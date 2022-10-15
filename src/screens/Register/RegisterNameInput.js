@@ -4,7 +4,7 @@ import StringInput from "../../components/Input/StringInput";
 import Submit from "../../components/Login/Submit";
 
 const RegisterNameInput = () => {
-  const [nameInput, setNameInput] = useState("");
+  const [nameInput, setNameInput] = useState("Hoang Van Cong");
   const [isDisSubmit, setIsDisSubmit] = useState(true);
 
   useEffect(() => {

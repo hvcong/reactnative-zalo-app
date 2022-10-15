@@ -15,13 +15,14 @@ import PhoneInput from "../../components/Input/PhoneInput";
 import PasswordInput from "../../components/Input/PasswordInput";
 import userApi from "../../api/authApi";
 import store from "../../store";
+import authApi from "../../api/authApi";
+import { useGlobalContext } from "../../store/contexts/GlobalContext";
 export default function LoginInput({ navigation }) {
-  const [phoneInput, setPhoneInput] = useState("");
-  const [pwdInput, setPwdInput] = useState("");
+  const { onLoginSuccess } = useGlobalContext();
+  const [phoneInput, setPhoneInput] = useState("0977777777");
+  const [pwdInput, setPwdInput] = useState("1234567");
   const [warnText, setWarnText] = useState("");
-
   const [isDisSubmit, setIsDisSubmit] = useState(true);
-  navigation.navigate("TabBar");
 
   useEffect(() => {
     // enable submit login when user type done
@@ -49,14 +50,16 @@ export default function LoginInput({ navigation }) {
   }
 
   async function onSubmit() {
+    console.log("submit");
     try {
-      const res = await userApi.login(phoneInput, pwdInput);
+      const res = await authApi.login(phoneInput, pwdInput);
       if (res.isSuccess) {
-        let result = await store.setToken(res.accessToken);
+        onLoginSuccess(res);
+      } else {
+        setWarnText("Số điện thoại hoặc mật khẩu không chính xác!");
       }
-      setWarnText("");
-      navigation.navigate("TabBar");
     } catch (error) {
+      console.log("erroor", error);
       setWarnText("Số điện thoại hoặc mật khẩu không chính xác!");
     }
   }

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { acc } from "react-native-reanimated";
 import store from "..";
 import authApi from "../../api/authApi";
 
@@ -18,6 +19,7 @@ function GlobalContextProvider({ children }) {
     token: state.token,
     user: state.user,
     onLogout,
+    onLoginSuccess,
   };
 
   useEffect(() => {
@@ -26,23 +28,51 @@ function GlobalContextProvider({ children }) {
   }, []);
 
   async function onLoadUser() {
-    setState({ ...state, isLoading: true });
-
     let token = await store.getToken();
     if (token) {
-      let res = await authApi.checkToken(token);
+      let res = await authApi.loginByToken(token);
       if (res.isSucess) {
-      } else {
-        // xoa item in storage
-
-        // test
         setState({
           ...state,
           isLoading: false,
-          token: "abc",
+          token: res.accessToken,
+        });
+      } else {
+        // store.removeToken();
+        setState({
+          ...state,
+          isLoading: false,
+          token: null,
+          user: null,
+          isLogout: true,
         });
       }
+    } else {
+      // token in storage is exits
+      setState({
+        ...state,
+        isLoading: false,
+      });
     }
+  }
+
+  async function onLoginSuccess(res) {
+    const { accessToken, name, phoneNumber, isAdmin, avatar, _id } = res;
+    store.setToken(accessToken);
+
+    setState({
+      ...state,
+      user: {
+        name,
+        phoneNumber,
+        isAdmin,
+        avatar,
+        _id,
+      },
+      token: accessToken,
+      isLoading: false,
+      isLogout: false,
+    });
   }
 
   async function onLogout() {

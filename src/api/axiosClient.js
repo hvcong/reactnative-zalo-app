@@ -1,5 +1,6 @@
 import axios from "axios";
 import queryString from "query-string";
+import store from "../store";
 
 const axiosClient = axios.create({
   baseURL: "http://13.212.252.189:3000/",

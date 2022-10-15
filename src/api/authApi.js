@@ -1,9 +1,25 @@
 import axiosClient from "./axiosClient";
 
 class AuthApi {
-  checkToken = async (token) => {
-    let url = "/auth/";
-    return axiosClient.get(url);
+  //[POST] auth/login
+  login = (phoneInput, pwdInput) => {
+    const url = "auth/login";
+
+    return axiosClient.post(url, {
+      phoneNumber: phoneInput,
+      password: pwdInput,
+    });
+  };
+
+  //[GET] auth/login
+  loginByToken = async (token) => {
+    const url = "auth/login";
+
+    return axiosClient.get(url, {
+      headers: {
+        token: "Bearer " + token,
+      },
+    });
   };
 }
 

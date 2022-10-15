@@ -4,7 +4,7 @@ import PhoneInput from "../../components/Input/PhoneInput";
 import Submit from "../../components/Login/Submit";
 
 const RegisterInput = ({ navigation }) => {
-  const [phoneInput, setPhoneInput] = useState("");
+  const [phoneInput, setPhoneInput] = useState("0868283915");
 
   const [isDisSubmit, setIsDisSubmit] = useState(true);
 

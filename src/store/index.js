@@ -4,34 +4,26 @@ const TOKEN__KEY = "TOKEN__KEY";
 class Store {
   async getToken() {
     try {
-      let data = await AsyncStorage.getItem(TOKEN__KEY);
-      if (data != null) {
-        return {
-          is: true,
-          data,
-        };
-      }
+      let value = await AsyncStorage.getItem(TOKEN__KEY);
 
-      return {
-        is: false,
-      };
+      return value;
     } catch (error) {
-      return {
-        is: false,
-      };
+      return value;
     }
   }
 
   async setToken(tokenValue) {
     try {
-      let data = await AsyncStorage.setItem(TOKEN__KEY, tokenValue);
-      return {
-        is: true,
-        ...data,
-      };
+      let value = await AsyncStorage.setItem(TOKEN__KEY, tokenValue);
+      return value;
     } catch (err) {
-      return { is: false };
+      return value;
     }
+  }
+
+  removeToken() {
+    AsyncStorage.removeItem(TOKEN__KEY);
+    console.log("remove token");
   }
 }
 

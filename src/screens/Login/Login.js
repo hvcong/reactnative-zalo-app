@@ -9,7 +9,9 @@ import {
 } from "react-native";
 
 export default function Login({ navigation }) {
-  function onLogin() {}
+  function onLogin() {
+    navigation.navigate("LoginInput");
+  }
   function onRegister() {
     navigation.navigate("RegisterInput");
   }
