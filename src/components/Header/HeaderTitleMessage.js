@@ -16,6 +16,7 @@ import {
 } from "@expo/vector-icons";
 
 const HeaderTitleMessage = (props) => {
+  const { conver } = props;
   const [searchInput, setSearchInput] = useState("");
   const [isVisibleModal, setIsVisibleModal] = useState(false);
 

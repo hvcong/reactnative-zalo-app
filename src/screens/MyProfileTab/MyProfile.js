@@ -11,10 +11,12 @@ import {
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import MyProfileModal from "./MyProfileModal";
+import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const MyProfile = (props) => {
   const { navigation, route } = props;
   const [isModalShow, setIsModalShow] = useState(false);
+  const { user } = useGlobalContext();
 
   useEffect(() => {
     navigation.setOptions({
@@ -44,13 +46,12 @@ const MyProfile = (props) => {
       >
         <View style={styles.left}>
           <Image
-            // source={require("../../../assets/avatar.jpg")}
             source={require("../../../assets/avatar.jpg")}
             style={styles.avatar}
           />
         </View>
         <View style={styles.body}>
-          <Text style={styles.title}>Nguyễn Tiến Đạt</Text>
+          <Text style={styles.title}>{user.name}</Text>
           <Text style={styles.description}>Xem trang cá nhân</Text>
         </View>
       </TouchableOpacity>
@@ -96,6 +97,7 @@ const MyProfile = (props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f2f2f2",
+    paddingTop: 32,
   },
   item: {
     paddingHorizontal: 14,

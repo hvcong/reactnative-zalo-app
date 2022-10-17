@@ -4,6 +4,7 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { EvilIcons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
 const HeaderTitleChatRoomGroup = (props) => {
+  const { converName, numOfMember } = props;
   function onNamePress() {
     console.warn("press name");
   }
@@ -24,9 +25,9 @@ const HeaderTitleChatRoomGroup = (props) => {
     <View style={styles.container}>
       <Pressable style={styles.itemGroup} onPress={onNamePress}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-          ĐHKTPM15A_t3aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          {converName}
         </Text>
-        <Text style={styles.quantity}>12 thành viên</Text>
+        <Text style={styles.quantity}>{numOfMember} thành viên</Text>
       </Pressable>
       <Pressable style={styles.itemIcon} onPress={onAddMemberPress}>
         <MaterialCommunityIcons
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   },
   quantity: {
     color: "#ccc",
-    fontSize: 13,
+    fontSize: 10,
   },
   itemIcon: {
     paddingLeft: 16,

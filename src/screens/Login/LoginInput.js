@@ -13,16 +13,16 @@ import { EvilIcons, AntDesign } from "@expo/vector-icons";
 import Submit from "../../components/Login/Submit";
 import PhoneInput from "../../components/Input/PhoneInput";
 import PasswordInput from "../../components/Input/PasswordInput";
-import userApi from "../../api/authApi";
-import store from "../../store";
 import authApi from "../../api/authApi";
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
+import LoadingModal from "../../components/LoadingModal";
 export default function LoginInput({ navigation }) {
   const { onLoginSuccess } = useGlobalContext();
-  const [phoneInput, setPhoneInput] = useState("0977777777");
+  const [phoneInput, setPhoneInput] = useState("0999999999");
   const [pwdInput, setPwdInput] = useState("1234567");
-  const [warnText, setWarnText] = useState("");
   const [isDisSubmit, setIsDisSubmit] = useState(true);
+  const [isLoading, setisLoading] = useState(false);
+  const [textErrRes, settextErrRes] = useState("");
 
   useEffect(() => {
     // enable submit login when user type done
@@ -42,7 +42,7 @@ export default function LoginInput({ navigation }) {
     if (!vnf_regex.test(phoneInput)) {
       isCheck = false;
     }
-    if (pwdInput == "") {
+    if (pwdInput.trim() == "") {
       isCheck = false;
     }
 
@@ -50,29 +50,35 @@ export default function LoginInput({ navigation }) {
   }
 
   async function onSubmit() {
-    console.log("submit");
+    settextErrRes("");
     try {
+      setisLoading(true);
       const res = await authApi.login(phoneInput, pwdInput);
+      setisLoading(false);
       if (res.isSuccess) {
         onLoginSuccess(res);
       } else {
-        setWarnText("Số điện thoại hoặc mật khẩu không chính xác!");
+        settextErrRes("Tài khoản hoặc mật khẩu không chính xác");
       }
     } catch (error) {
-      console.log("erroor", error);
-      setWarnText("Số điện thoại hoặc mật khẩu không chính xác!");
+      settextErrRes("Tài khoản hoặc mật khẩu không chính xác");
     }
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>Vui lòng nhập số điện thoại và mật khẩu</Text>
+        <Text style={styles.text}>{textErrRes}</Text>
       </View>
       <View style={styles.bodyContainer}>
-        <PhoneInput phoneInput={phoneInput} setPhoneInput={setPhoneInput} />
-        <PasswordInput value={pwdInput} setValue={setPwdInput} />
-        <Text style={styles.warnText}>{warnText}</Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Số điện thoại</Text>
+          <PhoneInput phoneInput={phoneInput} setPhoneInput={setPhoneInput} />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Mật khẩu</Text>
+          <PasswordInput value={pwdInput} setValue={setPwdInput} />
+        </View>
         <Text
           style={styles.textGetPwd}
           onPress={() => console.warn("Get back password press")}
@@ -81,6 +87,7 @@ export default function LoginInput({ navigation }) {
         </Text>
       </View>
       <Submit isDisSubmit={isDisSubmit} onSubmit={onSubmit} />
+      <LoadingModal visible={isLoading} text={"Đăng đăng nhập..."} />
     </View>
   );
 }
@@ -93,6 +100,7 @@ const styles = StyleSheet.create({
   bodyContainer: {
     marginHorizontal: 16,
     flex: 1,
+    paddingTop: 12,
   },
   textContainer: {
     backgroundColor: "#eee",
@@ -100,15 +108,12 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+  inputContainer: {
+    height: 92,
+  },
   text: {
     fontSize: 12,
-  },
-  inputContainer: {
-    borderBottomWidth: 3,
-    borderColor: "#0590f3",
-    marginTop: 20,
-    flexDirection: "row",
-    justifyContent: "center",
+    color: "red",
   },
 
   input: {
@@ -134,5 +139,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     fontSize: 16,
     color: "#4aabf0",
+  },
+  label: {
+    fontSize: 18,
+    paddingBottom: 8,
+    color: "#1b1d1e",
+  },
+  errText: {
+    // paddingTop: 6,
+    color: "red",
   },
 });

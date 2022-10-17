@@ -3,7 +3,8 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 
-const HeaderTitlteChatRoomSimple = () => {
+const HeaderTitlteChatRoomSimple = (props) => {
+  const { converName } = props;
   function onNamePress() {
     console.warn("press name");
   }
@@ -24,7 +25,7 @@ const HeaderTitlteChatRoomSimple = () => {
     <View style={styles.container}>
       <Pressable style={styles.itemGroup} onPress={onNamePress}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-          Nguyễn Tiến Đạt
+          {converName}
         </Text>
         <Text style={styles.minute}>Truy cập 18 phút trước</Text>
       </Pressable>
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
   },
   minute: {
     color: "#ccc",
-    fontSize: 13,
+    fontSize: 10,
   },
   itemIcon: {
     paddingHorizontal: 8,

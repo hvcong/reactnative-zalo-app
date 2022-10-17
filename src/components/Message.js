@@ -3,52 +3,72 @@ import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 import ImageMessage from "./MessageType/ImageMessage";
 import TextMessage from "./MessageType/TextMessage";
 import { Foundation, Fontisto } from "@expo/vector-icons";
+import NotifyMessage from "./MessageType/NotifyMessage";
 
-const Message = ({ style, isMyMessage, type, ...data }) => {
+const Message = (props) => {
+  let { style, item, isMyMessage, isRenderAvatarIcon, index, sender } = props;
+  let { type, senderId } = item;
+
   function renderMessageContent() {
-    if (type === "text") {
-      return <TextMessage data={data} isMyMessage={isMyMessage} />;
-    }
-    if (type === "image") {
+    if (type === "TEXT") {
+      return (
+        <TextMessage item={item} isMyMessage={isMyMessage} sender={sender} />
+      );
+    } else if (type === "NOTIFY") {
+      return <NotifyMessage item={item} isMyMessage={isMyMessage} />;
+    } else if (type === "IMAGE") {
+    } else if (type === "STICKER") {
+    } else if (type === "VIDEO") {
+    } else if (type === "VOTE") {
+    } else if (type === "HTML") {
+    } else if (type === "IMAGE") {
       return <ImageMessage data={data} />;
     }
+  }
+
+  function isRenderAvatar() {
+    if (type === "NOTIFY" || type === "VOTE") return false;
+    if (isMyMessage) return false;
+    return isRenderAvatarIcon(senderId, index);
   }
 
   function onReaction() {}
 
   return (
     <View style={[style, styles.wrapper]}>
-      <Image
-        style={isMyMessage ? { display: "none" } : styles.image}
-        source={require("../../assets/avatar.jpg")}
-      ></Image>
+      <View style={styles.imageContainer}>
+        {isRenderAvatar() && (
+          <Image
+            style={styles.image}
+            source={require("../../assets/avatar.jpg")}
+          ></Image>
+        )}
+      </View>
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
         onLongPress={onReaction}
       >
-        <View style={isMyMessage ? styles.bodyOfMyMessage : styles.body}>
-          {renderMessageContent()}
-          <View style={styles.reactionContainer}>
-            <Foundation
-              style={[styles.reactionIcon, styles.iconHeart]}
-              name="heart"
-              color="black"
-              onLongPress={() => {
-                console.log("abc");
-              }}
-            />
-            <Fontisto
-              style={[styles.reactionIcon, styles.iconLike]}
-              name="like"
-              color="black"
-            />
-            <Fontisto
-              style={[styles.reactionIcon, styles.iconDislike]}
-              name="dislike"
-              color="black"
-            />
-          </View>
+        {renderMessageContent()}
+        <View style={styles.reactionContainer}>
+          <Foundation
+            style={[styles.reactionIcon, styles.iconHeart]}
+            name="heart"
+            color="black"
+            onLongPress={() => {
+              console.log("abc");
+            }}
+          />
+          <Fontisto
+            style={[styles.reactionIcon, styles.iconLike]}
+            name="like"
+            color="black"
+          />
+          <Fontisto
+            style={[styles.reactionIcon, styles.iconDislike]}
+            name="dislike"
+            color="black"
+          />
         </View>
       </TouchableOpacity>
     </View>
@@ -65,16 +85,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
   },
-  image: {
-    width: 40,
-    height: 40,
+  imageContainer: {
+    width: 30,
+    height: 30,
     borderRadius: 50,
     marginRight: 12,
   },
-  bodyOfMyMessage: {
-    flex: 1,
-    marginLeft: "25%",
-    borderRadius: 10,
+  image: {
+    width: 30,
+    height: 30,
+    borderRadius: 50,
+    marginRight: 12,
   },
   body: {
     marginRight: "25%",

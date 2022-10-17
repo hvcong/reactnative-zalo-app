@@ -28,30 +28,27 @@ function GlobalContextProvider({ children }) {
   }, []);
 
   async function onLoadUser() {
-    let token = await store.getToken();
-    if (token) {
-      let res = await authApi.loginByToken(token);
-      if (res.isSucess) {
-        setState({
-          ...state,
-          isLoading: false,
-          token: res.accessToken,
-        });
-      } else {
-        // store.removeToken();
-        setState({
-          ...state,
-          isLoading: false,
-          token: null,
-          user: null,
-          isLogout: true,
-        });
-      }
-    } else {
-      // token in storage is exits
+    let res = await authApi.loginByToken();
+    if (res.isSuccess) {
+      const { name, phoneNumber, isAdmin } = res;
       setState({
         ...state,
         isLoading: false,
+        token: res.accessToken,
+        user: {
+          name,
+          phoneNumber,
+          isAdmin,
+        },
+      });
+    } else {
+      // store.removeToken();
+      setState({
+        ...state,
+        isLoading: false,
+        token: null,
+        user: null,
+        isLogout: true,
       });
     }
   }
@@ -76,7 +73,8 @@ function GlobalContextProvider({ children }) {
   }
 
   async function onLogout() {
-    console.log("logout");
+    store.removeToken();
+
     setState({
       ...state,
       token: null,

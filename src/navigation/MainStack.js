@@ -6,7 +6,6 @@ import GlobalContextProvider, {
 import Login from "../screens/Login/Login";
 import LoginInput from "../screens/Login/LoginInput";
 import RegisterInput from "../screens/Register/RegisterInput";
-import RegisterNameInput from "../screens/Register/RegisterNameInput";
 import LoadingScreen from "../screens/Loading/LoadingScreen";
 import TabBar from "./TabBar";
 
@@ -43,10 +42,6 @@ const MainStack = () => {
             }}
           />
           <Stack.Screen name="RegisterInput" component={RegisterInput} />
-          <Stack.Screen
-            name="RegisterNameInput"
-            component={RegisterNameInput}
-          />
         </>
       ) : (
         <>

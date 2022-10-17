@@ -3,6 +3,7 @@ import { LogBox, StyleSheet } from "react-native";
 import MainStack from "./src/navigation/MainStack.js";
 import React from "react";
 import GlobalContextProvider from "./src/store/contexts/GlobalContext";
+import ConversationContextProvider from "./src/store/contexts/ConversationContext.js";
 
 export default function App() {
   LogBox.ignoreLogs(["EventEmitter.removeListener"]);
@@ -10,7 +11,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <GlobalContextProvider>
-        <MainStack />
+        <ConversationContextProvider>
+          <MainStack />
+        </ConversationContextProvider>
       </GlobalContextProvider>
     </NavigationContainer>
   );

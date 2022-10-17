@@ -5,7 +5,6 @@ class Store {
   async getToken() {
     try {
       let value = await AsyncStorage.getItem(TOKEN__KEY);
-
       return value;
     } catch (error) {
       return value;
@@ -23,7 +22,6 @@ class Store {
 
   removeToken() {
     AsyncStorage.removeItem(TOKEN__KEY);
-    console.log("remove token");
   }
 }
 

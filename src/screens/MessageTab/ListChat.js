@@ -1,84 +1,29 @@
 import React from "react";
 import { View, StyleSheet, FlatList, Text, Image } from "react-native";
+import { isArray } from "react-native-axios/lib/utils";
 import ChatItem from "../../components/ChatItem";
+import { useConversationContext } from "../../store/contexts/ConversationContext";
 
-const data = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-  {
-    id: "bd7acbea-c1b1-46c2-ad5-3ad53ab28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-  {
-    id: "bd7acbea-cb1-46c2-aed5-3ad53abb28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-  {
-    id: "bd7acbea-c1b1-462-aed5-3ad53ab28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-  {
-    id: "bd7acbea-c1b1-6c2-aed5-3ad53abb28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-ad53ab28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-  {
-    id: "bd7acbea-c1b1sss-6c2-aed5-3ad53abb28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-  {
-    id: "bd7acbea-c1sfdsfb1-46c2-aed5-ad53ab28ba",
-    name: "First Item",
-    lastTime: "1",
-    lastMessage: "this is a message from his",
-    numberOfNewMessage: 3,
-  },
-];
-const ListChat = (props) => {
+const ListChat = React.memo((props) => {
+  const { convers } = useConversationContext();
   const { navigation } = props;
 
   function renderItem({ item }) {
-    return <ChatItem item={item} navigation={navigation} />;
+    return <ChatItem conver={item} navigation={navigation} />;
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.listContainer}>
         <FlatList
-          data={data}
+          data={isArray(convers) ? convers : []}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
         ></FlatList>
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

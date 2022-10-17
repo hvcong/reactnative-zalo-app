@@ -5,6 +5,9 @@ import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import MessageTabScreen from "../screens/MessageTab/MessageTabScreen";
 import Friends from "../screens/FriendsTab/Friends";
 import MyProfile from "../screens/MyProfileTab/MyProfile";
+import ConversationContextProvider from "../store/contexts/ConversationContext";
+import ListChat from "../screens/MessageTab/ListChat";
+import FriendsTab from "../screens/FriendsTab/FriendsTab";
 const Tab = createBottomTabNavigator();
 
 const TabBar = () => {
@@ -24,13 +27,13 @@ const TabBar = () => {
         component={MessageTabScreen}
       ></Tab.Screen>
       <Tab.Screen
-        name="Friends"
+        name="FriendsTab"
         options={{
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="user-friends" size={24} color={color} />
           ),
         }}
-        component={Friends}
+        component={FriendsTab}
       ></Tab.Screen>
       <Tab.Screen
         name="MeProfile"

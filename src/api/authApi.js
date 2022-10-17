@@ -12,14 +12,17 @@ class AuthApi {
   };
 
   //[GET] auth/login
-  loginByToken = async (token) => {
+  loginByToken = async () => {
     const url = "auth/login";
 
-    return axiosClient.get(url, {
-      headers: {
-        token: "Bearer " + token,
-      },
-    });
+    return axiosClient.get(url);
+  };
+
+  //[GET] auth/register
+  register = async (props) => {
+    const url = "auth/register";
+
+    return axiosClient.post(url, props);
   };
 }
 

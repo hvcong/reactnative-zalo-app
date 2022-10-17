@@ -1,7 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { View, StyleSheet, TextInput } from "react-native";
-import HeaderTitleChatRoom from "../../components/Header/HeaderTitleChatRoom";
 import HeaderTitleMessage from "../../components/Header/HeaderTitleMessage";
 import ChatRoom from "./ChatRoom";
 import ListChat from "./ListChat";
@@ -24,13 +23,7 @@ const MessageTabScreen = (props) => {
           headerLeft: null,
         }}
       />
-      <Stack.Screen
-        name="ChatRoom"
-        component={ChatRoom}
-        options={{
-          headerTitle: (props) => <HeaderTitleChatRoom {...props} />,
-        }}
-      />
+      <Stack.Screen name="ChatRoom" component={ChatRoom} />
     </Stack.Navigator>
   );
 };

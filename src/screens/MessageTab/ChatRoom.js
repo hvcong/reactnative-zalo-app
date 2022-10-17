@@ -3,69 +3,14 @@ import { View, StyleSheet, FlatList } from "react-native";
 import HeaderTitleChatRoom from "../../components/Header/HeaderTitleChatRoom";
 import Message from "../../components/Message";
 import MessageInput from "../../components/MessageInput";
-
-const myId = "abd1";
-
-const messages = [
-  {
-    content: " ou better underst thed post content.",
-    avatar: "...",
-    id: "qer222e",
-    userId: "abd2",
-    type: "text",
-  },
-  {
-    content:
-      " this is a content of Facebook is showing information to help you better understand the purpose of a Page. See actions taken by the people who manage and post content.",
-    avatar: "...",
-    id: "qereff",
-    userId: "abd1",
-    type: "text",
-  },
-  {
-    content:
-      " this is a content of message ntent of Facebook is showing information to help you better understand the purpose of a Page. See actions taken by the people who manage and post content.",
-    avatar: "...",
-    id: "qeaar2e",
-    userId: "abd2",
-    type: "text",
-  },
-  {
-    content:
-      " this is a content of Facebook is showing information to help you better understand the purpose of a Page. See actions taken by the people who manage and post content.",
-    avatar: "...",
-    id: "qerddde",
-    userId: "abd1",
-    type: "text",
-  },
-  {
-    content:
-      " this is a content of message ntent of Facebook is showing information to help you better understand the purpose of a Page. See actions taken by the people who manage and post content.",
-    avatar: "...",
-    id: "qer2asfe",
-    userId: "abd2",
-    type: "text",
-  },
-  {
-    content: "../../assets/avatar.jpg",
-    avatar: "...",
-    id: "qersse",
-    userId: "abd1",
-    type: "image",
-  },
-  {
-    content:
-      " this is a content of Facebook is showing information to help you better understand the purpose of a Page. See actions taken by the people who manage and post content.",
-    avatar: "...",
-    id: "qere",
-    userId: "abd1",
-    type: "text",
-  },
-];
+import { useConversationContext } from "../../store/contexts/ConversationContext";
+import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const ChatRoom = (props) => {
-  const { typeOfConversation } = props.route.params;
+  const { typeOfConversation, messages, converId, conver } = props.route.params;
   const { navigation } = props;
+  const { user } = useGlobalContext();
+  const { getMember, getMembers } = useConversationContext();
 
   useEffect(() => {
     navigation.setOptions({
@@ -73,6 +18,8 @@ const ChatRoom = (props) => {
         <HeaderTitleChatRoom
           {...props}
           typeOfConversation={typeOfConversation}
+          numOfMember={getMembers(converId).length}
+          converName={conver.name}
         />
       ),
     });
@@ -87,14 +34,24 @@ const ChatRoom = (props) => {
       });
   }, []);
 
-  function renderItem({ item }) {
+  function renderItem({ index, item }) {
     return (
       <Message
-        content={item.content}
-        isMyMessage={myId === item.userId ? true : false}
-        type={item.type}
+        isMyMessage={user._id == item.senderId ? true : false}
+        item={item}
+        isRenderAvatarIcon={isRenderAvatarIcon}
+        index={index}
+        sender={getMember(converId, item.senderId)}
       />
     );
+  }
+
+  function isRenderAvatarIcon(senderId, index) {
+    if (index == 0) {
+      return true;
+    }
+    if (messages[index - 1].senderId === senderId) return false;
+    return true;
   }
 
   function onSendMessage() {
@@ -107,7 +64,7 @@ const ChatRoom = (props) => {
           style={styles.flatList}
           data={messages}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
         ></FlatList>
       </View>
       <View style={styles.enterContainer}>

@@ -1,6 +1,9 @@
+import { createStackNavigator } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import FriendsModal from "./FriendsModal";
+
+const Stack = createStackNavigator();
 
 const Friends = () => {
   const [isModalShow, setIsModalShow] = useState(false);

@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 
-const ChatItem = ({ item, navigation }) => {
-  const { name, avatar } = item;
-
+const ChatItem = ({ conver, navigation }) => {
+  const { name, avatar, messages, lastMessageId, _id, type } = conver;
+  const [lastMessage, setlastMessage] = useState(null);
   function onPressItem() {
     navigation.navigate("ChatRoom", {
-      typeOfConversation: "simple",
+      typeOfConversation: type ? "group" : "simple",
+      messages,
+      converId: _id,
+      conver,
     });
   }
 
@@ -26,7 +29,7 @@ const ChatItem = ({ item, navigation }) => {
         <View style={styles.centerContainer}>
           <Text style={styles.name}>{name}</Text>
           <Text numberOfLine={1} style={styles.lastMessage}>
-            last message print here
+            {lastMessageId ? lastMessageId.content : "...."}
           </Text>
         </View>
         <View style={styles.rightContainer}>
