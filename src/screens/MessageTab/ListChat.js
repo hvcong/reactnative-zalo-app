@@ -1,12 +1,31 @@
-import React from "react";
-import { View, StyleSheet, FlatList, Text, Image } from "react-native";
+import React, { useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Text,
+  Image,
+  SafeAreaView,
+} from "react-native";
 import { isArray } from "react-native-axios/lib/utils";
 import ChatItem from "../../components/ChatItem";
+import HeaderTitleMessage from "../../components/Header/HeaderTitleMessage";
 import { useConversationContext } from "../../store/contexts/ConversationContext";
 
 const ListChat = React.memo((props) => {
   const { convers } = useConversationContext();
   const { navigation } = props;
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: (props) => (
+        <HeaderTitleMessage {...props} navigation={navigation} />
+      ),
+      headerLeft: null,
+    });
+
+    return () => {};
+  }, []);
 
   function renderItem({ item }) {
     return <ChatItem conver={item} navigation={navigation} />;

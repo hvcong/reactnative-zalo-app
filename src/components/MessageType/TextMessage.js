@@ -21,15 +21,14 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     backgroundColor: "white",
     borderRadius: 16,
-    flex: 1,
-    marginRight: "25%",
+    maxWidth: "75%",
   },
   myMessageContainer: {
     padding: 12,
     borderRadius: 16,
-    flex: 1,
     backgroundColor: "#e5efff",
-    marginLeft: "20%",
+    marginLeft: "auto",
+    maxWidth: "75%",
   },
   name: {
     color: "#bd6d29",

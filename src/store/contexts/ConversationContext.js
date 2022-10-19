@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { View, StyleSheet } from "react-native";
 import converApi from "../../api/converApi";
+import socketIOClient from "socket.io-client";
 
 const ConversationContext = createContext();
 
@@ -8,11 +15,18 @@ const ConversationContextProvider = ({ children }) => {
   const [state, setstate] = useState({
     convers: [],
   });
+  const host = "https://zalo-chat.herokuapp.com/";
+  const socketRef = useRef();
 
   useEffect(() => {
-    loadConversations();
-    return () => {};
+    connectSocketIo();
   }, []);
+
+  // connect socket io
+  function connectSocketIo() {
+    socketRef.current = socketIOClient.connect(host);
+    console.log("connect success");
+  }
 
   async function loadConversations() {
     const convers = await converApi.getAllConvers();
@@ -23,11 +37,10 @@ const ConversationContextProvider = ({ children }) => {
           convers: convers.data,
         });
       } else {
-        console.log("load conversation again");
-        loadConversations();
+        console.log("cover empty");
       }
     } else {
-      console.log("conver empty");
+      console.log("server error");
     }
   }
 
@@ -41,17 +54,20 @@ const ConversationContextProvider = ({ children }) => {
 
   function getMember(converId, memberId) {
     const members = getMembers(converId);
-    for (let i = 0; i < members.length; i++) {
-      if (members[i]._id === memberId) {
-        return members[i];
+    if (Array.isArray(members))
+      for (let i = 0; i < members.length; i++) {
+        if (members[i]._id === memberId) {
+          return members[i];
+        }
       }
-    }
   }
 
   const ConversationContextData = {
     convers: state.convers,
     getMembers,
     getMember,
+    loadConversations,
+    socket: socketRef.current,
   };
   return (
     <ConversationContext.Provider value={ConversationContextData}>

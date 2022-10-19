@@ -1,5 +1,11 @@
 import React from "react";
-import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Text,
+  SafeAreaView,
+} from "react-native";
 
 const LoadingScreen = () => {
   return (
@@ -12,9 +18,9 @@ const LoadingScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
   },
   text: {
     fontSize: 14,

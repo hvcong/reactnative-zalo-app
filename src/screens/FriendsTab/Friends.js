@@ -1,28 +1,82 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import React, { useState } from "react";
-import { View, StyleSheet, Text, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  Image,
+  SafeAreaView,
+  SafeAreaViewBase,
+  SafeAreaViewComponent,
+} from "react-native";
+import { Fontisto } from "@expo/vector-icons";
 import FriendsModal from "./FriendsModal";
+import FriendsBody from "./components/FriendsBody";
+import GroupChatBody from "./components/GroupChatBody";
 
 const Stack = createStackNavigator();
 
-const Friends = () => {
+const Friends = (props) => {
+  const { navigation, route } = props;
   const [isModalShow, setIsModalShow] = useState(false);
+  const [activeTab, setactiveTab] = useState(true);
+
+  useEffect(() => {
+    if (route.params && route.params.nextScreen) {
+      navigation.navigate(route.params.nextScreen);
+    }
+    return () => {};
+  }, [route.params]);
 
   return (
-    <View>
-      <Text>Friends screen</Text>
-      <Pressable
-        onPress={() => {
-          setIsModalShow(true);
-        }}
-      >
-        <Text>Open modal</Text>
-      </Pressable>
-      <FriendsModal isModalShow={isModalShow} setIsModalShow={setIsModalShow} />
+    <View style={styles.container}>
+      <View style={styles.navbar}>
+        <Text
+          onPress={() => setactiveTab(true)}
+          style={[styles.navItem, activeTab && styles.navItemAcctive]}
+        >
+          BẠN BÈ
+        </Text>
+        <Text
+          onPress={() => setactiveTab(false)}
+          style={[styles.navItem, !activeTab && styles.navItemAcctive]}
+        >
+          NHÓM
+        </Text>
+      </View>
+
+      {!activeTab ? (
+        <GroupChatBody navigation={navigation} />
+      ) : (
+        <FriendsBody navigation={navigation} />
+      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "white",
+    flex: 1,
+  },
+  navbar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  navItem: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    paddingVertical: 8,
+    color: "#ccc",
+  },
+  navItemAcctive: {
+    borderBottomWidth: 4,
+    borderBottomColor: "blue",
+    color: "black",
+  },
+});
 
 export default Friends;

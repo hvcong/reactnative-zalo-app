@@ -16,7 +16,7 @@ import {
 } from "@expo/vector-icons";
 
 const HeaderTitleMessage = (props) => {
-  const { conver } = props;
+  const { navigation } = props;
   const [searchInput, setSearchInput] = useState("");
   const [isVisibleModal, setIsVisibleModal] = useState(false);
 
@@ -29,11 +29,21 @@ const HeaderTitleMessage = (props) => {
   }
 
   function onAddFriend() {
-    console.warn("add new friend");
+    navigation.navigate("FriendsTab", {
+      screen: "Friends",
+      params: {
+        nextScreen: "AddFriend",
+      },
+    });
   }
 
   function onCreateGroup() {
-    console.warn("create new group");
+    navigation.navigate("FriendsTab", {
+      screen: "Friends",
+      params: {
+        nextScreen: "AddGroupChat",
+      },
+    });
   }
 
   function onCloseModal() {
@@ -49,6 +59,7 @@ const HeaderTitleMessage = (props) => {
         <TextInput
           style={styles.input}
           placeholder="Tìm kiếm..."
+          placeholderTextColor={"white"}
           value={searchInput}
           onChangeText={setSearchInput}
         />
@@ -98,8 +109,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#4444",
   },
   icon: {
     paddingVertical: 12,

@@ -18,16 +18,16 @@ const MyProfile = (props) => {
   const [isModalShow, setIsModalShow] = useState(false);
   const { user } = useGlobalContext();
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: null,
-      headerTitleAlign: "center",
-      headerShow: true,
-      headerTitle:
-        route.params && route.params.title ? route.params.title : "Thông tin",
-    });
-    return () => {};
-  }, []);
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerLeft: null,
+  //     headerTitleAlign: "center",
+  //     headerShow: true,
+  //     headerTitle:
+  //       route.params && route.params.title ? route.params.title : "Thông tin",
+  //   });
+  //   return () => {};
+  // }, []);
 
   function logoutPress() {
     setIsModalShow(true);
@@ -97,7 +97,6 @@ const MyProfile = (props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f2f2f2",
-    paddingTop: 32,
   },
   item: {
     paddingHorizontal: 14,
@@ -105,7 +104,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
-    borderTopWidth: 1,
     borderColor: "#f2f2f2",
   },
   left: {

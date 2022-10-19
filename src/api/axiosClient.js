@@ -1,9 +1,14 @@
 import axios from "axios";
 import store from "../store";
 import qs from "qs";
+// let baseURL = "http://192.168.1.87/";
+// let baseURL = "http://127.0.0.1:3000/";
+let baseURL = "https://zalo-chat.herokuapp.com/";
+// let baseURL = "http://localhost:3000/";
+// let baseURL = "http://13.212.252.189:3000/";
 
 const axiosClient = axios.create({
-  baseURL: "https://zalo-chat.herokuapp.com/",
+  baseURL: baseURL,
   headers: {
     "content-type": "application/json",
   },

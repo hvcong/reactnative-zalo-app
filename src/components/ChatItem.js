@@ -4,6 +4,20 @@ import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 const ChatItem = ({ conver, navigation }) => {
   const { name, avatar, messages, lastMessageId, _id, type } = conver;
   const [lastMessage, setlastMessage] = useState(null);
+
+  useEffect(() => {
+    getLastMessage();
+    return () => {};
+  }, []);
+  function getLastMessage() {
+    for (let i = 0; i < conver.messages.length; i++) {
+      if (conver.messages[i]._id === lastMessageId) {
+        setlastMessage(conver.messages[i]);
+        return;
+      }
+    }
+  }
+
   function onPressItem() {
     navigation.navigate("ChatRoom", {
       typeOfConversation: type ? "group" : "simple",
@@ -14,7 +28,7 @@ const ChatItem = ({ conver, navigation }) => {
   }
 
   return (
-    <View>
+    <View style={styles.wrap}>
       <TouchableOpacity
         onPress={() => onPressItem()}
         activeOpacity={0.9}
@@ -27,9 +41,11 @@ const ChatItem = ({ conver, navigation }) => {
           />
         </View>
         <View style={styles.centerContainer}>
-          <Text style={styles.name}>{name}</Text>
-          <Text numberOfLine={1} style={styles.lastMessage}>
-            {lastMessageId ? lastMessageId.content : "...."}
+          <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+            {name}
+          </Text>
+          <Text numberOfLines={1} style={styles.lastMessage}>
+            {lastMessage && lastMessage.content}
           </Text>
         </View>
         <View style={styles.rightContainer}>
@@ -44,19 +60,25 @@ const ChatItem = ({ conver, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  wrap: {
+    flex: 1,
+  },
   container: {
     flexDirection: "row",
-    paddingVertical: 14,
-    paddingHorizontal: 18,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
+    flex: 1,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
   },
   imageContainer: {
-    paddingRight: 20,
+    paddingRight: 12,
   },
   avatar: {
-    height: 60,
-    width: 60,
+    height: 50,
+    width: 50,
     borderRadius: 50,
   },
   centerContainer: {
@@ -64,29 +86,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   name: {
-    fontSize: 18,
+    fontSize: 14,
+    fontWeight: "bold",
   },
   lastMessage: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#858383",
   },
   rightContainer: {
     justifyContent: "center",
   },
   lastTime: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: "bold",
     color: "#858383",
   },
   numberOfNewMessage: {
     backgroundColor: "red",
     textAlign: "center",
-    borderRadius: 59,
-    height: 18,
-    lineHeight: 18,
+    fontSize: 10,
     color: "white",
     fontWeight: "bold",
     marginTop: 4,
+    borderRadius: 50,
   },
 });
 

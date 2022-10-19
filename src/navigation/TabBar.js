@@ -8,6 +8,7 @@ import MyProfile from "../screens/MyProfileTab/MyProfile";
 import ConversationContextProvider from "../store/contexts/ConversationContext";
 import ListChat from "../screens/MessageTab/ListChat";
 import FriendsTab from "../screens/FriendsTab/FriendsTab";
+import MyProfileTab from "../screens/MyProfileTab/MyProfileTab";
 const Tab = createBottomTabNavigator();
 
 const TabBar = () => {
@@ -42,7 +43,7 @@ const TabBar = () => {
             <Ionicons name="person" size={24} color={color} />
           ),
         }}
-        component={MyProfile}
+        component={MyProfileTab}
       ></Tab.Screen>
     </Tab.Navigator>
   );

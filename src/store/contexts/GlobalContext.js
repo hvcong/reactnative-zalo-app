@@ -78,7 +78,6 @@ function GlobalContextProvider({ children }) {
     setState({
       ...state,
       token: null,
-      user: null,
       isLogout: true,
     });
   }
