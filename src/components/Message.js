@@ -1,13 +1,28 @@
-import React from "react";
-import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import ImageMessage from "./MessageType/ImageMessage";
 import TextMessage from "./MessageType/TextMessage";
-import { Foundation, Fontisto } from "@expo/vector-icons";
+import {
+  Foundation,
+  Fontisto,
+  SimpleLineIcons,
+  Feather,
+} from "@expo/vector-icons";
 import NotifyMessage from "./MessageType/NotifyMessage";
+import ReactModal from "./ReactModal";
 
 const Message = (props) => {
   let { style, item, isMyMessage, isRenderAvatarIcon, index, sender } = props;
   let { type, senderId } = item;
+  const [isShowModal, setisShowModal] = useState(false);
+  const [isOnReact, setisOnReact] = useState(false);
 
   function renderMessageContent() {
     if (type === "TEXT") {
@@ -32,10 +47,12 @@ const Message = (props) => {
     return isRenderAvatarIcon(senderId, index);
   }
 
-  function onReaction() {}
+  function onReaction() {
+    setisOnReact(!isOnReact);
+  }
 
   return (
-    <View style={[style, styles.wrapper]}>
+    <Pressable style={[style, styles.wrapper]}>
       <View style={styles.imageContainer}>
         {isRenderAvatar() && (
           <Image
@@ -50,28 +67,52 @@ const Message = (props) => {
         onLongPress={onReaction}
       >
         {renderMessageContent()}
-        <View style={styles.reactionContainer}>
-          <Foundation
-            style={[styles.reactionIcon, styles.iconHeart]}
-            name="heart"
-            color="black"
-            onLongPress={() => {
-              console.log("abc");
-            }}
-          />
-          <Fontisto
-            style={[styles.reactionIcon, styles.iconLike]}
+
+        <View style={styles.listReacted}>
+          <SimpleLineIcons
+            style={styles.reactedIcon}
             name="like"
+            size={24}
             color="black"
           />
-          <Fontisto
-            style={[styles.reactionIcon, styles.iconDislike]}
-            name="dislike"
+          <Feather
+            style={styles.reactedIcon}
+            name="heart"
+            size={24}
             color="black"
           />
         </View>
+        {isOnReact && (
+          <View style={styles.reactContainer}>
+            <SimpleLineIcons
+              style={styles.reactIcon}
+              name="like"
+              size={24}
+              color="black"
+            />
+            <SimpleLineIcons
+              style={styles.reactIcon}
+              name="like"
+              size={24}
+              color="black"
+            />
+            <SimpleLineIcons
+              style={styles.reactIcon}
+              name="like"
+              size={24}
+              color="black"
+            />
+            <Feather
+              style={styles.reactIcon}
+              name="heart"
+              size={24}
+              color="black"
+            />
+          </View>
+        )}
       </TouchableOpacity>
-    </View>
+      <ReactModal isShowModal={isShowModal} setisShowModal={setisShowModal} />
+    </Pressable>
   );
 };
 
@@ -80,6 +121,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     marginVertical: 8,
+    position: "relative",
   },
   container: {
     flexDirection: "row",
@@ -101,41 +143,27 @@ const styles = StyleSheet.create({
     marginRight: "25%",
     borderRadius: 10,
   },
-  reactionContainer: {
-    position: "absolute",
-    right: "10%",
-    bottom: -6,
-    flexDirection: "row",
-    justifyContent: "center",
-    backgroundColor: "white",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
+  listReacted: {
     display: "none",
   },
-  reactionIcon: {
-    paddingHorizontal: 8,
-    paddingTop: 4,
-    fontSize: 24,
-    position: "relative",
+  reactedIcon: {},
+  reactContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    position: "absolute",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    bottom: 0,
+    width: "100%",
+
+    borderColor: "#999",
+    borderWidth: 1,
   },
-  iconHeart: {
-    top: 1,
-    color: "red",
-  },
-  iconLike: {
-    color: "yellow",
-    fontSize: 20,
-  },
-  iconDislike: {
-    color: "green",
-    fontSize: 20,
+  reactIcon: {
+    paddingLeft: 8,
   },
 });
 

@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { EvilIcons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
 const HeaderTitleChatRoomGroup = (props) => {
-  const { converName, numOfMember } = props;
+  const { converName, numOfMember, navigation } = props;
   function onNamePress() {
     console.warn("press name");
   }
@@ -18,7 +18,7 @@ const HeaderTitleChatRoomGroup = (props) => {
   }
 
   function onListPress() {
-    console.warn("onListPress");
+    navigation.navigate("RoomChatGroupMore");
   }
 
   return (

@@ -20,6 +20,7 @@ const ChatRoom = (props) => {
           typeOfConversation={typeOfConversation}
           numOfMember={getMembers(converId).length}
           converName={conver.name}
+          navigation={navigation}
         />
       ),
     });

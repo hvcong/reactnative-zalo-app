@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 
 const HeaderTitlteChatRoomSimple = (props) => {
-  const { converName } = props;
+  const { converName, navigation } = props;
   function onNamePress() {
     console.warn("press name");
   }
@@ -19,6 +19,7 @@ const HeaderTitlteChatRoomSimple = (props) => {
 
   function onListPress() {
     console.warn("onListPress");
+    navigation.navigate("RoomSimpleMore");
   }
 
   return (

@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { View, StyleSheet } from "react-native";
 import converApi from "../../api/converApi";
-import socketIOClient from "socket.io-client";
 
 const ConversationContext = createContext();
 
@@ -15,21 +14,12 @@ const ConversationContextProvider = ({ children }) => {
   const [state, setstate] = useState({
     convers: [],
   });
-  const host = "https://zalo-chat.herokuapp.com/";
-  const socketRef = useRef();
 
-  useEffect(() => {
-    connectSocketIo();
-  }, []);
-
-  // connect socket io
-  function connectSocketIo() {
-    socketRef.current = socketIOClient.connect(host);
-    console.log("connect success");
-  }
+  function sendMessage(mess) {}
 
   async function loadConversations() {
     const convers = await converApi.getAllConvers();
+
     if (convers) {
       if (Array.isArray(convers.data)) {
         setstate({
@@ -67,7 +57,7 @@ const ConversationContextProvider = ({ children }) => {
     getMembers,
     getMember,
     loadConversations,
-    socket: socketRef.current,
+    sendMessage,
   };
   return (
     <ConversationContext.Provider value={ConversationContextData}>
