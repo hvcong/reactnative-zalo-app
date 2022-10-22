@@ -33,7 +33,7 @@ const MessageInput = ({ onSendMessage }) => {
         onPress={() => {
           setTextInput("");
           //   inputRef.current.blur();
-          onSendMessage();
+          onSendMessage({ type: "TEXT", message: textInput });
         }}
       />
     </View>

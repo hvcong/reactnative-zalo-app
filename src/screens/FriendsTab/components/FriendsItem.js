@@ -2,7 +2,8 @@ import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const FriendsItem = () => {
+const FriendsItem = (props) => {
+  const { _id, avatar, name } = props;
   return (
     <TouchableOpacity style={styles.item}>
       <View style={styles.avatarContainer}>
@@ -11,9 +12,16 @@ const FriendsItem = () => {
           style={styles.avatar}
         />
       </View>
-      <Text style={styles.name}>Hoang Van Cong</Text>
+      <Text style={styles.name}>{name}</Text>
       <View style={styles.icon}>
-        <Ionicons name="chatbox-ellipses-outline" size={24} color="black" />
+        <Ionicons
+          name="chatbox-ellipses-outline"
+          size={24}
+          color="black"
+          onPress={() => {
+            console.log("go to conver");
+          }}
+        />
       </View>
     </TouchableOpacity>
   );

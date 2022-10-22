@@ -6,38 +6,89 @@ import React, {
   useState,
 } from "react";
 import { View, StyleSheet } from "react-native";
+import { startDetecting } from "react-native/Libraries/Utilities/PixelRatio";
 import converApi from "../../api/converApi";
+import startSocketIO from "../../socketIo";
+import { useGlobalContext } from "./GlobalContext";
 
 const ConversationContext = createContext();
 
 const ConversationContextProvider = ({ children }) => {
-  const [state, setstate] = useState({
-    convers: [],
-  });
+  const [convers, setconvers] = useState([]);
+  const [hasListens, sethasListens] = useState({});
+  const socketRef = useRef();
+  const { user } = useGlobalContext();
 
-  function sendMessage(mess) {}
+  useEffect(() => {
+    if (convers) {
+      const _hasListens = { ...hasListens };
+
+      convers.forEach((conv) => {
+        if (!_hasListens[conv._id]) {
+          socketRef.current.on(conv._id, (data) => {
+            console.log(data);
+            // when hava new mesage
+            if (data.type == "new-message") {
+              console.log("hava new-message from server");
+              newMessage(data);
+            }
+          });
+
+          _hasListens[conv._id] = true;
+        }
+      });
+      sethasListens(_hasListens);
+    }
+    return () => {};
+  }, [convers]);
+
+  useEffect(() => {
+    if (user) {
+      loadConversations();
+    }
+    return () => {};
+  }, [user]);
 
   async function loadConversations() {
-    const convers = await converApi.getAllConvers();
+    socketRef.current = await startSocketIO();
+    socketRef.current.on("connect", () => {
+      socketRef.current.on(user._id, (data) => {
+        if (data && data.conversations && Array.isArray(data.conversations)) {
+          console.log("socket on convers");
+          setconvers(data.conversations);
+        } else if (data.type && data.type == "new-message") {
+          console.log(" new message from server");
+        }
+      });
+    });
+  }
 
-    if (convers) {
-      if (Array.isArray(convers.data)) {
-        setstate({
-          ...state,
-          convers: convers.data,
-        });
-      } else {
-        console.log("cover empty");
+  function newMessage(data) {
+    const _convers = [...convers];
+    _convers.map((conv) => {
+      if (conv._id == data.message.conversationId) {
+        console.log("add");
+        conv.messages.unshift(data.message);
+        conv.lastMessageId = data.message;
       }
-    } else {
-      console.log("server error");
-    }
+    });
+    setconvers(_convers);
+  }
+
+  function sendMessage({ message, type, conversationId }) {
+    socketRef.current.emit("send-message", {
+      message: {
+        content: message,
+        type,
+        conversationId,
+      },
+    });
   }
 
   function getMembers(converId) {
-    for (let i = 0; i < state.convers.length; i++) {
-      if (converId == state.convers[i]._id) {
-        return state.convers[i].members;
+    for (let i = 0; i < convers.length; i++) {
+      if (converId == convers[i]._id) {
+        return convers[i].members;
       }
     }
   }
@@ -53,7 +104,7 @@ const ConversationContextProvider = ({ children }) => {
   }
 
   const ConversationContextData = {
-    convers: state.convers,
+    convers: convers,
     getMembers,
     getMember,
     loadConversations,

@@ -5,6 +5,7 @@ import React from "react";
 import GlobalContextProvider from "./src/store/contexts/GlobalContext";
 import ConversationContextProvider from "./src/store/contexts/ConversationContext.js";
 import { SafeAreaView } from "react-native-safe-area-context";
+import FriendContextProvider from "./src/store/contexts/FriendContext.js";
 export default function App() {
   LogBox.ignoreLogs(["EventEmitter.removeListener"]);
 
@@ -14,7 +15,9 @@ export default function App() {
         <NavigationContainer>
           <GlobalContextProvider>
             <ConversationContextProvider>
-              <MainStack />
+              <FriendContextProvider>
+                <MainStack />
+              </FriendContextProvider>
             </ConversationContextProvider>
           </GlobalContextProvider>
         </NavigationContainer>

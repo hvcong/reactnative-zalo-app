@@ -1,9 +1,16 @@
 import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import { View, StyleSheet, Text, Image, FlatList } from "react-native";
 import FriendsItem from "./FriendsItem";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
+import { useFriendContext } from "../../../store/contexts/FriendContext";
 
 const FriendsBody = ({ navigation }) => {
+  const { friends } = useFriendContext();
+
+  function renderItem({ item }) {
+    return <FriendsItem {...item} />;
+  }
+
   return (
     <View style={styles.wrap}>
       <View style={styles.header}>
@@ -34,10 +41,11 @@ const FriendsBody = ({ navigation }) => {
           </Text>
         </View>
         <View style={styles.body}>
-          <FriendsItem />
-          <FriendsItem />
-          <FriendsItem />
-          <FriendsItem />
+          <FlatList
+            data={friends}
+            renderItem={renderItem}
+            keyExtractor={(item) => item._id}
+          />
         </View>
       </View>
     </View>

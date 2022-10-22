@@ -11,13 +11,6 @@ import RoomChatGroupMore from "./RoomChatGroupMore";
 const Stack = createStackNavigator();
 
 const MessageTabScreen = (props) => {
-  const { loadConversations } = useConversationContext();
-
-  useEffect(() => {
-    loadConversations();
-    return () => {};
-  }, []);
-
   return (
     <Stack.Navigator
       screenOptions={{

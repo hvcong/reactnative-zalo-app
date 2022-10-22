@@ -6,17 +6,23 @@ import {
   TextInput,
   Image,
   Pressable,
+  FlatList,
 } from "react-native";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import AddGroupItem from "./components/AddGroupItem";
 import * as ImagePicker from "expo-image-picker";
 import { HeaderBackButton } from "@react-navigation/stack";
+import Friends from "./Friends";
+import { useFriendContext } from "../../store/contexts/FriendContext";
 
 const AddGroupChat = (props) => {
   const { navigation, route } = props;
+  const { friends } = useFriendContext();
 
-  const [isSubmitActive, setisSubmitActive] = useState(true);
+  const [isSubmitActive, setisSubmitActive] = useState(false);
   const [image, setImage] = useState(null);
+  const [nameInput, setnameInput] = useState("");
+  const [listMembers, setListMembers] = useState([]);
 
   async function onPickImage() {
     console.log("pick");
@@ -35,6 +41,50 @@ const AddGroupChat = (props) => {
     }
   }
 
+  function pushMember(_id) {
+    let arr = [...listMembers];
+
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == _id) {
+        return;
+      }
+    }
+
+    arr.push(_id);
+    setListMembers(arr);
+  }
+
+  function removeMember(_id) {
+    let arr = [...listMembers];
+    let index = arr.indexOf(_id);
+
+    if (index >= 0) arr.splice(index, 1);
+    setListMembers(arr);
+  }
+
+  useEffect(() => {
+    if (nameInput && listMembers.length > 0) {
+      setisSubmitActive(true);
+    } else {
+      setisSubmitActive(false);
+    }
+    return () => {};
+  }, [nameInput, listMembers]);
+
+  function renderItem({ item }) {
+    return (
+      <AddGroupItem
+        {...item}
+        pushMember={pushMember}
+        removeMember={removeMember}
+      />
+    );
+  }
+
+  function onCreateGroup() {
+    console.log("create gorup");
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -45,9 +95,15 @@ const AddGroupChat = (props) => {
             <Ionicons name="md-camera-sharp" size={24} color="black" />
           )}
         </Pressable>
-        <TextInput style={styles.nameInput} placeholder={"Đặt tên nhóm"} />
+        <TextInput
+          value={nameInput}
+          onChangeText={setnameInput}
+          style={styles.nameInput}
+          placeholder={"Đặt tên nhóm"}
+        />
         <Text
           style={[styles.btnSubmit, isSubmitActive && styles.btnSubmitActive]}
+          onPress={onCreateGroup}
         >
           Tạo nhóm
         </Text>
@@ -59,10 +115,13 @@ const AddGroupChat = (props) => {
           placeholder={"Tìm số điện thoại"}
         />
       </View>
-      <Text style={styles.numOfSelected}>Đã chọn 8</Text>
+      <Text style={styles.numOfSelected}>Đã chọn {listMembers.length}</Text>
       <View style={styles.list}>
-        <AddGroupItem />
-        <AddGroupItem />
+        <FlatList
+          data={friends}
+          renderItem={renderItem}
+          keyExtractor={(item) => item._id}
+        />
       </View>
     </View>
   );

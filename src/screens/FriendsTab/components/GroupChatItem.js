@@ -1,7 +1,9 @@
 import React from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
 
-const GroupChatItem = () => {
+const GroupChatItem = (props) => {
+  const { _id, name, lassMessageId } = props;
+
   return (
     <View style={styles.item}>
       <View style={styles.avatarContainer}>
@@ -12,10 +14,10 @@ const GroupChatItem = () => {
       </View>
       <View style={styles.itemMiddle}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-          Hoang van congaaa aaaaaaaaaaaaaaa
+          {name}
         </Text>
         <Text style={styles.lastMess} numberOfLines={1} ellipsizeMode="tail">
-          last mesag
+          {}
         </Text>
       </View>
     </View>

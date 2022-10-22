@@ -1,22 +1,16 @@
 import socketIO from "socket.io-client";
+import store from "../store";
 const host = "https://zalo-chat.herokuapp.com/";
-// Initialize Socket IO:
-const socket = socketIO(host, {
-  transports: ["websocket"],
-  jsonp: false,
-});
 
-// const startSocketIO = (store) => {
-//   socket.connect();
+const startSocketIO = async () => {
+  let token = await store.getToken();
+  const socket = socketIO(host, {
+    transports: ["websocket"],
+    jsonp: false,
+    query: `access=${token}`,
+  });
 
-//   socket.on("connect", () => {
-//     console.log("connect ok");
-//     socket.on("disconnect", () => {
-//       console.log("connection to server lost.");
-//     });
-//     // socket.on("newMessage", (message) => {});
-//   });
-// };
+  return socket;
+};
 
-// export the function to connect and use socket IO:
 export default startSocketIO;

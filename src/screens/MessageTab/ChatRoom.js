@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { View, StyleSheet, FlatList, Text } from "react-native";
 import HeaderTitleChatRoom from "../../components/Header/HeaderTitleChatRoom";
 import Message from "../../components/Message";
 import MessageInput from "../../components/MessageInput";
@@ -10,7 +10,8 @@ const ChatRoom = (props) => {
   const { typeOfConversation, messages, converId, conver } = props.route.params;
   const { navigation } = props;
   const { user } = useGlobalContext();
-  const { getMember, getMembers } = useConversationContext();
+  const { getMember, getMembers, sendMessage } = useConversationContext();
+  const flastListRef = useRef();
 
   useEffect(() => {
     navigation.setOptions({
@@ -55,18 +56,28 @@ const ChatRoom = (props) => {
     return true;
   }
 
-  function onSendMessage() {
-    console.warn("send message");
+  function onSendMessage(data) {
+    console.log({ ...data, conversationId: converId });
+    sendMessage({ ...data, conversationId: converId });
+  }
+
+  function scrollToEndFlastList() {
+    flastListRef.current.scrollToEnd();
   }
   return (
     <View style={styles.container}>
       <View style={styles.listMessContainer}>
-        <FlatList
-          style={styles.flatList}
-          data={messages}
-          renderItem={renderItem}
-          keyExtractor={(item) => item._id}
-        ></FlatList>
+        {
+          <FlatList
+            style={styles.flatList}
+            data={messages.reverse()}
+            renderItem={renderItem}
+            keyExtractor={(item) => item._id}
+            ref={flastListRef}
+            inverted={true}
+            initialNumToRender={20}
+          ></FlatList>
+        }
       </View>
       <View style={styles.enterContainer}>
         <MessageInput onSendMessage={onSendMessage} />

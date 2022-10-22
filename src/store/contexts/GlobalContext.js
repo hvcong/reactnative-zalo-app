@@ -30,17 +30,7 @@ function GlobalContextProvider({ children }) {
   async function onLoadUser() {
     let res = await authApi.loginByToken();
     if (res.isSuccess) {
-      const { name, phoneNumber, isAdmin } = res;
-      setState({
-        ...state,
-        isLoading: false,
-        token: res.accessToken,
-        user: {
-          name,
-          phoneNumber,
-          isAdmin,
-        },
-      });
+      onLoginSuccess(res);
     } else {
       // store.removeToken();
       setState({

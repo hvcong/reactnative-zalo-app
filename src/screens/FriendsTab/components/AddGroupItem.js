@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -8,12 +8,23 @@ import {
   Pressable,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-const AddGroupItem = () => {
+const AddGroupItem = (props) => {
+  const { _id, name, avatar, pushMember, removeMember } = props;
+
   const [isSelected, setisSelected] = useState(false);
 
   function onSelect() {
     setisSelected(!isSelected);
   }
+
+  useEffect(() => {
+    if (isSelected) {
+      pushMember(_id);
+    } else {
+      removeMember(_id);
+    }
+    return () => {};
+  }, [isSelected]);
 
   return (
     <Pressable style={styles.container}>
@@ -24,7 +35,7 @@ const AddGroupItem = () => {
         ></Image>
       </View>
       <View style={styles.middle}>
-        <Text style={styles.name}>Le minh cong</Text>
+        <Text style={styles.name}>{name}</Text>
       </View>
       <View style={styles.right}>
         <Pressable

@@ -1,9 +1,16 @@
 import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import { View, StyleSheet, Text, Image, FlatList } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import GroupChatItem from "./GroupChatItem";
+import { useConversationContext } from "../../../store/contexts/ConversationContext";
 
 const GroupChatBody = ({ navigation }) => {
+  const { convers } = useConversationContext();
+
+  function renderItem({ item }) {
+    return <GroupChatItem {...item} />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -19,12 +26,16 @@ const GroupChatBody = ({ navigation }) => {
       </View>
       <View style={styles.body}>
         <View style={styles.numOfGroupContainer}>
-          <Text style={styles.numOfGroup}>Nhóm đang tham gia (40)</Text>
+          <Text style={styles.numOfGroup}>
+            Nhóm đang tham gia ({convers.length})
+          </Text>
         </View>
         <View style={styles.list}>
-          <GroupChatItem />
-          <GroupChatItem />
-          <GroupChatItem />
+          <FlatList
+            renderItem={renderItem}
+            data={convers}
+            keyExtractor={(item) => item._id}
+          />
         </View>
       </View>
     </View>

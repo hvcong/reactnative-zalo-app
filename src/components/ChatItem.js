@@ -50,9 +50,9 @@ const ChatItem = ({ conver, navigation }) => {
         </View>
         <View style={styles.rightContainer}>
           <Text style={styles.lastTime}>4 giờ</Text>
-          <Text numberOfLine={1} style={styles.numberOfNewMessage}>
+          {/* <Text numberOfLine={1} style={styles.numberOfNewMessage}>
             3
-          </Text>
+          </Text> */}
         </View>
       </TouchableOpacity>
     </View>

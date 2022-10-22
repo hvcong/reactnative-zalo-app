@@ -5,7 +5,7 @@ const TextMessage = ({ item, isMyMessage, sender }) => {
   const { content } = item;
   return (
     <View style={isMyMessage ? styles.myMessageContainer : styles.container}>
-      {!isMyMessage && <Text style={styles.name}>{sender.name}</Text>}
+      {!isMyMessage && <Text style={styles.name}>{sender && sender.name}</Text>}
       <Text style={[styles.text, isMyMessage ? styles.textOfMyMessage : {}]}>
         {content}
       </Text>
