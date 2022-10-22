@@ -16,7 +16,9 @@ const PhoneInput = ({ phoneInput, setPhoneInput, style, isWrong }) => {
       <TextInput
         value={phoneInput}
         onChangeText={setPhoneInput}
-        keyboardType="numeric"
+        autoCompleteType="tel"
+        keyboardType="number-pad"
+        textContentType="telephoneNumber"
         style={[styles.input]}
         placeholder="Số điện thoại"
         onChange={() => {
