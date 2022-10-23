@@ -10,8 +10,6 @@ import { useGlobalContext } from "../../store/contexts/GlobalContext";
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import { initializeApp, getApp } from 'firebase/app';
 import { getAuth, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
-// import {firebaseConfig} from '../../../firebaseConfig';
-// import firebase from "firebase/compat/app";
 
 
 try {
@@ -128,7 +126,6 @@ const RegisterInput = ({ navigation }) => {
     const firebaseConfig = app ? app.options : undefined;
     const attemptInvisibleVerification = false;
     
-  
     const sendVertification = async ()=>{
       try {
         const phoneProvider = new PhoneAuthProvider(auth);
