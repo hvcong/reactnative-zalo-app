@@ -32,7 +32,7 @@ const HeaderTitleMessage = (props) => {
     navigation.navigate("FriendsTab", {
       screen: "Friends",
       params: {
-        nextScreen: "AddFriend",
+        screen: "AddFriend",
       },
     });
   }
@@ -41,7 +41,7 @@ const HeaderTitleMessage = (props) => {
     navigation.navigate("FriendsTab", {
       screen: "Friends",
       params: {
-        nextScreen: "AddGroupChat",
+        screen: "AddGroupChat",
       },
     });
   }

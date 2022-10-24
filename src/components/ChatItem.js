@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 
 const ChatItem = ({ conver, navigation }) => {
-  const { name, avatar, messages, lastMessageId, _id, type } = conver;
+  const { name, lastMessageId, _id } = conver;
   const [lastMessage, setlastMessage] = useState(null);
 
   useEffect(() => {
@@ -20,10 +20,7 @@ const ChatItem = ({ conver, navigation }) => {
 
   function onPressItem() {
     navigation.navigate("ChatRoom", {
-      typeOfConversation: type ? "group" : "simple",
-      messages,
       converId: _id,
-      conver,
     });
   }
 

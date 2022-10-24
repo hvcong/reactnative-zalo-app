@@ -3,8 +3,11 @@ import { View, StyleSheet, Text, Image, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 
-const RoomSimpleMore = () => {
+const RoomSimpleMore = (props) => {
   const [isNotify, setisNotify] = useState(false);
+  const { route } = props;
+
+  const { conver } = route.params;
 
   return (
     <View style={styles.container}>
@@ -14,7 +17,7 @@ const RoomSimpleMore = () => {
           style={styles.image}
         />
       </View>
-      <Text style={styles.name}>Hoàng Văn Công</Text>
+      <Text style={styles.name}>{conver.name}</Text>
       <View style={styles.sections}>
         <View style={styles.section}>
           <View style={styles.sectionIcon}>

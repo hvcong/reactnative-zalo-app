@@ -7,9 +7,12 @@ import {
   TouchableOpacity,
   Pressable,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
-const AddFriendItem = () => {
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useFriendContext } from "../../../store/contexts/FriendContext";
+const AddFriendItem = (props) => {
+  const { avatar, name, _id } = props;
   const [isSended, setisSended] = useState(false);
+  const { checkIsMyFriend } = useFriendContext();
 
   function requestFriend() {
     setisSended(true);
@@ -18,29 +21,50 @@ const AddFriendItem = () => {
     setisSended(false);
   }
 
+  function renderRight() {
+    if (checkIsMyFriend(_id)) {
+      return (
+        <View style={styles.aaaa}>
+          <Ionicons name="chatbox-ellipses-outline" size={24} color="black" />
+        </View>
+      );
+    } else if (isSended) {
+      return (
+        <Text onPress={cancelRequest} style={styles.btnCancel}>
+          {" "}
+          Thu hồi
+        </Text>
+      );
+    } else {
+      return (
+        <TouchableOpacity onPress={requestFriend} style={styles.btnContainer}>
+          <FontAwesome name="user-plus" size={18} color="#1a69d9" />
+        </TouchableOpacity>
+      );
+    }
+  }
+
   return (
     <Pressable style={styles.container}>
       <View style={styles.avatarContainer}>
-        <Image
-          source={require("../../../../assets/avatar.jpg")}
-          style={styles.avatar}
-        ></Image>
-      </View>
-      <View style={styles.middle}>
-        <Text style={styles.name}>Le minh cong</Text>
-      </View>
-      <View style={styles.right}>
-        {!isSended ? (
-          <TouchableOpacity onPress={requestFriend} style={styles.btnContainer}>
-            <FontAwesome name="user-plus" size={18} color="#1a69d9" />
-          </TouchableOpacity>
+        {avatar ? (
+          <Image
+            source={{
+              uri: avatar,
+            }}
+            style={styles.avatar}
+          ></Image>
         ) : (
-          <Text onPress={cancelRequest} style={styles.btnCancel}>
-            {" "}
-            Thu hồi
-          </Text>
+          <Image
+            source={require("../../../../assets/avatar.jpg")}
+            style={styles.avatar}
+          ></Image>
         )}
       </View>
+      <View style={styles.middle}>
+        <Text style={styles.name}>{name}</Text>
+      </View>
+      <View style={styles.right}>{renderRight()}</View>
     </Pressable>
   );
 };

@@ -14,32 +14,55 @@ import {
   SimpleLineIcons,
   FontAwesome5,
 } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 
-const RoomChatGroupMore = () => {
+const RoomChatGroupMore = (props) => {
+  const { route } = props;
+  const { conver } = route.params;
   const [isNotify, setisNotify] = useState(false);
   const [isEditName, setisEditName] = useState(false);
-  const [nameInput, setnameInput] = useState("aaaaaa");
+  const [nameInput, setnameInput] = useState(conver.name);
+  const [image, setImage] = useState(null);
+
+  async function onPickImage() {
+    console.log("pick");
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+    if (!result.cancelled) {
+      setImage(result);
+    }
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
         <View style={styles.avatarWrap}>
-          <Image
-            source={require("../../../assets/avatar.jpg")}
-            style={styles.avatar}
-          />
+          {image ? (
+            <Image source={{ uri: image.uri }} style={styles.avatar} />
+          ) : (
+            <Image
+              source={require("../../../assets/avatar_default.jpg")}
+              style={styles.avatar}
+            />
+          )}
           <Ionicons
             style={styles.iconCamera}
             name="camera-outline"
             size={24}
             color="black"
+            onPress={onPickImage}
           />
         </View>
       </View>
       <View style={styles.nameContainer}>
         {!isEditName ? (
           <>
-            <Text style={styles.name}>Đại học công nghiệp</Text>
+            <Text style={styles.name}>{conver.name}</Text>
             <FontAwesome5
               name="pencil-alt"
               style={styles.penIcon}
@@ -112,7 +135,9 @@ const RoomChatGroupMore = () => {
       <View style={styles.body}>
         <View style={styles.item}>
           <Ionicons name="md-people-outline" size={24} color="black" />
-          <Text style={styles.text}>Xem thành viên (16)</Text>
+          <Text style={styles.text}>
+            Xem thành viên ({conver.members.length})
+          </Text>
         </View>
 
         <View style={styles.item}>

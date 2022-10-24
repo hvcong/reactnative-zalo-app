@@ -17,9 +17,12 @@ const TabBar = () => {
       tabBarOptions={{
         showLabel: false,
       }}
+      screenOptions={{
+        unmountOnBlur: true,
+      }}
     >
       <Tab.Screen
-        name="Message"
+        name="MessageTab"
         options={{
           tabBarIcon: ({ color }) => (
             <AntDesign name="message1" size={24} color={color} />

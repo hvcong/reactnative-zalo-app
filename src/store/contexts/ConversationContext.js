@@ -16,8 +16,8 @@ const ConversationContext = createContext();
 const ConversationContextProvider = ({ children }) => {
   const [convers, setconvers] = useState([]);
   const [hasListens, sethasListens] = useState({});
-  const socketRef = useRef();
   const { user } = useGlobalContext();
+  const socketRef = useRef();
 
   useEffect(() => {
     if (convers) {
@@ -26,7 +26,6 @@ const ConversationContextProvider = ({ children }) => {
       convers.forEach((conv) => {
         if (!_hasListens[conv._id]) {
           socketRef.current.on(conv._id, (data) => {
-            console.log(data);
             // when hava new mesage
             if (data.type == "new-message") {
               console.log("hava new-message from server");
@@ -46,18 +45,20 @@ const ConversationContextProvider = ({ children }) => {
     if (user) {
       loadConversations();
     }
+
     return () => {};
   }, [user]);
 
   async function loadConversations() {
     socketRef.current = await startSocketIO();
     socketRef.current.on("connect", () => {
+      console.log("socket: connect");
+
       socketRef.current.on(user._id, (data) => {
         if (data && data.conversations && Array.isArray(data.conversations)) {
-          console.log("socket on convers");
           setconvers(data.conversations);
         } else if (data.type && data.type == "new-message") {
-          console.log(" new message from server");
+          console.log("socket: new message from server");
         }
       });
     });
@@ -67,7 +68,6 @@ const ConversationContextProvider = ({ children }) => {
     const _convers = [...convers];
     _convers.map((conv) => {
       if (conv._id == data.message.conversationId) {
-        console.log("add");
         conv.messages.unshift(data.message);
         conv.lastMessageId = data.message;
       }
@@ -76,6 +76,7 @@ const ConversationContextProvider = ({ children }) => {
   }
 
   function sendMessage({ message, type, conversationId }) {
+    console.log("socket: send message");
     socketRef.current.emit("send-message", {
       message: {
         content: message,
@@ -103,12 +104,28 @@ const ConversationContextProvider = ({ children }) => {
       }
   }
 
+  function addNewConver(conver) {
+    setconvers([conver, ...convers]);
+  }
+
+  function getConverById(_id) {
+    let _convers = [...convers];
+
+    for (let i = 0; i < _convers.length; i++) {
+      if (_convers[i]._id == _id) {
+        return _convers[i];
+      }
+    }
+  }
+
   const ConversationContextData = {
     convers: convers,
     getMembers,
     getMember,
     loadConversations,
     sendMessage,
+    addNewConver,
+    getConverById,
   };
   return (
     <ConversationContext.Provider value={ConversationContextData}>

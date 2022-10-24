@@ -14,10 +14,13 @@ import * as ImagePicker from "expo-image-picker";
 import { HeaderBackButton } from "@react-navigation/stack";
 import Friends from "./Friends";
 import { useFriendContext } from "../../store/contexts/FriendContext";
+import converApi from "../../api/converApi";
+import { useConversationContext } from "../../store/contexts/ConversationContext";
 
 const AddGroupChat = (props) => {
   const { navigation, route } = props;
   const { friends } = useFriendContext();
+  const { addNewConver } = useConversationContext();
 
   const [isSubmitActive, setisSubmitActive] = useState(false);
   const [image, setImage] = useState(null);
@@ -81,8 +84,27 @@ const AddGroupChat = (props) => {
     );
   }
 
-  function onCreateGroup() {
-    console.log("create gorup");
+  async function onCreateGroup() {
+    const body = {
+      name: nameInput,
+      userIds: [...listMembers],
+    };
+    const res = await converApi.createGroupChat(body);
+    if (res.isSuccess) {
+      console.log("create group chat ok");
+      addNewConver(res);
+      navigation.navigate("MessageTab", {
+        screen: "ListChat",
+        params: {
+          screen: "ChatRoom",
+          params: {
+            converId: res._id,
+          },
+        },
+      });
+    } else {
+      console.log("create group chat error");
+    }
   }
 
   return (

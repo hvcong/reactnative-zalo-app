@@ -5,6 +5,11 @@ class ConverApi {
     let url = "conversation/";
     return axiosClient.get(url);
   }
+
+  createGroupChat(body) {
+    let url = "conversation/groups";
+    return axiosClient.post(url, body);
+  }
 }
 
 const converApi = new ConverApi();

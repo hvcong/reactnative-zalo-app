@@ -3,14 +3,23 @@ import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const FriendsItem = (props) => {
-  const { _id, avatar, name } = props;
+  const { _id, avatar, name, navigation } = props;
   return (
     <TouchableOpacity style={styles.item}>
       <View style={styles.avatarContainer}>
-        <Image
-          source={require("../../../../assets/avatar.jpg")}
-          style={styles.avatar}
-        />
+        {avatar ? (
+          <Image
+            source={{
+              uri: avatar,
+            }}
+            style={styles.avatar}
+          />
+        ) : (
+          <Image
+            source={require("../../../../assets/avatar.jpg")}
+            style={styles.avatar}
+          />
+        )}
       </View>
       <Text style={styles.name}>{name}</Text>
       <View style={styles.icon}>

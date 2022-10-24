@@ -8,7 +8,7 @@ const FriendsBody = ({ navigation }) => {
   const { friends } = useFriendContext();
 
   function renderItem({ item }) {
-    return <FriendsItem {...item} />;
+    return <FriendsItem {...item} navigation={navigation} />;
   }
 
   return (

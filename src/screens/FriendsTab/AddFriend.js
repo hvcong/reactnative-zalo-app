@@ -1,22 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import userApi from "../../api/userApi";
 import PhoneInput from "../../components/Input/PhoneInput";
 import AddFriendItem from "./components/AddFriendItem";
 
 const AddFriend = () => {
+  const [phoneInput, setphoneInput] = useState("0988888881");
+  const [userFound, setuserFound] = useState(null);
+  const [errText, setErrText] = useState("");
+  const [isDisSubmit, setIsDisSubmit] = useState(false);
+
+  useEffect(() => {
+    if (phoneInput.length == 10) {
+      setIsDisSubmit(false);
+      onFindSubmit();
+    } else {
+      setuserFound(null);
+      setIsDisSubmit(true);
+    }
+
+    return () => {};
+  }, [phoneInput]);
+
+  async function onFindSubmit() {
+    if (phoneInput.length != 10) return;
+    let res = await userApi.findUserByPhoneNumber(phoneInput);
+    if (res.isSuccess) {
+      setuserFound(res);
+      setErrText("");
+    } else {
+      setErrText("Số điện thoại này có vẻ chưa đăng kí tài khoản nào");
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>Thêm bạn bằng số điện thoại</Text>
       <View style={styles.inputGroup}>
         <View style={styles.input}>
-          <PhoneInput />
+          <PhoneInput phoneInput={phoneInput} setPhoneInput={setphoneInput} />
         </View>
         <TouchableOpacity style={styles.btnContainer}>
-          <Text style={styles.btnText}>Tìm</Text>
+          <Text
+            onPress={onFindSubmit}
+            style={[styles.btnText, isDisSubmit ? styles.btnTextDisable : {}]}
+          >
+            Tìm
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
-        <AddFriendItem />
+        {userFound ? (
+          <AddFriendItem {...userFound} />
+        ) : (
+          <View style={styles.notFound}>
+            <Text style={styles.notFoundText}>{errText}</Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -53,10 +93,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     color: "white",
   },
+  btnTextDisable: {
+    opacity: 0.6,
+  },
+
   body: {
     paddingVertical: 4,
     backgroundColor: "#eee",
     flex: 1,
+  },
+  notFoundText: {
+    padding: 12,
   },
 });
 

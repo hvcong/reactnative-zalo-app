@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { acc } from "react-native-reanimated";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import store from "..";
 import authApi from "../../api/authApi";
 
@@ -12,15 +11,6 @@ function GlobalContextProvider({ children }) {
     isLoading: true,
     user: null,
   });
-
-  const GlobalContextData = {
-    isLoading: state.isLoading,
-    isLogout: state.isLogout,
-    token: state.token,
-    user: state.user,
-    onLogout,
-    onLoginSuccess,
-  };
 
   useEffect(() => {
     onLoadUser();
@@ -71,6 +61,15 @@ function GlobalContextProvider({ children }) {
       isLogout: true,
     });
   }
+
+  const GlobalContextData = {
+    isLoading: state.isLoading,
+    isLogout: state.isLogout,
+    token: state.token,
+    user: state.user,
+    onLogout,
+    onLoginSuccess,
+  };
 
   return (
     <GlobalContext.Provider value={GlobalContextData}>

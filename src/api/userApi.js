@@ -1,10 +1,10 @@
 import axiosClient from "./axiosClient";
 
 class UserApi {
-  register = (params) => {
-    const url = "auth/register";
-    return axiosClient.post(url, { params });
-  };
+  findUserByPhoneNumber(phone) {
+    let url = `/user/phonenumber/${phone}`;
+    return axiosClient.get(url);
+  }
 }
 
 const userApi = new UserApi();

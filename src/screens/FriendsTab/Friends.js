@@ -21,14 +21,6 @@ const Friends = (props) => {
   const { navigation, route } = props;
   const [isModalShow, setIsModalShow] = useState(false);
   const [activeTab, setactiveTab] = useState(true);
-
-  useEffect(() => {
-    if (route.params && route.params.nextScreen) {
-      navigation.navigate(route.params.nextScreen);
-    }
-    return () => {};
-  }, [route.params]);
-
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>

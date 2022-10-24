@@ -15,7 +15,7 @@ import { useConversationContext } from "../../store/contexts/ConversationContext
 const ListChat = React.memo((props) => {
   const { convers } = useConversationContext();
 
-  const { navigation } = props;
+  const { navigation, route } = props;
 
   useEffect(() => {
     navigation.setOptions({

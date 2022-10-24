@@ -19,10 +19,7 @@ export default function Login({ navigation }) {
   return (
     <View style={s.container}>
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center" }}>
-        <Image
-          source={require("../../../assets/logo.svg.png")}
-          style={s.logo}
-        />
+        <Image source={require("../../../assets/logo.png")} style={s.logo} />
       </View>
       <View
         style={{

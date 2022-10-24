@@ -4,7 +4,8 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { EvilIcons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
 const HeaderTitleChatRoomGroup = (props) => {
-  const { converName, numOfMember, navigation } = props;
+  const { numOfMember, navigation, conver } = props;
+
   function onNamePress() {
     console.warn("press name");
   }
@@ -18,14 +19,14 @@ const HeaderTitleChatRoomGroup = (props) => {
   }
 
   function onListPress() {
-    navigation.navigate("RoomChatGroupMore");
+    navigation.navigate("RoomChatGroupMore", { conver });
   }
 
   return (
     <View style={styles.container}>
       <Pressable style={styles.itemGroup} onPress={onNamePress}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-          {converName}
+          {conver.name}
         </Text>
         <Text style={styles.quantity}>{numOfMember} thành viên</Text>
       </Pressable>

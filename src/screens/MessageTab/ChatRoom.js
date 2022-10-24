@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { View, StyleSheet, FlatList, Text } from "react-native";
+import { View, StyleSheet, FlatList, Text, Keyboard } from "react-native";
 import HeaderTitleChatRoom from "../../components/Header/HeaderTitleChatRoom";
 import Message from "../../components/Message";
 import MessageInput from "../../components/MessageInput";
@@ -7,21 +7,30 @@ import { useConversationContext } from "../../store/contexts/ConversationContext
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const ChatRoom = (props) => {
-  const { typeOfConversation, messages, converId, conver } = props.route.params;
+  const { converId } = props.route.params;
   const { navigation } = props;
   const { user } = useGlobalContext();
-  const { getMember, getMembers, sendMessage } = useConversationContext();
+  const { getMember, getMembers, sendMessage, getConverById, convers } =
+    useConversationContext();
   const flastListRef = useRef();
+  const [conver, setConver] = useState(getConverById(converId));
+  const { type, messages } = conver;
+
+  useEffect(() => {
+    setConver(getConverById(converId));
+    return () => {};
+  }, [convers]);
 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => (
         <HeaderTitleChatRoom
           {...props}
-          typeOfConversation={typeOfConversation}
+          typeOfConversation={type ? "group" : "simple"}
           numOfMember={getMembers(converId).length}
           converName={conver.name}
           navigation={navigation}
+          conver={conver}
         />
       ),
     });
@@ -57,6 +66,7 @@ const ChatRoom = (props) => {
   }
 
   function onSendMessage(data) {
+    Keyboard.dismiss();
     console.log({ ...data, conversationId: converId });
     sendMessage({ ...data, conversationId: converId });
   }
