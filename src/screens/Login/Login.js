@@ -17,16 +17,18 @@ export default function Login({ navigation }) {
   }
 
   return (
-    <View style={s.container}>
-      <View style={{ flex: 3, justifyContent: "center", alignItems: "center" }}>
-        <Image source={require("../../../assets/logo.png")} style={s.logo} />
+    <View style={styles.container}>
+      <View style={styles.logContainer}>
+        <Image
+          source={require("../../../assets/logo.png")}
+          style={styles.logo}
+        />
       </View>
-      <View
-        style={{
-          flex: 2,
-        }}
-      >
-        <TouchableOpacity style={[s.btn, s.btnLogin]} onPress={onLogin}>
+      <View style={styles.body}>
+        <TouchableOpacity
+          style={[styles.btn, styles.btnLogin]}
+          onPress={onLogin}
+        >
           <Text
             style={{
               textTransform: "uppercase",
@@ -39,7 +41,10 @@ export default function Login({ navigation }) {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[s.btn, s.btnRegister]} onPress={onRegister}>
+        <TouchableOpacity
+          style={[styles.btn, styles.btnRegister]}
+          onPress={onRegister}
+        >
           <Text
             style={{
               textTransform: "uppercase",
@@ -55,13 +60,15 @@ export default function Login({ navigation }) {
   );
 }
 
-const s = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#ddd",
+    backgroundColor: "#dfdfdf",
     alignItems: "center",
+  },
+  body: {
+    marginTop: "auto",
+    marginBottom: "40%",
   },
   btn: {
     width: 250,
@@ -78,7 +85,22 @@ const s = StyleSheet.create({
   btnRegister: {
     backgroundColor: "#eee",
   },
+  logContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 200,
+    height: 200,
+    marginTop: 36,
+  },
+
+  logoWrap: {
+    backgroundColor: "transparent",
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+  },
   logo: {
+    width: 200,
     width: 200,
     resizeMode: "contain",
   },
