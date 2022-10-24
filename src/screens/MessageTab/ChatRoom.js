@@ -12,9 +12,10 @@ const ChatRoom = (props) => {
   const { user } = useGlobalContext();
   const { getMember, getMembers, sendMessage, getConverById, convers } =
     useConversationContext();
-  const flastListRef = useRef();
   const [conver, setConver] = useState(getConverById(converId));
   const { type, messages } = conver;
+  const flastListRef = useRef();
+  const [idSelected, setIdSelected] = useState(null);
 
   useEffect(() => {
     setConver(getConverById(converId));
@@ -46,6 +47,7 @@ const ChatRoom = (props) => {
   }, []);
 
   function renderItem({ index, item }) {
+    if (item.isDeleted == true) return <></>;
     return (
       <Message
         isMyMessage={user._id == item.senderId ? true : false}
@@ -53,6 +55,8 @@ const ChatRoom = (props) => {
         isRenderAvatarIcon={isRenderAvatarIcon}
         index={index}
         sender={getMember(converId, item.senderId)}
+        idSelected={idSelected}
+        setIdSelected={setIdSelected}
       />
     );
   }

@@ -13,13 +13,24 @@ import {
   Foundation,
   Fontisto,
   SimpleLineIcons,
+  FontAwesome,
   Feather,
+  AntDesign,
 } from "@expo/vector-icons";
 import NotifyMessage from "./MessageType/NotifyMessage";
 import ReactModal from "./ReactModal";
 
 const Message = (props) => {
-  let { style, item, isMyMessage, isRenderAvatarIcon, index, sender } = props;
+  let {
+    style,
+    item,
+    isMyMessage,
+    isRenderAvatarIcon,
+    index,
+    sender,
+    idSelected,
+    setIdSelected,
+  } = props;
   let { type, senderId } = item;
   const [isShowModal, setisShowModal] = useState(false);
   const [isOnReact, setisOnReact] = useState(false);
@@ -27,7 +38,13 @@ const Message = (props) => {
   function renderMessageContent() {
     if (type === "TEXT") {
       return (
-        <TextMessage item={item} isMyMessage={isMyMessage} sender={sender} />
+        <TextMessage
+          item={item}
+          isMyMessage={isMyMessage}
+          sender={sender}
+          idSelected={idSelected}
+          setIdSelected={setIdSelected}
+        />
       );
     } else if (type === "NOTIFY") {
       return <NotifyMessage item={item} isMyMessage={isMyMessage} />;
@@ -48,7 +65,8 @@ const Message = (props) => {
   }
 
   function onReaction() {
-    setisOnReact(!isOnReact);
+    console.log("hre");
+    setIdSelected("" + item._id);
   }
 
   return (
@@ -164,6 +182,22 @@ const styles = StyleSheet.create({
   },
   reactIcon: {
     paddingLeft: 8,
+  },
+  options: {
+    flexDirection: "row",
+    backgroundColor: "#ddd",
+    borderWidth: 1,
+    borderColor: "#eee",
+    position: "absolute",
+    padding: 8,
+    borderRadius: 8,
+    top: "20%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  optionContainer: {
+    paddingHorizontal: 4,
+    marginHorizontal: 8,
   },
 });
 

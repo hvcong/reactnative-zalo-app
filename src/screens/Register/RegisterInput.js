@@ -13,6 +13,10 @@ import StringInput from "../../components/Input/StringInput";
 import authApi from "../../api/authApi";
 import LoadingModal from "../../components/LoadingModal";
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
+
+// import auth from "@react-native-firebase/auth";
+// console.log(auth);
+
 // import {
 //   FirebaseRecaptchaVerifierModal,
 //   FirebaseRecaptchaBanner,
@@ -148,7 +152,7 @@ const RegisterInput = ({ navigation }) => {
   //     console.log(error);
   //   }
   // };
-
+  //
   // const confirmCode = async () => {
   //   try {
   //     const credential = PhoneAuthProvider.credential(verificationId, OTP);
@@ -164,7 +168,7 @@ const RegisterInput = ({ navigation }) => {
     <View style={styles.container}>
       {/* <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
-        firebaseConfig={app ? app.options : undefined}
+        firebaseConfig={app.options}
         attemptInvisibleVerification
       /> */}
       <Text style={styles.textErrRes}>{textErrRes}</Text>
