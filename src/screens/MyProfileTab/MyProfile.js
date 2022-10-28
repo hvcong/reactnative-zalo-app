@@ -12,6 +12,7 @@ import {
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import MyProfileModal from "./MyProfileModal";
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
+import userApi from "../../api/userApi";
 
 const MyProfile = (props) => {
   const { navigation, route } = props;
@@ -19,26 +20,18 @@ const MyProfile = (props) => {
   const { user } = useGlobalContext();
   const { modalProfile, setModalProfile } = useGlobalContext();
 
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerLeft: null,
-  //     headerTitleAlign: "center",
-  //     headerShow: true,
-  //     headerTitle:
-  //       route.params && route.params.title ? route.params.title : "Thông tin",
-  //   });
-  //   return () => {};
-  // }, []);
-
   function logoutPress() {
     setIsModalShow(true);
   }
 
-  function onDetailProfilePress() {
-    setModalProfile({
-      ...modalProfile,
-      isShow: true,
-    });
+  async function onDetailProfilePress() {
+    let acc = await userApi.findUserById(user._id);
+    if (acc.isSuccess) {
+      setModalProfile({
+        acc: acc,
+        isShow: true,
+      });
+    }
   }
 
   return (
@@ -49,10 +42,14 @@ const MyProfile = (props) => {
         style={[styles.item, styles.borderBottom]}
       >
         <View style={styles.left}>
-          <Image
-            source={require("../../../assets/avatar.jpg")}
-            style={styles.avatar}
-          />
+          {user && user.avatar ? (
+            <Image source={{ uri: user.avatar }} style={styles.avatar} />
+          ) : (
+            <Image
+              source={require("../../../assets/avatar.jpg")}
+              style={styles.avatar}
+            />
+          )}
         </View>
         <View style={styles.body}>
           <Text style={styles.title}>{user.name}</Text>

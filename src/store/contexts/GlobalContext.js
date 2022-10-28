@@ -14,7 +14,7 @@ function GlobalContextProvider({ children }) {
 
   const [modalProfile, setModalProfile] = useState({
     isShow: false,
-    _id: null,
+    acc: null,
   });
 
   useEffect(() => {

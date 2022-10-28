@@ -11,6 +11,8 @@ import { Entypo, Ionicons } from "@expo/vector-icons";
 import friendApi from "../../../api/friendApi";
 import { useFriendContext } from "../../../store/contexts/FriendContext";
 import { useConversationContext } from "../../../store/contexts/ConversationContext";
+import { useGlobalContext } from "../../../store/contexts/GlobalContext";
+import userApi from "../../../api/userApi";
 
 const FriendsItem = (props) => {
   const {
@@ -24,6 +26,8 @@ const FriendsItem = (props) => {
     length,
   } = props;
   const { createSimpleConver } = useConversationContext();
+
+  const { modalProfile, setModalProfile } = useGlobalContext();
 
   const { deleteFriend } = useFriendContext();
 
@@ -51,8 +55,22 @@ const FriendsItem = (props) => {
       console.log("delete friend ok");
     }
   }
+
+  async function onShowProfile() {
+    try {
+      let acc = await userApi.findUserById(_id);
+      setModalProfile({
+        isShow: true,
+        acc,
+      });
+    } catch (error) {}
+  }
+
   return (
-    <Pressable style={[styles.item, index == length - 1 && { marginTop: 24 }]}>
+    <Pressable
+      onPress={onShowProfile}
+      style={[styles.item, index == length - 1 && { marginTop: 24 }]}
+    >
       <View style={styles.avatarContainer}>
         {avatar ? (
           <Image

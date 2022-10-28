@@ -8,41 +8,27 @@ import {
   Text,
   ActivityIndicator,
 } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useGlobalContext } from "../store/contexts/GlobalContext";
 import { AntDesign } from "@expo/vector-icons";
 import userApi from "../api/userApi";
+import { converDate } from "../utils";
 
 const ProfileModal = () => {
   const { modalProfile, setModalProfile } = useGlobalContext();
+  const { acc, isShow } = modalProfile;
   const { user } = useGlobalContext();
-  const [acc, setAcc] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [isEditName, setIsEditName] = useState(false);
 
   useEffect(() => {
-    console.log(modalProfile);
-    // if (modalProfile._id) {
-    //   loadAcc();
-    // } else {
-    //   setModalProfile({
-    //     isShow: false,
-    //   });
-    // }
-
-    async function loadAcc() {
-      try {
-        console.log(modalProfile._id);
-        const acc = await userApi.findUserById(modalProfile._id);
-        if (acc.isSuccess) {
-          setIsLoading(false);
-          setAcc(acc);
-        }
-      } catch (error) {
-        console.log("load acc err", error);
-      }
+    if (modalProfile && modalProfile.acc) {
+      setNameInput(modalProfile.acc.name);
     }
     return () => {};
   }, [modalProfile]);
-
+  if (!acc || !isShow) return null;
   return (
     <Modal visible={modalProfile.isShow} transparent={true}>
       <View style={styles.wrap}>
@@ -57,23 +43,56 @@ const ProfileModal = () => {
                   name="close"
                   size={24}
                   color="black"
-                  onPress={() =>
+                  onPress={() => {
+                    setIsEditName(false);
                     setModalProfile({
-                      ...modalProfile,
+                      acc: null,
                       isShow: false,
-                    })
-                  }
+                    });
+                  }}
                 />
               </View>
               <View style={styles.avatarContainer}>
-                <Image
-                  source={require("../../assets/avatar.jpg")}
-                  style={styles.avatar}
-                />
+                {acc && modalProfile.acc.avatar ? (
+                  <Image
+                    source={{ uri: modalProfile.acc.avatar }}
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <Image
+                    source={require("../../assets/avatar.jpg")}
+                    style={styles.avatar}
+                  />
+                )}
               </View>
               <View style={styles.nameContainer}>
-                <Text style={styles.name}>Hoang van cong</Text>
-                <TextInput />
+                {isEditName ? (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      value={nameInput}
+                      onChangeText={setNameInput}
+                    />
+                    <View style={styles.btnSaveNameContainer}>
+                      <Text style={styles.btnSaveName}>Lưu</Text>
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.name}>
+                      {acc && modalProfile.acc.name}
+                    </Text>
+                    {acc && modalProfile.acc._id == user._id && (
+                      <Text onPress={() => setIsEditName(true)}>
+                        <FontAwesome5
+                          name="pencil-alt"
+                          size={20}
+                          color="black"
+                        />
+                      </Text>
+                    )}
+                  </>
+                )}
               </View>
               <View style={styles.btns}>
                 <Text style={styles.btn}>Kết bạn</Text>
@@ -85,11 +104,15 @@ const ProfileModal = () => {
                 </View>
                 <View style={styles.bodyItem}>
                   <Text style={styles.bodyLabel}>Giới tính</Text>
-                  <Text style={styles.bodyValue}>Nam</Text>
+                  <Text style={styles.bodyValue}>
+                    {acc && modalProfile.acc.gender ? "Name" : "Nữ"}
+                  </Text>
                 </View>
                 <View style={styles.bodyItem}>
                   <Text style={styles.bodyLabel}>Ngày sinh</Text>
-                  <Text style={styles.bodyValue}>10/1/1</Text>
+                  <Text style={styles.bodyValue}>
+                    {acc && converDate(acc.dateOfBirth).toStringDMY}
+                  </Text>
                 </View>
               </View>
             </>
@@ -144,8 +167,37 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 75,
   },
-  nameContainer: {},
-  name: {},
+  nameContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 12,
+  },
+  name: {
+    paddingRight: 12,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  input: {
+    backgroundColor: "#ddd",
+    flex: 1,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    marginLeft: 8,
+  },
+  btnSaveNameContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 12,
+  },
+  btnSaveName: {
+    backgroundColor: "#1a69d9",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 4,
+    color: "white",
+  },
   btns: {
     flexDirection: "row",
   },
