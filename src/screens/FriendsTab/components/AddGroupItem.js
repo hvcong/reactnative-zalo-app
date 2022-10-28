@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 const AddGroupItem = (props) => {
-  const { _id, name, avatar, pushMember, removeMember } = props;
+  const { _id, name, avatar, pushMember, removeMember, checkIsExistsInGroup } =
+    props;
 
   const [isSelected, setisSelected] = useState(false);
 
@@ -37,16 +38,21 @@ const AddGroupItem = (props) => {
       <View style={styles.middle}>
         <Text style={styles.name}>{name}</Text>
       </View>
+
       <View style={styles.right}>
-        <Pressable
-          style={[
-            styles.btnContainer,
-            isSelected && styles.btnContainerSelected,
-          ]}
-          onPress={onSelect}
-        >
-          <Text style={[styles.btn, isSelected && styles.btnSelected]}></Text>
-        </Pressable>
+        {checkIsExistsInGroup && checkIsExistsInGroup(_id) ? (
+          <Text style={styles.existsInGroupText}>Đã vào nhóm</Text>
+        ) : (
+          <Pressable
+            style={[
+              styles.btnContainer,
+              isSelected && styles.btnContainerSelected,
+            ]}
+            onPress={onSelect}
+          >
+            <Text style={[styles.btn, isSelected && styles.btnSelected]}></Text>
+          </Pressable>
+        )}
       </View>
     </Pressable>
   );

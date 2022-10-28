@@ -11,13 +11,16 @@ import {
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useGlobalContext } from "../store/contexts/GlobalContext";
 import { AntDesign } from "@expo/vector-icons";
-import userApi from "../api/userApi";
 import { converDate } from "../utils";
+import { useConversationContext } from "../store/contexts/ConversationContext";
+import { useFriendContext } from "../store/contexts/FriendContext";
 
 const ProfileModal = () => {
-  const { modalProfile, setModalProfile } = useGlobalContext();
+  const { modalProfile, setModalProfile, user } = useGlobalContext();
+  const { checkIsMyFriend, checkIsRequested, checkIsRequestedToMe } =
+    useFriendContext();
+
   const { acc, isShow } = modalProfile;
-  const { user } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [isEditName, setIsEditName] = useState(false);
@@ -29,6 +32,28 @@ const ProfileModal = () => {
     return () => {};
   }, [modalProfile]);
   if (!acc || !isShow) return null;
+
+  function renderBtns() {
+    if (acc && checkIsMyFriend(acc._id)) {
+      return <Text style={styles.btn}>Nhắn tin</Text>;
+    } else if (checkIsRequested(acc._id)) {
+      return (
+        <Text style={[styles.btn, { color: "red" }]}>
+          Thu hồi yêu cầu kết bạn
+        </Text>
+      );
+    } else if (checkIsRequestedToMe(acc._id)) {
+      return (
+        <>
+          <Text style={[styles.btn, styles.btnAcceptFriend]}>Đồng ý</Text>
+          <Text style={[styles.btn, { color: "red" }]}>Từ chối</Text>
+        </>
+      );
+    } else {
+      return <Text style={styles.btn}>Kết bạn</Text>;
+    }
+  }
+
   return (
     <Modal visible={modalProfile.isShow} transparent={true}>
       <View style={styles.wrap}>
@@ -38,7 +63,13 @@ const ProfileModal = () => {
           ) : (
             <>
               <View style={styles.header}>
-                <Text style={styles.title}>Thông tin tài khoản</Text>
+                {acc && acc._id == user._id ? (
+                  <Text style={styles.bodyTitle}>
+                    Thông tin tài khoản của bạn
+                  </Text>
+                ) : (
+                  <Text style={styles.title}>Thông tin tài khoản</Text>
+                )}
                 <AntDesign
                   name="close"
                   size={24}
@@ -94,10 +125,9 @@ const ProfileModal = () => {
                   </>
                 )}
               </View>
-              <View style={styles.btns}>
-                <Text style={styles.btn}>Kết bạn</Text>
-                <Text style={styles.btn}>Nhắn tin</Text>
-              </View>
+              {acc && acc._id != user._id && (
+                <View style={styles.btns}>{renderBtns()}</View>
+              )}
               <View style={styles.body}>
                 <View style={styles.bodyItem}>
                   <Text style={styles.bodyTitle}>Thông tin cá nhân</Text>
@@ -105,7 +135,7 @@ const ProfileModal = () => {
                 <View style={styles.bodyItem}>
                   <Text style={styles.bodyLabel}>Giới tính</Text>
                   <Text style={styles.bodyValue}>
-                    {acc && modalProfile.acc.gender ? "Name" : "Nữ"}
+                    {acc && modalProfile.acc.gender ? "Nam" : "Nữ"}
                   </Text>
                 </View>
                 <View style={styles.bodyItem}>
@@ -208,6 +238,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#ddd",
     marginHorizontal: 8,
     borderRadius: 4,
+  },
+  btnAcceptFriend: {
+    backgroundColor: "#1a69d9",
+    color: "white",
   },
   body: {
     paddingVertical: 12,

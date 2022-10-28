@@ -16,7 +16,6 @@ import Friends from "./Friends";
 import { useFriendContext } from "../../store/contexts/FriendContext";
 import converApi from "../../api/converApi";
 import { useConversationContext } from "../../store/contexts/ConversationContext";
-import PhoneInput from "../../components/Input/PhoneInput";
 
 const AddGroupChat = (props) => {
   const { navigation, route } = props;
@@ -47,27 +46,6 @@ const AddGroupChat = (props) => {
     }
   }
 
-  function pushMember(_id) {
-    let arr = [...listMembers];
-
-    for (let i = 0; i < arr.length; i++) {
-      if (arr[i] == _id) {
-        return;
-      }
-    }
-
-    arr.push(_id);
-    setListMembers(arr);
-  }
-
-  function removeMember(_id) {
-    let arr = [...listMembers];
-    let index = arr.indexOf(_id);
-
-    if (index >= 0) arr.splice(index, 1);
-    setListMembers(arr);
-  }
-
   useEffect(() => {
     if (nameInput && listMembers.length > 0) {
       setisSubmitActive(true);
@@ -95,6 +73,27 @@ const AddGroupChat = (props) => {
     }
     return () => {};
   }, [phoneInput]);
+
+  function pushMember(_id) {
+    let arr = [...listMembers];
+
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == _id) {
+        return;
+      }
+    }
+
+    arr.push(_id);
+    setListMembers(arr);
+  }
+
+  function removeMember(_id) {
+    let arr = [...listMembers];
+    let index = arr.indexOf(_id);
+
+    if (index >= 0) arr.splice(index, 1);
+    setListMembers(arr);
+  }
 
   async function findUser() {
     if (phoneInput.length != 10) return;

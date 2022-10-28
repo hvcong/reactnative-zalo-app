@@ -70,6 +70,20 @@ class ConverApi {
       headers: { "Content-Type": "multipart/form-data" },
     });
   }
+
+  // add members to conver
+  addMembers(converId, userIds) {
+    let url = `conversation/${converId}/members`;
+    return axiosClient.post(url, {
+      userIds: [...userIds],
+    });
+  }
+
+  // load All members of conver
+  getAllMembers(converId) {
+    let url = `conversation/${converId}/members`;
+    return axiosClient.get(url);
+  }
 }
 
 const converApi = new ConverApi();

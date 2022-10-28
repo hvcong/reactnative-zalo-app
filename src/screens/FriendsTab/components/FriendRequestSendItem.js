@@ -9,9 +9,11 @@ import {
 } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useFriendContext } from "../../../store/contexts/FriendContext";
+import userApi from "../../../api/userApi";
+import { useGlobalContext } from "../../../store/contexts/GlobalContext";
 const FriendRequestSendItem = (props) => {
   const { avatar, name, _id } = props;
-  console.log(props);
+  const { modalProfile, setModalProfile } = useGlobalContext();
   const {
     checkIsMyFriend,
     sendRequestFriend,
@@ -56,9 +58,19 @@ const FriendRequestSendItem = (props) => {
       </TouchableOpacity>
     );
   }
+  async function onShowProfile() {
+    console.log("send");
+    try {
+      let acc = await userApi.findUserById(_id);
+      setModalProfile({
+        isShow: true,
+        acc,
+      });
+    } catch (error) {}
+  }
 
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={onShowProfile}>
       <View style={styles.avatarContainer}>
         {avatar ? (
           <Image

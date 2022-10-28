@@ -129,7 +129,7 @@ const RoomChatGroupMore = (props) => {
           </View>
           <Text style={styles.label}>Đổi hình nền</Text>
         </Pressable>
-        <Pressable style={styles.section}>
+        <Pressable style={styles.section} onPress={onMemberList}>
           <View style={styles.sectionIcon}>
             <Ionicons name="ios-person-add-outline" size={20} color="black" />
           </View>

@@ -11,10 +11,14 @@ import { FontAwesome } from "@expo/vector-icons";
 import { converDate } from "../../../utils";
 import friendApi from "../../../api/friendApi";
 import { useFriendContext } from "../../../store/contexts/FriendContext";
+import userApi from "../../../api/userApi";
+import { useGlobalContext } from "../../../store/contexts/GlobalContext";
 
 const FriendRequestReceiveItem = (props) => {
   const { senderId, updatedAt } = props;
+
   const { acceptFriend } = useFriendContext();
+  const { modalProfile, setModalProfile } = useGlobalContext();
 
   let date = converDate(updatedAt);
 
@@ -30,8 +34,18 @@ const FriendRequestReceiveItem = (props) => {
 
   function onRefuse() {}
 
+  async function onShowProfile() {
+    try {
+      let acc = await userApi.findUserById(senderId._id);
+      setModalProfile({
+        isShow: true,
+        acc,
+      });
+    } catch (error) {}
+  }
+
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={onShowProfile}>
       <View style={styles.avatarContainer}>
         <Image
           source={require("../../../../assets/avatar.jpg")}

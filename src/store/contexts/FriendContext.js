@@ -166,6 +166,16 @@ const FriendContextProvider = ({ children }) => {
     return false;
   }
 
+  // kiểm tra xem có gửi yêu cầu kết bạn với mình không
+  function checkIsRequestedToMe(_id) {
+    const _requestToMe = [...requestToMe];
+
+    for (let i = 0; i < _requestToMe.length; i++) {
+      if (_requestToMe[i].senderId._id == _id) return true;
+    }
+    return false;
+  }
+
   const FriendContextData = {
     friends,
     checkIsMyFriend,
@@ -177,6 +187,7 @@ const FriendContextProvider = ({ children }) => {
     deleteRequestFriend,
     findUserByPhoneNumber,
     acceptFriend,
+    checkIsRequestedToMe,
   };
   return (
     <FriendContext.Provider value={FriendContextData}>

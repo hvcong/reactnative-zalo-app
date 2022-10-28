@@ -11,9 +11,10 @@ import { FontAwesome, Ionicons, Entypo } from "@expo/vector-icons";
 import { useFriendContext } from "../../../store/contexts/FriendContext";
 import { useConversationContext } from "../../../store/contexts/ConversationContext";
 import { useGlobalContext } from "../../../store/contexts/GlobalContext";
+import userApi from "../../../api/userApi";
 const AddFriendItem = (props) => {
   const { getConverById } = useConversationContext();
-  const { user } = useGlobalContext();
+  const { user, modalProfile, setModalProfile } = useGlobalContext();
   const { avatar, name, _id, converId, selectedId, setSelectedId } = props;
 
   const conver = converId && getConverById(converId);
@@ -79,8 +80,19 @@ const AddFriendItem = (props) => {
     }
   }
 
+  async function onShowProfile() {
+    console.log("send");
+    try {
+      let acc = await userApi.findUserById(_id);
+      setModalProfile({
+        isShow: true,
+        acc,
+      });
+    } catch (error) {}
+  }
+
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={onShowProfile}>
       <View style={styles.avatarContainer}>
         {avatar ? (
           <Image

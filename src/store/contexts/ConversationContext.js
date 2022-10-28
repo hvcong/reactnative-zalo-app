@@ -275,6 +275,43 @@ const ConversationContextProvider = ({ children }) => {
       console.log("update avatar err:", error);
     }
   }
+
+  // add members
+  async function addMembers(converId, userIds) {
+    try {
+      const res = await converApi.addMembers(converId, userIds);
+      if (res.isSuccess) {
+        console.log("add members ok");
+        await loadAllConversation();
+        // const members = await loadAllMemberOfConver(converId);
+        // return members;
+        return true;
+      }
+    } catch (error) {
+      console.log("add members err", error);
+      return false;
+    }
+  }
+
+  // get all members of conver
+  async function loadAllMemberOfConver(converId) {
+    try {
+      const res = await converApi.getAllMembers(converId);
+      if (res.isSuccess) {
+        let _convers = [...convers];
+        for (let i = 0; i < _convers.length; i++) {
+          if (_convers[i]._id == converId) {
+            _convers[i].members = res.data;
+          }
+        }
+        setconvers(_convers);
+        return res.data;
+      }
+    } catch (error) {
+      console.log("get mmebers err", error);
+    }
+  }
+
   const ConversationContextData = {
     convers: convers,
     getMembers,
@@ -291,6 +328,7 @@ const ConversationContextProvider = ({ children }) => {
     renameConver,
     updateAvatar,
     sendImageMessage,
+    addMembers,
   };
   return (
     <ConversationContext.Provider value={ConversationContextData}>
