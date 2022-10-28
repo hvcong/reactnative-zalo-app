@@ -16,16 +16,19 @@ import Friends from "./Friends";
 import { useFriendContext } from "../../store/contexts/FriendContext";
 import converApi from "../../api/converApi";
 import { useConversationContext } from "../../store/contexts/ConversationContext";
+import PhoneInput from "../../components/Input/PhoneInput";
 
 const AddGroupChat = (props) => {
   const { navigation, route } = props;
-  const { friends } = useFriendContext();
+  const { friends, findUserByPhoneNumber } = useFriendContext();
   const { addNewConver } = useConversationContext();
+  const [userFound, setuserFound] = useState(null);
 
   const [isSubmitActive, setisSubmitActive] = useState(false);
   const [image, setImage] = useState(null);
   const [nameInput, setnameInput] = useState("");
   const [listMembers, setListMembers] = useState([]);
+  const [phoneInput, setphoneInput] = useState("0988888881");
 
   async function onPickImage() {
     console.log("pick");
@@ -84,12 +87,33 @@ const AddGroupChat = (props) => {
     );
   }
 
+  useEffect(() => {
+    if (phoneInput && phoneInput.length == 10) {
+      findUser();
+    } else {
+      setuserFound(null);
+    }
+    return () => {};
+  }, [phoneInput]);
+
+  async function findUser() {
+    if (phoneInput.length != 10) return;
+    let res = await findUserByPhoneNumber(phoneInput);
+    if (res && res.isSuccess) {
+      setuserFound(res);
+    } else {
+      console.log("not found");
+      // setErrText("Số điện thoại này có vẻ chưa đăng kí tài khoản nào");
+    }
+  }
+
   async function onCreateGroup() {
     const body = {
       name: nameInput,
       userIds: [...listMembers],
     };
     const res = await converApi.createGroupChat(body);
+    console.log(res);
     if (res.isSuccess) {
       console.log("create group chat ok");
       addNewConver(res);
@@ -134,13 +158,16 @@ const AddGroupChat = (props) => {
         <AntDesign name="search1" size={24} color="black" />
         <TextInput
           style={styles.searchInput}
-          placeholder={"Tìm số điện thoại"}
+          value={phoneInput}
+          onChangeText={setphoneInput}
+          placeholder={"Nhập số điện thoại cần tìm"}
+          keyboardType={"numeric"}
         />
       </View>
       <Text style={styles.numOfSelected}>Đã chọn {listMembers.length}</Text>
       <View style={styles.list}>
         <FlatList
-          data={friends}
+          data={userFound ? [userFound] : friends}
           renderItem={renderItem}
           keyExtractor={(item) => item._id}
         />

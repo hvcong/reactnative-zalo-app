@@ -7,8 +7,8 @@ import { useConversationContext } from "../../../store/contexts/ConversationCont
 const GroupChatBody = ({ navigation }) => {
   const { convers } = useConversationContext();
 
-  function renderItem({ item }) {
-    return <GroupChatItem {...item} />;
+  function renderItem({ item, index }) {
+    return <GroupChatItem {...item} index={index} />;
   }
 
   return (

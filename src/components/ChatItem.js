@@ -1,29 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+import { useGlobalContext } from "../store/contexts/GlobalContext";
 
 const ChatItem = ({ conver, navigation }) => {
-  const { name, lastMessageId, _id } = conver;
-  const [lastMessage, setlastMessage] = useState(null);
-
-  useEffect(() => {
-    getLastMessage();
-    return () => {};
-  }, []);
-  function getLastMessage() {
-    for (let i = 0; i < conver.messages.length; i++) {
-      if (conver.messages[i]._id === lastMessageId) {
-        setlastMessage(conver.messages[i]);
-        return;
-      }
-    }
-  }
+  const { name, lastMessageId, _id, type, avatar } = conver;
+  const { user } = useGlobalContext();
 
   function onPressItem() {
     navigation.navigate("ChatRoom", {
       converId: _id,
+      name: getNameOfSimpleConver(),
     });
   }
 
+  // get name of simple conver
+  function getNameOfSimpleConver() {
+    for (let i = 0; i < conver.members.length; i++) {
+      if (conver.members[i]._id != user._id) {
+        return conver.members[i].name;
+      }
+    }
+  }
+
+  function renderLastMessage() {
+    if (lastMessageId) {
+      if (lastMessageId.type == "TEXT" || lastMessageId.type == "NOTIFY") {
+        return lastMessageId.content;
+      }
+    }
+  }
   return (
     <View style={styles.wrap}>
       <TouchableOpacity
@@ -32,17 +37,26 @@ const ChatItem = ({ conver, navigation }) => {
         style={styles.container}
       >
         <View style={styles.imageContainer}>
-          <Image
-            source={require("../../assets/avatar.jpg")}
-            style={styles.avatar}
-          />
+          {avatar ? (
+            <Image
+              source={{
+                uri: avatar,
+              }}
+              style={styles.avatar}
+            />
+          ) : (
+            <Image
+              source={require("../../assets/avatar.jpg")}
+              style={styles.avatar}
+            />
+          )}
         </View>
         <View style={styles.centerContainer}>
           <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-            {name}
+            {type ? name : getNameOfSimpleConver()}
           </Text>
           <Text numberOfLines={1} style={styles.lastMessage}>
-            {lastMessage && lastMessage.content}
+            {renderLastMessage()}
           </Text>
         </View>
         <View style={styles.rightContainer}>
@@ -87,6 +101,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   lastMessage: {
+    paddingTop: 4,
     fontSize: 14,
     color: "#858383",
   },

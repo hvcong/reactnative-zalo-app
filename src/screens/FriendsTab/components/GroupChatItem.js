@@ -2,10 +2,9 @@ import React from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
 
 const GroupChatItem = (props) => {
-  const { _id, name, lassMessageId } = props;
-
+  const { _id, name, lassMessageId, index } = props;
   return (
-    <View style={styles.item}>
+    <View style={[styles.item, index == 0 && { marginTop: 12 }]}>
       <View style={styles.avatarContainer}>
         <Image
           source={require("../../../../assets/avatar.jpg")}

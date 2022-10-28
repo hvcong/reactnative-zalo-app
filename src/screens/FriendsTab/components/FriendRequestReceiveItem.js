@@ -8,11 +8,24 @@ import {
   Pressable,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-const FriendRequestReceiveItem = () => {
-  const [isAccept, setisAccept] = useState(false);
+import { converDate } from "../../../utils";
+import friendApi from "../../../api/friendApi";
+import { useFriendContext } from "../../../store/contexts/FriendContext";
 
-  function onAccept() {
-    setisAccept(true);
+const FriendRequestReceiveItem = (props) => {
+  const { senderId, updatedAt } = props;
+  const { acceptFriend } = useFriendContext();
+
+  let date = converDate(updatedAt);
+
+  async function onAccept() {
+    console.log("accept");
+    const is = await acceptFriend(senderId._id);
+    if (is) {
+      console.log("ok:");
+    } else {
+      console.log("faild:");
+    }
   }
 
   function onRefuse() {}
@@ -26,8 +39,8 @@ const FriendRequestReceiveItem = () => {
         ></Image>
       </View>
       <View style={styles.middle}>
-        <Text style={styles.name}>Le minh cong</Text>
-        <Text style={styles.time}>Ngày 12/3</Text>
+        <Text style={styles.name}>{senderId.name}</Text>
+        <Text style={styles.time}>Ngày {date.toStringDMY}</Text>
       </View>
       <View style={styles.right}>
         <Text onPress={onRefuse} style={styles.btn}>

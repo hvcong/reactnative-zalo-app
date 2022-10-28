@@ -19,6 +19,7 @@ import {
 } from "@expo/vector-icons";
 import NotifyMessage from "./MessageType/NotifyMessage";
 import ReactModal from "./ReactModal";
+import DeletedMessage from "./MessageType/DeletedMessage";
 
 const Message = (props) => {
   let {
@@ -31,11 +32,14 @@ const Message = (props) => {
     idSelected,
     setIdSelected,
   } = props;
-  let { type, senderId } = item;
+  let { type, senderId, isDeleted } = item;
   const [isShowModal, setisShowModal] = useState(false);
   const [isOnReact, setisOnReact] = useState(false);
 
   function renderMessageContent() {
+    if (isDeleted) {
+      return <DeletedMessage isMyMessage={isMyMessage} />;
+    }
     if (type === "TEXT") {
       return (
         <TextMessage
@@ -49,14 +53,15 @@ const Message = (props) => {
     } else if (type === "NOTIFY") {
       return <NotifyMessage item={item} isMyMessage={isMyMessage} />;
     } else if (type === "IMAGE") {
+      return <ImageMessage item={item} />;
     } else if (type === "STICKER") {
     } else if (type === "VIDEO") {
     } else if (type === "VOTE") {
     } else if (type === "HTML") {
-    } else if (type === "IMAGE") {
-      return <ImageMessage data={data} />;
     }
   }
+
+  function deletedWithMy() {}
 
   function isRenderAvatar() {
     if (type === "NOTIFY" || type === "VOTE") return false;
@@ -65,7 +70,6 @@ const Message = (props) => {
   }
 
   function onReaction() {
-    console.log("hre");
     setIdSelected("" + item._id);
   }
 
@@ -82,7 +86,7 @@ const Message = (props) => {
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
-        onLongPress={onReaction}
+        onPress={onReaction}
       >
         {renderMessageContent()}
 

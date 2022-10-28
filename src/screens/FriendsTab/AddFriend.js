@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import userApi from "../../api/userApi";
 import PhoneInput from "../../components/Input/PhoneInput";
+import { useFriendContext } from "../../store/contexts/FriendContext";
 import AddFriendItem from "./components/AddFriendItem";
 
 const AddFriend = () => {
@@ -9,6 +10,7 @@ const AddFriend = () => {
   const [userFound, setuserFound] = useState(null);
   const [errText, setErrText] = useState("");
   const [isDisSubmit, setIsDisSubmit] = useState(false);
+  const { findUserByPhoneNumber } = useFriendContext();
 
   useEffect(() => {
     if (phoneInput.length == 10) {
@@ -24,8 +26,8 @@ const AddFriend = () => {
 
   async function onFindSubmit() {
     if (phoneInput.length != 10) return;
-    let res = await userApi.findUserByPhoneNumber(phoneInput);
-    if (res.isSuccess) {
+    let res = await findUserByPhoneNumber(phoneInput);
+    if (res && res.isSuccess) {
       setuserFound(res);
       setErrText("");
     } else {

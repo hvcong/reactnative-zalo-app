@@ -21,6 +21,7 @@ const Friends = (props) => {
   const { navigation, route } = props;
   const [isModalShow, setIsModalShow] = useState(false);
   const [activeTab, setactiveTab] = useState(true);
+
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>

@@ -1,20 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
+import userApi from "../../api/userApi";
+import { useConversationContext } from "../../store/contexts/ConversationContext";
 
 const NotifyMessage = ({ item }) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.body}>
+  const { getMember } = useConversationContext();
+  const [sender, setSender] = useState({});
+
+  useEffect(() => {
+    loadSender();
+
+    async function loadSender() {
+      try {
+        const res = await userApi.findUserById(item.senderId);
+        if (res.isSuccess) {
+          setSender(res);
+        }
+      } catch (error) {}
+    }
+    return () => {};
+  }, [item]);
+
+  function renderText() {
+    if (item.content == "Đã thêm vào nhóm") {
+      if (item.manipulatedUserIds) {
+        return (
+          <>
+            <Text
+              style={styles.name}
+              onPress={() => {
+                console.warn("go to profile");
+              }}
+            >
+              {sender && sender.name}
+            </Text>
+            <Text
+              style={styles.text}
+            >{`Đã thêm ${item.manipulatedUserIds.length} người vào nhóm`}</Text>
+          </>
+        );
+      }
+    }
+
+    return (
+      <>
         <Text
           style={styles.name}
           onPress={() => {
             console.warn("go to profile");
           }}
         >
-          {"abd"}
+          {sender && sender.name}
         </Text>
         <Text style={styles.text}>{item.content}</Text>
-      </View>
+      </>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.body}>{renderText()}</View>
     </View>
   );
 };

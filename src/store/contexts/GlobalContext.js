@@ -12,6 +12,11 @@ function GlobalContextProvider({ children }) {
     user: null,
   });
 
+  const [modalProfile, setModalProfile] = useState({
+    isShow: false,
+    _id: null,
+  });
+
   useEffect(() => {
     onLoadUser();
     return () => {};
@@ -69,6 +74,8 @@ function GlobalContextProvider({ children }) {
     user: state.user,
     onLogout,
     onLoginSuccess,
+    modalProfile,
+    setModalProfile,
   };
 
   return (

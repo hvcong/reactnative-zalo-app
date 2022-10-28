@@ -7,6 +7,7 @@ import ChatRoom from "./ChatRoom";
 import ListChat from "./ListChat";
 import RoomSimpleMore from "./RoomSimpleMore";
 import RoomChatGroupMore from "./RoomChatGroupMore";
+import ListMember from "./ListMember";
 
 const Stack = createStackNavigator();
 
@@ -36,6 +37,14 @@ const MessageTabScreen = (props) => {
       <Stack.Screen
         name="RoomChatGroupMore"
         component={RoomChatGroupMore}
+        options={{
+          title: "Tùy chọn",
+        }}
+      />
+
+      <Stack.Screen
+        name="ListMember"
+        component={ListMember}
         options={{
           title: "Tùy chọn",
         }}

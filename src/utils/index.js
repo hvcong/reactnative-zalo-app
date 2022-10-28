@@ -15,7 +15,7 @@ export function converDate(date) {
     "Dec",
   ];
   var year = created_date.getFullYear();
-  var month = months[created_date.getMonth()];
+  var month = created_date.getMonth();
   var date = created_date.getDate();
   var hour = created_date.getHours();
   var min = created_date.getMinutes();
@@ -24,6 +24,12 @@ export function converDate(date) {
     date + "," + month + " " + year + " " + hour + ":" + min + ":" + sec;
 
   var toString = "" + hour + ":" + (min < 10 ? "0" + min : min);
+  var toStringDMY =
+    "" +
+    (date < 10 ? "0" + date : date) +
+    " / " +
+    (month < 10 ? "0" + month : month) +
+    (new Date().getFullYear() == year ? "" : " / " + year);
   return {
     months,
     year,
@@ -34,5 +40,6 @@ export function converDate(date) {
     sec,
     time,
     toString,
+    toStringDMY,
   };
 }

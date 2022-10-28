@@ -5,6 +5,40 @@ class FriendApi {
     let url = "friends";
     return axiosClient.get(url);
   }
+
+  getAllRequestToMe() {
+    let url = "friends/invites";
+    return axiosClient.get(url);
+  }
+
+  getAllRequestFromMe() {
+    let url = "friends/invites/me";
+    return axiosClient.get(url);
+  }
+
+  acceptFriend(_id) {
+    let url = "friends/" + _id;
+    return axiosClient.post(url);
+  }
+
+  // refuseFriend(_id) {
+  //   let url =
+  // }
+
+  deleteFriend(_id) {
+    let url = "friends/" + _id;
+    return axiosClient.delete(url);
+  }
+
+  addFriend(_id) {
+    let url = "friends/invites/me/" + _id;
+    return axiosClient.post(url);
+  }
+
+  deleteRequest(_id) {
+    let url = "friends/invites/me/" + _id;
+    return axiosClient.delete(url);
+  }
 }
 
 const friendApi = new FriendApi();

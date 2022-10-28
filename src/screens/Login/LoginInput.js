@@ -18,7 +18,7 @@ import { useGlobalContext } from "../../store/contexts/GlobalContext";
 import LoadingModal from "../../components/LoadingModal";
 export default function LoginInput({ navigation }) {
   const { onLoginSuccess } = useGlobalContext();
-  const [phoneInput, setPhoneInput] = useState("0999999999");
+  const [phoneInput, setPhoneInput] = useState("0123456789");
   const [pwdInput, setPwdInput] = useState("1234567");
   const [isDisSubmit, setIsDisSubmit] = useState(true);
   const [isLoading, setisLoading] = useState(false);
@@ -27,7 +27,8 @@ export default function LoginInput({ navigation }) {
   useEffect(() => {
     // enable submit login when user type done
 
-    if (validate()) {
+    // if (validate()) {
+    if (true) {
       setIsDisSubmit(false);
     } else {
       setIsDisSubmit(true);

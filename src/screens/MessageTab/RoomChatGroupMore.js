@@ -6,6 +6,7 @@ import {
   Image,
   Pressable,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import {
   Ionicons,
@@ -15,14 +16,20 @@ import {
   FontAwesome5,
 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { useConversationContext } from "../../store/contexts/ConversationContext";
+import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const RoomChatGroupMore = (props) => {
-  const { route } = props;
+  const { route, navigation } = props;
   const { conver } = route.params;
   const [isNotify, setisNotify] = useState(false);
   const [isEditName, setisEditName] = useState(false);
   const [nameInput, setnameInput] = useState(conver.name);
   const [image, setImage] = useState(null);
+  const [name, setName] = useState(conver.name);
+  const { user } = useGlobalContext();
+
+  const { leaveGroup, renameConver, updateAvatar } = useConversationContext();
 
   async function onPickImage() {
     console.log("pick");
@@ -35,21 +42,50 @@ const RoomChatGroupMore = (props) => {
     });
     if (!result.cancelled) {
       setImage(result);
+
+      updateAvatar(conver._id, result);
     }
+  }
+
+  async function onLeaveGroup() {
+    console.log("leave");
+    const is = await leaveGroup(conver._id);
+  }
+
+  async function onRenameConver() {
+    setisEditName(false);
+    setName(nameInput);
+    if (nameInput) {
+      const is = await renameConver(conver._id, nameInput);
+    }
+  }
+
+  function onMemberList() {
+    navigation.navigate("ListMember", { converId: conver._id });
+  }
+
+  function renderAvatar() {
+    if (image) {
+      return <Image source={{ uri: image.uri }} style={styles.avatar} />;
+    }
+
+    if (conver.avatar) {
+      return <Image source={{ uri: conver.avatar }} style={styles.avatar} />;
+    }
+
+    return (
+      <Image
+        source={require("../../../assets/avatar.jpg")}
+        style={styles.avatar}
+      />
+    );
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
         <View style={styles.avatarWrap}>
-          {image ? (
-            <Image source={{ uri: image.uri }} style={styles.avatar} />
-          ) : (
-            <Image
-              source={require("../../../assets/avatar_default.jpg")}
-              style={styles.avatar}
-            />
-          )}
+          {renderAvatar()}
           <Ionicons
             style={styles.iconCamera}
             name="camera-outline"
@@ -62,7 +98,7 @@ const RoomChatGroupMore = (props) => {
       <View style={styles.nameContainer}>
         {!isEditName ? (
           <>
-            <Text style={styles.name}>{conver.name}</Text>
+            <Text style={styles.name}>{name}</Text>
             <FontAwesome5
               name="pencil-alt"
               style={styles.penIcon}
@@ -80,10 +116,7 @@ const RoomChatGroupMore = (props) => {
               value={nameInput}
               onChangeText={setnameInput}
             />
-            <Text
-              onPress={() => setisEditName(false)}
-              style={styles.btnSaveName}
-            >
+            <Text onPress={onRenameConver} style={styles.btnSaveName}>
               Lưu
             </Text>
           </>
@@ -133,28 +166,30 @@ const RoomChatGroupMore = (props) => {
       </View>
 
       <View style={styles.body}>
-        <View style={styles.item}>
+        <TouchableOpacity style={styles.item} onPress={onMemberList}>
           <Ionicons name="md-people-outline" size={24} color="black" />
           <Text style={styles.text}>
             Xem thành viên ({conver.members.length})
           </Text>
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.item}>
+        <TouchableOpacity style={styles.item}>
           <AntDesign name="pushpino" size={24} color="black" />
           <Text style={styles.text}>Tin nhắn đã gim</Text>
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.item}>
+        <TouchableOpacity style={styles.item}>
           <Feather name="trash-2" size={24} color="red" />
           <Text style={[styles.text, styles.removeText]}>
             Xóa lịch sử trò chuyện
           </Text>
-        </View>
-        <View style={styles.item}>
-          <SimpleLineIcons name="logout" size={24} color="red" />
-          <Text style={[styles.text, styles.removeText]}>Rời nhóm</Text>
-        </View>
+        </TouchableOpacity>
+        {conver.leaderId != user._id && (
+          <TouchableOpacity style={styles.item} onPress={onLeaveGroup}>
+            <SimpleLineIcons name="logout" size={24} color="red" />
+            <Text style={[styles.text, styles.removeText]}>Rời nhóm</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

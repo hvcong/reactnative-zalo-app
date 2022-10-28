@@ -17,6 +17,7 @@ const MyProfile = (props) => {
   const { navigation, route } = props;
   const [isModalShow, setIsModalShow] = useState(false);
   const { user } = useGlobalContext();
+  const { modalProfile, setModalProfile } = useGlobalContext();
 
   // useEffect(() => {
   //   navigation.setOptions({
@@ -34,7 +35,10 @@ const MyProfile = (props) => {
   }
 
   function onDetailProfilePress() {
-    console.warn("view profile detail");
+    setModalProfile({
+      ...modalProfile,
+      isShow: true,
+    });
   }
 
   return (

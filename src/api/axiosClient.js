@@ -1,6 +1,5 @@
 import axios from "axios";
 import store from "../store";
-import qs from "qs";
 // let baseURL = "http://192.168.1.87/";
 // let baseURL = "http://127.0.0.1:3000/";
 let baseURL = "https://zalo-chat.herokuapp.com/";
@@ -37,6 +36,11 @@ axiosClient.interceptors.response.use(
       return {
         isSuccess: true,
         ...response.data,
+      };
+    } else if (response) {
+      return {
+        isSuccess: true,
+        data: response,
       };
     } else {
       return {

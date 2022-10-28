@@ -4,29 +4,65 @@ import { useGlobalContext } from "./GlobalContext";
 import friendApi from "../../api/friendApi";
 import { set } from "react-native-reanimated";
 import { useConversationContext } from "./ConversationContext";
+import userApi from "../../api/userApi";
 
 const FriendContext = createContext();
 
 const FriendContextProvider = ({ children }) => {
   const [friends, setfriends] = useState([]);
+  const [requestToMe, setRequestToMe] = useState([]);
+  const [requestFromMe, setRequestFromMe] = useState([]);
+
   const { user } = useGlobalContext();
   const { socket } = useConversationContext();
 
   useEffect(() => {
     if (user) {
       loadFriends();
+      loadAllRequestToMe();
+      loadAllRequestFromMe();
     }
     return () => {};
   }, [user]);
+
+  // load all request from me
+  async function loadAllRequestFromMe() {
+    try {
+      const res = await friendApi.getAllRequestFromMe();
+      if (res.isSuccess) {
+        setRequestFromMe(res.data);
+      } else {
+        setRequestFromMe([]);
+      }
+    } catch (err) {
+      console.log("loadAllRequestFromMe Err:", err);
+    }
+  }
+
+  // load all request to me
+  async function loadAllRequestToMe() {
+    try {
+      const res = await friendApi.getAllRequestToMe();
+      if (res.isSuccess) {
+        setRequestToMe(res.data);
+      } else {
+        setRequestToMe([]);
+      }
+    } catch (err) {
+      console.log("loadAllRequestToMe Err:", err);
+    }
+  }
 
   useEffect(() => {
     // listent socket on create-simple-conversation
     if (!socket) return;
     console.log("id", user._id);
-    console.log("listent socket on create-simple-conversation ");
-    socket.on("create-simple-conversation", (data) => {
-      console.log("data: ", data);
+
+    console.log("listen Accept friend");
+    socket.on("accept-friend", (data) => {
+      console.log("socket: from server accept-friend", data);
     });
+
     return () => {};
   }, [socket]);
 
@@ -48,9 +84,99 @@ const FriendContextProvider = ({ children }) => {
     return false;
   }
 
+  async function deleteFriend(_id) {
+    try {
+      console.log(_id);
+      const res = await friendApi.deleteFriend(_id);
+      if (res.isSuccess) {
+        loadFriends();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log("delete friend error", error);
+      return false;
+    }
+  }
+
+  async function sendRequestFriend(_id) {
+    try {
+      const res = await friendApi.addFriend(_id);
+
+      if (res.isSuccess) {
+        loadAllRequestFromMe();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log("request friend error", error);
+      return false;
+    }
+  }
+
+  async function deleteRequestFriend(_id) {
+    try {
+      const res = await friendApi.deleteRequest(_id);
+      console.log("aaa", res);
+      if (res.isSuccess) {
+        loadAllRequestFromMe();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log("delete request err", error);
+      return false;
+    }
+  }
+
+  // find user by phonumber
+  async function findUserByPhoneNumber(phone) {
+    try {
+      const res = await userApi.findUserByPhoneNumber(phone);
+      return res;
+    } catch (error) {
+      console.log("find user error", error);
+      return null;
+    }
+  }
+
+  //
+  async function acceptFriend(_id) {
+    try {
+      const res = await friendApi.acceptFriend(_id);
+      loadFriends();
+      loadAllRequestToMe();
+      loadAllRequestFromMe();
+    } catch (error) {
+      console.log("accept friend error", error);
+      return false;
+    }
+  }
+
+  // check is exists in request from me
+  function checkIsRequested(_id) {
+    const _requestFromMe = [...requestFromMe];
+
+    for (let i = 0; i < _requestFromMe.length; i++) {
+      if (_requestFromMe[i].receiverId._id == _id) return true;
+    }
+    return false;
+  }
+
   const FriendContextData = {
     friends,
     checkIsMyFriend,
+    requestFromMe,
+    requestToMe,
+    deleteFriend,
+    sendRequestFriend,
+    checkIsRequested,
+    deleteRequestFriend,
+    findUserByPhoneNumber,
+    acceptFriend,
   };
   return (
     <FriendContext.Provider value={FriendContextData}>

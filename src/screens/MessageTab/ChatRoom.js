@@ -7,21 +7,22 @@ import { useConversationContext } from "../../store/contexts/ConversationContext
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const ChatRoom = (props) => {
-  const { converId } = props.route.params;
+  const { converId, name } = props.route.params;
   const { navigation } = props;
   const { user } = useGlobalContext();
-  const { getMember, getMembers, sendMessage, getConverById, convers } =
+  const { getMember, getMembers, convers, getConverById } =
     useConversationContext();
-  const [conver, setConver] = useState(getConverById(converId));
-  const { type, messages } = conver;
   const flastListRef = useRef();
   const [idSelected, setIdSelected] = useState(null);
+  const [conver, setConver] = useState(getConverById(converId));
+  const { type, messages } = conver;
 
   useEffect(() => {
     setConver(getConverById(converId));
     return () => {};
   }, [convers]);
 
+  //header
   useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => (
@@ -29,7 +30,7 @@ const ChatRoom = (props) => {
           {...props}
           typeOfConversation={type ? "group" : "simple"}
           numOfMember={getMembers(converId).length}
-          converName={conver.name}
+          converName={name}
           navigation={navigation}
           conver={conver}
         />
@@ -44,10 +45,24 @@ const ChatRoom = (props) => {
       parent.setOptions({
         tabBarVisible: true,
       });
-  }, []);
+  }, [conver]);
+
+  function isDeletedWithMe(deletedWithUserIds, senderId) {
+    if (deletedWithUserIds && deletedWithUserIds.length > 0) {
+      for (let i = 0; i < deletedWithUserIds.length; i++) {
+        if (deletedWithUserIds[i] == senderId) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   function renderItem({ index, item }) {
-    if (item.isDeleted == true) return <></>;
+    const { senderId, deletedWithUserIds } = item;
+    if (isDeletedWithMe(deletedWithUserIds, senderId)) {
+      return null;
+    }
     return (
       <Message
         isMyMessage={user._id == item.senderId ? true : false}
@@ -69,12 +84,6 @@ const ChatRoom = (props) => {
     return true;
   }
 
-  function onSendMessage(data) {
-    Keyboard.dismiss();
-    console.log({ ...data, conversationId: converId });
-    sendMessage({ ...data, conversationId: converId });
-  }
-
   function scrollToEndFlastList() {
     flastListRef.current.scrollToEnd();
   }
@@ -84,7 +93,7 @@ const ChatRoom = (props) => {
         {
           <FlatList
             style={styles.flatList}
-            data={messages.reverse()}
+            data={messages}
             renderItem={renderItem}
             keyExtractor={(item) => item._id}
             ref={flastListRef}
@@ -94,7 +103,7 @@ const ChatRoom = (props) => {
         }
       </View>
       <View style={styles.enterContainer}>
-        <MessageInput onSendMessage={onSendMessage} />
+        <MessageInput converId={converId} />
       </View>
     </View>
   );

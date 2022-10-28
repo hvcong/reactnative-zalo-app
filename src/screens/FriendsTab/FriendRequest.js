@@ -1,10 +1,23 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, FlatList } from "react-native";
+import { useFriendContext } from "../../store/contexts/FriendContext";
 import AddFriendItem from "./components/AddFriendItem";
 import FriendRequestReceiveItem from "./components/FriendRequestReceiveItem";
 
 const FriendRequest = () => {
   const [activeTab, setactiveTab] = useState(true);
+
+  const { requestFromMe, requestToMe } = useFriendContext();
+
+  function renderRequestToMeItem({ item }) {
+    return <FriendRequestReceiveItem {...item} />;
+  }
+
+  function renderRequestFromMeItem({ item }) {
+    const { receiverId } = item;
+    return <AddFriendItem {...receiverId} />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
@@ -12,27 +25,28 @@ const FriendRequest = () => {
           onPress={() => setactiveTab(true)}
           style={[styles.navItem, activeTab && styles.navItemAcctive]}
         >
-          ĐÃ NHẬN 1
+          ĐÃ NHẬN {requestToMe && requestToMe.length}
         </Text>
         <Text
           onPress={() => setactiveTab(false)}
           style={[styles.navItem, !activeTab && styles.navItemAcctive]}
         >
-          ĐÃ GỬI 8
+          ĐÃ GỬI {requestFromMe && requestFromMe.length}
         </Text>
       </View>
       <View style={styles.body}>
         {activeTab ? (
-          <>
-            <FriendRequestReceiveItem />
-            <FriendRequestReceiveItem />
-          </>
+          <FlatList
+            renderItem={renderRequestToMeItem}
+            data={requestToMe}
+            keyExtractor={(item) => item._id}
+          />
         ) : (
-          <>
-            <AddFriendItem />
-            <AddFriendItem />
-            <AddFriendItem />
-          </>
+          <FlatList
+            renderItem={renderRequestFromMeItem}
+            data={requestFromMe}
+            keyExtractor={(item) => item._id}
+          />
         )}
       </View>
     </View>

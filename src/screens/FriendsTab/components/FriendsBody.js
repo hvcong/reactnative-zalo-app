@@ -1,14 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, FlatList } from "react-native";
 import FriendsItem from "./FriendsItem";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
 import { useFriendContext } from "../../../store/contexts/FriendContext";
 
 const FriendsBody = ({ navigation }) => {
-  const { friends } = useFriendContext();
+  const { friends, requestFromMe, requestToMe } = useFriendContext();
+  const [idOptionShow, setIdOptionShow] = useState(null);
 
-  function renderItem({ item }) {
-    return <FriendsItem {...item} navigation={navigation} />;
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      setIdOptionShow(null);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  function renderItem({ item, index }) {
+    return (
+      <FriendsItem
+        {...item}
+        navigation={navigation}
+        idOptionShow={idOptionShow}
+        setIdOptionShow={setIdOptionShow}
+        index={index}
+        length={friends.length}
+      />
+    );
   }
 
   return (
@@ -23,7 +41,10 @@ const FriendsBody = ({ navigation }) => {
               onPress={() => navigation.navigate("FriendRequest")}
               style={styles.headerText}
             >
-              Lời mời kết bạn
+              Lời mời kết bạn (
+              {(requestFromMe ? requestFromMe.length : 0) +
+                (requestToMe ? requestToMe.length : 0)}
+              )
             </Text>
           </View>
         </View>
@@ -31,6 +52,9 @@ const FriendsBody = ({ navigation }) => {
 
       <View style={styles.container}>
         <View style={styles.addContainer}>
+          <Text style={styles.numberOfFriend}>
+            Tất cả bạn bè ({friends.length})
+          </Text>
           <Text
             onPress={() => {
               navigation.navigate("AddFriend");
@@ -67,6 +91,12 @@ const styles = StyleSheet.create({
   addContainer: {
     borderBottomColor: "#eee",
     borderBottomWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 12,
+  },
+  numberOfFriend: {
+    fontWeight: "bold",
   },
   addBtn: {
     paddingVertical: 8,
@@ -75,6 +105,7 @@ const styles = StyleSheet.create({
     color: "#349eeb",
     fontSize: 16,
   },
+
   body: {
     paddingHorizontal: 12,
     paddingVertical: 6,
