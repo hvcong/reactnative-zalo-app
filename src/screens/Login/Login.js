@@ -13,7 +13,7 @@ export default function Login({ navigation }) {
     navigation.navigate("LoginInput");
   }
   function onRegister() {
-    navigation.navigate("RegisterInput");
+    navigation.navigate("RegisterPhoneInput");
   }
 
   return (

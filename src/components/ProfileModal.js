@@ -16,22 +16,31 @@ import { useConversationContext } from "../store/contexts/ConversationContext";
 import { useFriendContext } from "../store/contexts/FriendContext";
 
 const ProfileModal = () => {
-  const { modalProfile, setModalProfile, user } = useGlobalContext();
+  const { modalProfile, setModalProfile, user, updateInfor } =
+    useGlobalContext();
   const { checkIsMyFriend, checkIsRequested, checkIsRequestedToMe } =
     useFriendContext();
 
   const { acc, isShow } = modalProfile;
-  const [isLoading, setIsLoading] = useState(false);
-  const [nameInput, setNameInput] = useState("");
+  const [image, setImage] = useState(null);
+  const [inforInput, setInforInput] = useState({});
+
   const [isEditName, setIsEditName] = useState(false);
 
   useEffect(() => {
     if (modalProfile && modalProfile.acc) {
-      setNameInput(modalProfile.acc.name);
+      setInforInput({
+        ...inforInput,
+        name: modalProfile.acc.name,
+      });
     }
     return () => {};
   }, [modalProfile]);
-  if (!acc || !isShow) return null;
+
+  async function onSaveChange() {
+    setIsEditName(false);
+    let is = await updateInfor(inforInput);
+  }
 
   function renderBtns() {
     if (acc && checkIsMyFriend(acc._id)) {
@@ -58,95 +67,88 @@ const ProfileModal = () => {
     <Modal visible={modalProfile.isShow} transparent={true}>
       <View style={styles.wrap}>
         <View style={styles.container}>
-          {isLoading ? (
-            <ActivityIndicator size="large" color={"#0000ff"} />
-          ) : (
-            <>
-              <View style={styles.header}>
-                {acc && acc._id == user._id ? (
-                  <Text style={styles.bodyTitle}>
-                    Thông tin tài khoản của bạn
-                  </Text>
-                ) : (
-                  <Text style={styles.title}>Thông tin tài khoản</Text>
-                )}
-                <AntDesign
-                  name="close"
-                  size={24}
-                  color="black"
-                  onPress={() => {
-                    setIsEditName(false);
-                    setModalProfile({
-                      acc: null,
-                      isShow: false,
+          <View style={styles.header}>
+            {acc && acc._id == user._id ? (
+              <Text style={styles.bodyTitle}>Thông tin tài khoản của bạn</Text>
+            ) : (
+              <Text style={styles.title}>Thông tin tài khoản</Text>
+            )}
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+              onPress={() => {
+                setIsEditName(false);
+                setModalProfile({
+                  acc: null,
+                  isShow: false,
+                });
+              }}
+            />
+          </View>
+          <View style={styles.avatarContainer}>
+            {acc && modalProfile.acc.avatar ? (
+              <Image
+                source={{ uri: modalProfile.acc.avatar }}
+                style={styles.avatar}
+              />
+            ) : (
+              <Image
+                source={require("../../assets/avatar.jpg")}
+                style={styles.avatar}
+              />
+            )}
+          </View>
+          <View style={styles.nameContainer}>
+            {isEditName ? (
+              <>
+                <TextInput
+                  style={styles.input}
+                  value={inforInput && inforInput.name}
+                  onChangeText={(text) => {
+                    setInforInput({
+                      ...inforInput,
+                      name: text,
                     });
                   }}
                 />
-              </View>
-              <View style={styles.avatarContainer}>
-                {acc && modalProfile.acc.avatar ? (
-                  <Image
-                    source={{ uri: modalProfile.acc.avatar }}
-                    style={styles.avatar}
-                  />
-                ) : (
-                  <Image
-                    source={require("../../assets/avatar.jpg")}
-                    style={styles.avatar}
-                  />
-                )}
-              </View>
-              <View style={styles.nameContainer}>
-                {isEditName ? (
-                  <>
-                    <TextInput
-                      style={styles.input}
-                      value={nameInput}
-                      onChangeText={setNameInput}
-                    />
-                    <View style={styles.btnSaveNameContainer}>
-                      <Text style={styles.btnSaveName}>Lưu</Text>
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    <Text style={styles.name}>
-                      {acc && modalProfile.acc.name}
-                    </Text>
-                    {acc && modalProfile.acc._id == user._id && (
-                      <Text onPress={() => setIsEditName(true)}>
-                        <FontAwesome5
-                          name="pencil-alt"
-                          size={20}
-                          color="black"
-                        />
-                      </Text>
-                    )}
-                  </>
-                )}
-              </View>
-              {acc && acc._id != user._id && (
-                <View style={styles.btns}>{renderBtns()}</View>
-              )}
-              <View style={styles.body}>
-                <View style={styles.bodyItem}>
-                  <Text style={styles.bodyTitle}>Thông tin cá nhân</Text>
-                </View>
-                <View style={styles.bodyItem}>
-                  <Text style={styles.bodyLabel}>Giới tính</Text>
-                  <Text style={styles.bodyValue}>
-                    {acc && modalProfile.acc.gender ? "Nam" : "Nữ"}
+                <View style={styles.btnSaveNameContainer}>
+                  <Text style={styles.btnSaveName} onPress={onSaveChange}>
+                    Lưu
                   </Text>
                 </View>
-                <View style={styles.bodyItem}>
-                  <Text style={styles.bodyLabel}>Ngày sinh</Text>
-                  <Text style={styles.bodyValue}>
-                    {acc && converDate(acc.dateOfBirth).toStringDMY}
+              </>
+            ) : (
+              <>
+                <Text style={styles.name}>{acc && modalProfile.acc.name}</Text>
+                {acc && modalProfile.acc._id == user._id && (
+                  <Text onPress={() => setIsEditName(true)}>
+                    <FontAwesome5 name="pencil-alt" size={20} color="black" />
                   </Text>
-                </View>
-              </View>
-            </>
+                )}
+              </>
+            )}
+          </View>
+          {acc && acc._id != user._id && (
+            <View style={styles.btns}>{renderBtns()}</View>
           )}
+          <View style={styles.body}>
+            <View style={styles.bodyItem}>
+              <Text style={styles.bodyTitle}>Thông tin cá nhân</Text>
+            </View>
+            <View style={styles.bodyItem}>
+              <Text style={styles.bodyLabel}>Giới tính</Text>
+              <Text style={styles.bodyValue}>
+                {acc && modalProfile.acc.gender ? "Nam" : "Nữ"}
+              </Text>
+            </View>
+            <View style={styles.bodyItem}>
+              <Text style={styles.bodyLabel}>Ngày sinh</Text>
+              <Text style={styles.bodyValue}>
+                {acc && converDate(acc.dateOfBirth).toStringDMY}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
     </Modal>

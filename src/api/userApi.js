@@ -10,6 +10,24 @@ class UserApi {
     let url = `/user/` + _id;
     return axiosClient.get(url);
   }
+
+  updateInfor(infor) {
+    let url = "/me/profile";
+    return axiosClient.put(url, infor);
+  }
+
+  getMyInfor() {
+    let url = "me/profile";
+    return axiosClient.get(url);
+  }
+
+  updatePassword(userId, newPass) {
+    let url = "/user/" + userId;
+    console.log(url);
+    return axiosClient.put(url, {
+      password: newPass,
+    });
+  }
 }
 
 const userApi = new UserApi();

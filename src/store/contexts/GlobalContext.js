@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import store from "..";
 import authApi from "../../api/authApi";
+import userApi from "../../api/userApi";
 
 const GlobalContext = createContext();
 
@@ -67,6 +68,36 @@ function GlobalContextProvider({ children }) {
     });
   }
 
+  // change infor
+  async function updateInfor(infor) {
+    try {
+      const res = await userApi.updateInfor(infor);
+      if (res.isSuccess) {
+        console.log("update ok");
+        if (
+          modalProfile &&
+          modalProfile.acc &&
+          modalProfile.acc._id == state.user._id
+        ) {
+          const _user = await userApi.getMyInfor();
+          setState({
+            ...state,
+            user: _user,
+          });
+
+          setModalProfile({
+            ...modalProfile,
+            acc: _user,
+          });
+        }
+
+        return true;
+      }
+    } catch (error) {
+      console.log("update error", error);
+    }
+  }
+
   const GlobalContextData = {
     isLoading: state.isLoading,
     isLogout: state.isLogout,
@@ -76,6 +107,7 @@ function GlobalContextProvider({ children }) {
     onLoginSuccess,
     modalProfile,
     setModalProfile,
+    updateInfor,
   };
 
   return (

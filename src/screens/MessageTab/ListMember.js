@@ -17,7 +17,7 @@ import AddGroupItem from "../FriendsTab/components/AddGroupItem";
 import LoadingModal from "../../components/LoadingModal";
 const ListMember = (props) => {
   const { navigation, route } = props;
-  const { getMembers, addMembers } = useConversationContext();
+  const { getMembers, addMembers, convers } = useConversationContext();
   const { friends, findUserByPhoneNumber } = useFriendContext();
   const [members, setMembers] = useState(getMembers(route.params.converId));
   const [selectedId, setSelectedId] = useState(null);
@@ -29,6 +29,12 @@ const ListMember = (props) => {
   const [isFinding, setIsFinding] = useState(true);
   const [findErrText, setFindErrText] = useState("Không tìm thấy");
   const [isAdding, setisAdding] = useState(false);
+
+  // useEffect
+  useEffect(() => {
+    setMembers(getMembers(route.params.converId));
+    return () => {};
+  }, [convers]);
 
   function renderItem({ item }) {
     return (
@@ -100,12 +106,12 @@ const ListMember = (props) => {
     setisAdding(false);
     setIsShowAddMember(false);
 
-    if (_members) {
-      // setMembers(_members);
-      navigation.navigate("ChatRoom", {
-        converId: route.params.converId,
-      });
-    }
+    // if (_members) {
+    //   // setMembers(_members);
+    //   navigation.navigate("ChatRoom", {
+    //     converId: route.params.converId,
+    //   });
+    // }
   }
 
   useEffect(() => {

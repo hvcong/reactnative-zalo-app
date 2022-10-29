@@ -43,7 +43,7 @@ const TabBar = () => {
         name="MeProfile"
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons name="person" size={24} color={color} />
+            <AntDesign name="setting" size={24} color={color} />
           ),
         }}
         component={MyProfileTab}

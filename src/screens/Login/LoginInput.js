@@ -80,12 +80,13 @@ export default function LoginInput({ navigation }) {
           <Text style={styles.label}>Mật khẩu</Text>
           <PasswordInput value={pwdInput} setValue={setPwdInput} />
         </View>
-        <Text
-          style={styles.textGetPwd}
-          onPress={() => console.warn("Get back password press")}
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("ForgotPasswordPhoneInput");
+          }}
         >
-          Lấy lại mật khẩu
-        </Text>
+          <Text style={styles.textGetPwd}>Lấy lại mật khẩu</Text>
+        </TouchableOpacity>
       </View>
       <Submit isDisSubmit={isDisSubmit} onSubmit={onSubmit} />
       <LoadingModal visible={isLoading} text={"Đăng đăng nhập..."} />

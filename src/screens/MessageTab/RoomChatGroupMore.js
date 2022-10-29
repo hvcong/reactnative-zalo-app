@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -20,16 +20,24 @@ import { useConversationContext } from "../../store/contexts/ConversationContext
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const RoomChatGroupMore = (props) => {
+  const { user } = useGlobalContext();
+  const { leaveGroup, renameConver, updateAvatar, getConverById, convers } =
+    useConversationContext();
   const { route, navigation } = props;
-  const { conver } = route.params;
+  const { converId } = route.params;
+  const [conver, setConver] = useState(getConverById(converId));
   const [isNotify, setisNotify] = useState(false);
   const [isEditName, setisEditName] = useState(false);
   const [nameInput, setnameInput] = useState(conver.name);
   const [image, setImage] = useState(null);
   const [name, setName] = useState(conver.name);
-  const { user } = useGlobalContext();
 
-  const { leaveGroup, renameConver, updateAvatar } = useConversationContext();
+  // useEffect
+  useEffect(() => {
+    console.log("convers change");
+    setConver(getConverById(converId));
+    return () => {};
+  }, [convers]);
 
   async function onPickImage() {
     console.log("pick");
@@ -61,7 +69,7 @@ const RoomChatGroupMore = (props) => {
   }
 
   function onMemberList() {
-    navigation.navigate("ListMember", { converId: conver._id });
+    navigation.navigate("ListMember", { converId });
   }
 
   function renderAvatar() {

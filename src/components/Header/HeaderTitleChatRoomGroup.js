@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, Pressable } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 
 import { EvilIcons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
@@ -7,7 +13,9 @@ const HeaderTitleChatRoomGroup = (props) => {
   const { numOfMember, navigation, conver } = props;
 
   function onNamePress() {
-    console.warn("press name");
+    navigation.navigate("RoomChatGroupMore", {
+      converId: conver._id,
+    });
   }
 
   function onSearchPress() {
@@ -15,34 +23,33 @@ const HeaderTitleChatRoomGroup = (props) => {
   }
 
   function onAddMemberPress() {
-    console.warn("onAddMemberPress");
+    navigation.navigate("ListMember", {
+      converId: conver._id,
+    });
   }
 
   function onListPress() {
-    navigation.navigate("RoomChatGroupMore", { conver });
+    navigation.navigate("RoomChatGroupMore", { converId: conver._id });
   }
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.itemGroup} onPress={onNamePress}>
+      <TouchableOpacity style={styles.itemGroup} onPress={onNamePress}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
           {conver.name}
         </Text>
         <Text style={styles.quantity}>{numOfMember} thành viên</Text>
-      </Pressable>
-      <Pressable style={styles.itemIcon} onPress={onAddMemberPress}>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemIcon} onPress={onAddMemberPress}>
         <MaterialCommunityIcons
           name="account-multiple-plus-outline"
           size={26}
           color="white"
         />
-      </Pressable>
-      <Pressable style={styles.itemIcon} onPress={onSearchPress}>
-        <EvilIcons name="search" size={26} color="white" />
-      </Pressable>
-      <Pressable style={styles.itemIcon} onPress={onListPress}>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemIcon} onPress={onListPress}>
         <Feather name="list" size={26} color="white" />
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 };

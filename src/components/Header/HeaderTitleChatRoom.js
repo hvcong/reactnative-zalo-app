@@ -4,7 +4,8 @@ import HeaderTitleChatRoomGroup from "./HeaderTitleChatRoomGroup";
 import HeaderTitlteChatRoomSimple from "./HeaderTitlteChatRoomSimple";
 
 const HeaderTitleChatRoom = (props) => {
-  const { typeOfConversation } = props;
+  const { typeOfConversation, conver } = props;
+
   return (
     <>
       {typeOfConversation && typeOfConversation == "group" ? (
