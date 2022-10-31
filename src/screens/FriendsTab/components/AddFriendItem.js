@@ -13,18 +13,18 @@ import { useConversationContext } from "../../../store/contexts/ConversationCont
 import { useGlobalContext } from "../../../store/contexts/GlobalContext";
 import userApi from "../../../api/userApi";
 const AddFriendItem = (props) => {
-  const { getConverById } = useConversationContext();
+  const { getConverById, leaveGroup, deleteMember, addManager, deleteManager } =
+    useConversationContext();
   const { user, modalProfile, setModalProfile } = useGlobalContext();
-  const { avatar, name, _id, converId, selectedId, setSelectedId } = props;
-
-  const conver = converId && getConverById(converId);
-
   const {
     checkIsMyFriend,
     sendRequestFriend,
     checkIsRequested,
     deleteRequestFriend,
   } = useFriendContext();
+  const { avatar, name, _id, converId, selectedId, setSelectedId } = props;
+
+  const conver = converId && getConverById(converId);
 
   async function onRequestFriend() {
     console.log("send");
@@ -75,7 +75,7 @@ const AddFriendItem = (props) => {
         return "Người tạo nhóm";
       }
       if (conver.managerIds.includes(_id)) {
-        return "Phó nhóm";
+        return "Trưởng nhóm";
       }
     }
   }
@@ -89,6 +89,69 @@ const AddFriendItem = (props) => {
         acc,
       });
     } catch (error) {}
+  }
+
+  async function onLeaveGroup() {
+    setSelectedId(null);
+    const is = await leaveGroup(conver._id);
+  }
+
+  async function onKickOutGroup() {
+    setSelectedId(null);
+    const is = await deleteMember(conver._id, _id);
+  }
+  async function onDeleteManager() {
+    setSelectedId(null);
+    const is = await deleteManager(conver._id, _id);
+  }
+  async function onAddManager() {
+    setSelectedId(null);
+    const is = await addManager(conver._id, _id);
+  }
+
+  function renderOptionsWhenClickThreeDots() {
+    if (selectedId && selectedId == _id) {
+      return (
+        <View style={styles.options}>
+          {user._id == _id ? (
+            <>
+              {user._id != conver.leaderId && (
+                <TouchableOpacity
+                  style={styles.textOption}
+                  onPress={onLeaveGroup}
+                >
+                  <Text>Rời nhóm</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.textOption}
+                onPress={onKickOutGroup}
+              >
+                <Text>Đuổi khỏi nhóm</Text>
+              </TouchableOpacity>
+              {conver.managerIds.includes(_id) ? (
+                <TouchableOpacity
+                  style={styles.textOption}
+                  onPress={onDeleteManager}
+                >
+                  <Text>Xóa trưởng nhóm</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.textOption}
+                  onPress={onAddManager}
+                >
+                  <Text>Làm trưởng nhóm</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )}
+        </View>
+      );
+    }
   }
 
   return (
@@ -115,33 +178,22 @@ const AddFriendItem = (props) => {
       <View style={styles.right}>
         {renderRight()}
         {/* render when show member of conversation */}
-        {conver &&
+        {((conver &&
           (user._id == conver.leaderId ||
-            conver.managerIds.includes(user._id)) && (
-            <>
-              <Entypo
-                style={styles.dots}
-                name="dots-three-horizontal"
-                size={24}
-                color="black"
-                onPress={() => setSelectedId(_id)}
-              />
-              {/* View when click three dots */}
-              {selectedId && selectedId == _id && (
-                <View style={styles.options}>
-                  {user._id == _id ? (
-                    <TouchableOpacity style={styles.textOption}>
-                      <Text>Rời nhóm</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity style={styles.textOption}>
-                      <Text>Đuổi khỏi nhóm</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              )}
-            </>
-          )}
+            conver.managerIds.includes(user._id))) ||
+          user._id == _id) && (
+          <>
+            <Entypo
+              style={styles.dots}
+              name="dots-three-horizontal"
+              size={24}
+              color="black"
+              onPress={() => setSelectedId(_id)}
+            />
+            {/* View when click three dots */}
+            {renderOptionsWhenClickThreeDots()}
+          </>
+        )}
       </View>
     </Pressable>
   );

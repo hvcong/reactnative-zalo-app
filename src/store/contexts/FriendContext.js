@@ -12,9 +12,7 @@ const FriendContextProvider = ({ children }) => {
   const [friends, setfriends] = useState([]);
   const [requestToMe, setRequestToMe] = useState([]);
   const [requestFromMe, setRequestFromMe] = useState([]);
-
   const { user } = useGlobalContext();
-  const { socket } = useConversationContext();
 
   useEffect(() => {
     if (user) {
@@ -52,19 +50,6 @@ const FriendContextProvider = ({ children }) => {
       console.log("loadAllRequestToMe Err:", err);
     }
   }
-
-  useEffect(() => {
-    // listent socket on create-simple-conversation
-    if (!socket) return;
-    console.log("id", user._id);
-
-    console.log("listen Accept friend");
-    socket.on("accept-friend", (data) => {
-      console.log("socket: from server accept-friend", data);
-    });
-
-    return () => {};
-  }, [socket]);
 
   async function loadFriends() {
     const res = await friendApi.getAllFriends();
@@ -106,6 +91,8 @@ const FriendContextProvider = ({ children }) => {
 
       if (res.isSuccess) {
         loadAllRequestFromMe();
+        loadFriends();
+        loadAllRequestToMe();
         return true;
       } else {
         return false;
@@ -119,7 +106,6 @@ const FriendContextProvider = ({ children }) => {
   async function deleteRequestFriend(_id) {
     try {
       const res = await friendApi.deleteRequest(_id);
-      console.log("aaa", res);
       if (res.isSuccess) {
         loadAllRequestFromMe();
         return true;
@@ -188,6 +174,9 @@ const FriendContextProvider = ({ children }) => {
     findUserByPhoneNumber,
     acceptFriend,
     checkIsRequestedToMe,
+    loadFriends,
+    loadAllRequestToMe,
+    loadAllRequestFromMe,
   };
   return (
     <FriendContext.Provider value={FriendContextData}>

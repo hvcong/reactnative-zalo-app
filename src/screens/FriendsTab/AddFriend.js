@@ -10,7 +10,7 @@ const AddFriend = () => {
   const [userFound, setuserFound] = useState(null);
   const [errText, setErrText] = useState("");
   const [isDisSubmit, setIsDisSubmit] = useState(false);
-  const { findUserByPhoneNumber } = useFriendContext();
+  const { findUserByPhoneNumber, friends } = useFriendContext();
 
   useEffect(() => {
     if (phoneInput.length == 10) {
@@ -34,6 +34,11 @@ const AddFriend = () => {
       setErrText("Số điện thoại này có vẻ chưa đăng kí tài khoản nào");
     }
   }
+
+  useEffect(() => {
+    onFindSubmit();
+    return () => {};
+  }, [friends]);
 
   return (
     <View style={styles.container}>

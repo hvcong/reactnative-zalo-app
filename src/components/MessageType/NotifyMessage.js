@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import userApi from "../../api/userApi";
 import { useConversationContext } from "../../store/contexts/ConversationContext";
+import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const NotifyMessage = ({ item }) => {
   const { getMember } = useConversationContext();
+  const { modalProfile, setModalProfile } = useGlobalContext();
   const [sender, setSender] = useState({});
 
   useEffect(() => {
@@ -29,7 +31,10 @@ const NotifyMessage = ({ item }) => {
             <Text
               style={styles.name}
               onPress={() => {
-                console.warn("go to profile");
+                setModalProfile({
+                  isShow: true,
+                  acc: sender,
+                });
               }}
             >
               {sender && sender.name}

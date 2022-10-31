@@ -18,10 +18,6 @@ const HeaderTitleChatRoomGroup = (props) => {
     });
   }
 
-  function onSearchPress() {
-    console.warn("onSearchPress");
-  }
-
   function onAddMemberPress() {
     navigation.navigate("ListMember", {
       converId: conver._id,

@@ -26,9 +26,9 @@ const MessageInput = ({ converId }) => {
 
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 4],
+      aspect: [4, 3],
       quality: 1,
     });
     if (!result.cancelled) {
@@ -46,7 +46,6 @@ const MessageInput = ({ converId }) => {
 
   function onSendMessage(data) {
     Keyboard.dismiss();
-    console.log({ ...data, conversationId: converId });
     sendMessage({ ...data, conversationId: converId });
   }
 
@@ -90,7 +89,7 @@ const MessageInput = ({ converId }) => {
         onPress={() => {
           setTextInput("");
           //   inputRef.current.blur();
-          onSendMessage({ type: "TEXT", message: textInput });
+          onSendMessage({ type: "TEXT", content: textInput });
         }}
       />
 

@@ -7,6 +7,7 @@ import {
   Pressable,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import {
   Ionicons,
@@ -21,8 +22,14 @@ import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const RoomChatGroupMore = (props) => {
   const { user } = useGlobalContext();
-  const { leaveGroup, renameConver, updateAvatar, getConverById, convers } =
-    useConversationContext();
+  const {
+    leaveGroup,
+    renameConver,
+    updateAvatar,
+    getConverById,
+    convers,
+    deleteHistoryMessages,
+  } = useConversationContext();
   const { route, navigation } = props;
   const { converId } = route.params;
   const [conver, setConver] = useState(getConverById(converId));
@@ -89,6 +96,9 @@ const RoomChatGroupMore = (props) => {
     );
   }
 
+  async function onDeleteHistoryMessages() {
+    let is = await deleteHistoryMessages(converId);
+  }
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
@@ -131,12 +141,6 @@ const RoomChatGroupMore = (props) => {
         )}
       </View>
       <View style={styles.sections}>
-        <Pressable style={styles.section}>
-          <View style={styles.sectionIcon}>
-            <Ionicons name="image-outline" size={20} color="black" />
-          </View>
-          <Text style={styles.label}>Đổi hình nền</Text>
-        </Pressable>
         <Pressable style={styles.section} onPress={onMemberList}>
           <View style={styles.sectionIcon}>
             <Ionicons name="ios-person-add-outline" size={20} color="black" />
@@ -183,10 +187,12 @@ const RoomChatGroupMore = (props) => {
 
         <TouchableOpacity style={styles.item}>
           <AntDesign name="pushpino" size={24} color="black" />
-          <Text style={styles.text}>Tin nhắn đã gim</Text>
+          <Text style={styles.text}>
+            Tin nhắn đã gim ({conver && conver.pinMessageIds.length})
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.item}>
+        <TouchableOpacity style={styles.item} onPress={onDeleteHistoryMessages}>
           <Feather name="trash-2" size={24} color="red" />
           <Text style={[styles.text, styles.removeText]}>
             Xóa lịch sử trò chuyện

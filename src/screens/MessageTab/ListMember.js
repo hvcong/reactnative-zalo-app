@@ -105,13 +105,6 @@ const ListMember = (props) => {
     let _members = await addMembers(route.params.converId, listMembers);
     setisAdding(false);
     setIsShowAddMember(false);
-
-    // if (_members) {
-    //   // setMembers(_members);
-    //   navigation.navigate("ChatRoom", {
-    //     converId: route.params.converId,
-    //   });
-    // }
   }
 
   useEffect(() => {

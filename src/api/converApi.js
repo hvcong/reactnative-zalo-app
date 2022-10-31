@@ -33,9 +33,32 @@ class ConverApi {
 
   // rời nhóm
   leaveGroup(converId) {
-    let url = `/conversation/${converId}/member/leave`;
+    let url = `conversation/${converId}/member/leave`;
     console.log(url);
     return axiosClient.delete(url);
+  }
+
+  // đuổi khỏi nhóm
+  deleteMember(converId, memberId) {
+    let url = `/conversation/${converId}/members/${memberId}`;
+    return axiosClient.delete(url);
+  }
+
+  // cho làm phó nhóm
+  addManager(converId, memberId) {
+    let url = `conversation/${converId}/managers`;
+    return axiosClient.post(url, {
+      managerId: [memberId],
+    });
+  }
+
+  // không cho làm phó nhóm nữa
+  deleteManager(converId, memberId) {
+    let url = `conversation/${converId}/managers`;
+    console.log(converId, memberId);
+    return axiosClient.delete(url, {
+      managerId: [memberId],
+    });
   }
 
   // đổi tên nhóm
@@ -56,13 +79,21 @@ class ConverApi {
 
   // send image
   sendImageMessage(converId, pickerResult) {
-    let url = "/message/file/IMAGE/" + converId;
     let localUri = pickerResult.uri;
     let filename = localUri.split("/").pop();
 
     let match = /\.(\w+)$/.exec(filename);
-    let type = match ? `image/${match[1]}` : `image`;
-
+    let type = "";
+    let url = "";
+    console.log(match);
+    if (match && match[1] == "mp4") {
+      type = "video/mp4";
+      url = "/message/file/FILE/" + converId;
+    } else {
+      type = match ? `image/${match[1]}` : `image`;
+      url = "/message/file/IMAGE/" + converId;
+    }
+    console.log(type);
     let formData = new FormData();
     formData.append("file", { uri: localUri, name: filename, type });
 
@@ -83,6 +114,28 @@ class ConverApi {
   getAllMembers(converId) {
     let url = `conversation/${converId}/members`;
     return axiosClient.get(url);
+  }
+
+  // get lastView of a conver
+  getLastView(converId) {
+    let url = `conversation/${converId}/last-view`;
+    return axiosClient.get(url);
+  }
+
+  // delete history messages at my side
+  deleteHistoryMessages(converId) {
+    let url = `conversation/${converId}/messages`;
+    return axiosClient.delete(url);
+  }
+
+  // add text message
+  addTextMessage(converId, content) {
+    let url = `message/text`;
+    return axiosClient.post(url, {
+      conversationId: converId,
+      content: content,
+      type: "TEXT",
+    });
   }
 }
 

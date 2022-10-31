@@ -7,6 +7,7 @@ import {
   Image,
   Pressable,
   FlatList,
+  Alert,
 } from "react-native";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import AddGroupItem from "./components/AddGroupItem";
@@ -111,8 +112,11 @@ const AddGroupChat = (props) => {
       name: nameInput,
       userIds: [...listMembers],
     };
+    if (listMembers.length < 2) {
+      Alert.alert("Tạo nhóm cần ít nhất 3 thành viên");
+      return;
+    }
     const res = await converApi.createGroupChat(body);
-    console.log(res);
     if (res.isSuccess) {
       console.log("create group chat ok");
       addNewConver(res);

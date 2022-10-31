@@ -7,6 +7,8 @@ import ConversationContextProvider from "./src/store/contexts/ConversationContex
 import { SafeAreaView } from "react-native-safe-area-context";
 import FriendContextProvider from "./src/store/contexts/FriendContext.js";
 import ProfileModal from "./src/components/ProfileModal.js";
+import HandleFriendIo from "./src/socketIo/HandleFriendIo.js";
+import HandleConverIo from "./src/socketIo/HandleConverIo.js";
 export default function App() {
   LogBox.ignoreLogs(["EventEmitter.removeListener"]);
 
@@ -19,6 +21,8 @@ export default function App() {
               <FriendContextProvider>
                 <ProfileModal />
                 <MainStack />
+                <HandleFriendIo />
+                <HandleConverIo />
               </FriendContextProvider>
             </ConversationContextProvider>
           </GlobalContextProvider>
