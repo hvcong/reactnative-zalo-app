@@ -31,7 +31,6 @@ const ChatRoom = (props) => {
 
   useEffect(() => {
     let _conver = getConverById(converId);
-    console.log("conver change");
     if (_conver) {
       let _mess = _conver.messages;
       let messages = [..._mess];
@@ -50,7 +49,7 @@ const ChatRoom = (props) => {
         <HeaderTitleChatRoom
           {...props}
           typeOfConversation={conver && conver.type ? "group" : "simple"}
-          numOfMember={getMembers(converId).length}
+          numOfMember={getMembers(converId) && getMembers(converId).length}
           converName={name}
           navigation={navigation}
           conver={conver}
@@ -112,16 +111,16 @@ const ChatRoom = (props) => {
 
   function renderItem({ index, item }) {
     const { senderId, deletedWithUserIds } = item;
-    if (isDeletedWithMe(deletedWithUserIds, senderId)) {
+    if (isDeletedWithMe(deletedWithUserIds, senderId._id)) {
       return null;
     }
     return (
       <Message
-        isMyMessage={user._id == item.senderId ? true : false}
+        isMyMessage={user._id == senderId._id ? true : false}
         item={item}
         isRenderAvatarIcon={isRenderAvatarIcon}
         index={index}
-        sender={getMember(converId, item.senderId)}
+        sender={senderId}
         idSelected={idSelected}
         setIdSelected={setIdSelected}
       />
@@ -132,7 +131,7 @@ const ChatRoom = (props) => {
     if (index == 0) {
       return true;
     }
-    if (conver.messages[index - 1].senderId === senderId) return false;
+    if (conver.messages[index - 1].senderId._id === senderId) return false;
     return true;
   }
 

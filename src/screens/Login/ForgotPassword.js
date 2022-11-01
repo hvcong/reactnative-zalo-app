@@ -5,6 +5,7 @@ import PasswordInput from "../../components/Input/PasswordInput";
 import PhoneInput from "../../components/Input/PhoneInput";
 import LoadingModal from "../../components/LoadingModal";
 import Submit from "../../components/Login/Submit";
+import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const ForgotPassword = ({ navigation, route }) => {
   const [pwdInput, setPwdInput] = useState("111111");
@@ -14,21 +15,24 @@ const ForgotPassword = ({ navigation, route }) => {
   const [isDisSubmit, setIsDisSubmit] = useState(true);
   const [pwdTextWar, setPwdTextWar] = useState("");
   const [isWrongPwd, setisWrongPwd] = useState(false);
+  const { login } = useGlobalContext();
 
   const [confPwdTextWar, setConfPwdTextWar] = useState("");
   const [isWrongConfPwd, setisWrongConfPwd] = useState(false);
 
   async function onSubmit() {
     if (!isDisSubmit) {
-      console.log("submit");
       if (validate()) {
         try {
           const user = await userApi.findUserByPhoneNumber(
             route.params.phoneInput
           );
           if (user.isSuccess) {
-            // chờ api đổi mật khẩu
-            // const res = await userApi.updatePassword(user._id, pwdInput);
+            const res = await userApi.updatePassword(user._id, pwdInput);
+            if (res.isSuccess) {
+              console.log("update pass ok");
+              login(route.params.phoneInput, pwdInput);
+            }
           }
         } catch (error) {}
       }

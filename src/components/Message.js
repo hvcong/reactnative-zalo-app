@@ -33,6 +33,7 @@ const Message = (props) => {
     setIdSelected,
   } = props;
   let { type, senderId, isDeleted } = item;
+
   const [isShowModal, setisShowModal] = useState(false);
   const [isOnReact, setisOnReact] = useState(false);
 
@@ -66,7 +67,7 @@ const Message = (props) => {
   function isRenderAvatar() {
     if (type === "NOTIFY" || type === "VOTE") return false;
     if (isMyMessage) return false;
-    return isRenderAvatarIcon(senderId, index);
+    return isRenderAvatarIcon(senderId._id, index);
   }
 
   function onReaction() {

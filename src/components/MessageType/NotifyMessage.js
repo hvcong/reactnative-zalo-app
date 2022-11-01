@@ -5,23 +5,8 @@ import { useConversationContext } from "../../store/contexts/ConversationContext
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const NotifyMessage = ({ item }) => {
-  const { getMember } = useConversationContext();
   const { modalProfile, setModalProfile } = useGlobalContext();
-  const [sender, setSender] = useState({});
-
-  useEffect(() => {
-    loadSender();
-
-    async function loadSender() {
-      try {
-        const res = await userApi.findUserById(item.senderId);
-        if (res.isSuccess) {
-          setSender(res);
-        }
-      } catch (error) {}
-    }
-    return () => {};
-  }, [item]);
+  const [sender, setSender] = useState(item.senderId);
 
   function renderText() {
     if (item.content == "Đã thêm vào nhóm") {

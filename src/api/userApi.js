@@ -22,8 +22,7 @@ class UserApi {
   }
 
   updatePassword(userId, newPass) {
-    let url = "/user/" + userId;
-    console.log(url);
+    let url = "user/password/" + userId;
     return axiosClient.put(url, {
       password: newPass,
     });

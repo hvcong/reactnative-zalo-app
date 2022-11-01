@@ -5,7 +5,12 @@ class MessApi {
     let url = "conversation/";
     return axiosClient.get(url);
   }
+
+  getMessageById(id) {
+    let url = `/message/${id}`;
+    return axiosClient.get(url);
+  }
 }
 
-const MessApi = new MessApi();
-export default MessApi;
+const messApi = new MessApi();
+export default messApi;

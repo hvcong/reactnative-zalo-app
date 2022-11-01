@@ -27,7 +27,7 @@ class ConverApi {
   }
 
   getAllMessageByConverId(_id) {
-    let url = "/message/by_conversation/" + _id;
+    let url = "message/by_conversation/" + _id;
     return axiosClient.get(url);
   }
 
@@ -40,13 +40,14 @@ class ConverApi {
 
   // đuổi khỏi nhóm
   deleteMember(converId, memberId) {
-    let url = `/conversation/${converId}/members/${memberId}`;
+    let url = `conversation/${converId}/members/${memberId}`;
     return axiosClient.delete(url);
   }
 
   // cho làm phó nhóm
   addManager(converId, memberId) {
     let url = `conversation/${converId}/managers`;
+    console.log(converId, memberId);
     return axiosClient.post(url, {
       managerId: [memberId],
     });
@@ -108,12 +109,6 @@ class ConverApi {
     return axiosClient.post(url, {
       userIds: [...userIds],
     });
-  }
-
-  // load All members of conver
-  getAllMembers(converId) {
-    let url = `conversation/${converId}/members`;
-    return axiosClient.get(url);
   }
 
   // get lastView of a conver

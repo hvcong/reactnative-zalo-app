@@ -16,6 +16,7 @@ import { useGlobalContext } from "../../../store/contexts/GlobalContext";
 
 const FriendRequestReceiveItem = (props) => {
   const { senderId, updatedAt } = props;
+  console.log(senderId);
 
   const { acceptFriend } = useFriendContext();
   const { modalProfile, setModalProfile } = useGlobalContext();

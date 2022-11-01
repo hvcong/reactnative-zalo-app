@@ -5,8 +5,7 @@ import { useGlobalContext } from "../../store/contexts/GlobalContext";
 const ImageMessage = (props) => {
   const { item } = props;
   const { user } = useGlobalContext();
-  let isMyMessage = user._id == item.senderId;
-  console.log(isMyMessage);
+  let isMyMessage = user._id == item.senderId._id;
 
   return (
     <View style={styles.container}>

@@ -11,6 +11,7 @@ import converApi from "../../api/converApi";
 import startSocketIO from "../../socketIo";
 import handleConverIo from "../../socketIo/converIO";
 import { useGlobalContext } from "./GlobalContext";
+import memberApi from "../../api/memberApi";
 
 const ConversationContext = createContext();
 
@@ -19,7 +20,7 @@ const ConversationContextProvider = ({ children }) => {
   const [hasListens, sethasListens] = useState({});
   const { user } = useGlobalContext();
   const socketRef = useRef();
-  const [is, setIs] = useState(false);
+  const [lastView, setLastView] = useState([]);
 
   // io listen converId
   // useEffect(() => {
@@ -71,19 +72,17 @@ const ConversationContextProvider = ({ children }) => {
     } catch (error) {}
   }
 
-  function newMessage(data) {
-    let _convers = [...convers];
-    console.log("newMessage func");
-
-    // console.log(data);
-    _convers = _convers.map((conv) => {
-      if (conv._id == data.message.conversationId) {
-        conv.messages.push(data.message);
-        conv.lastMessageId = data.message;
+  async function loadAllLastView() {
+    try {
+      const res = await memberApi.getAllLastView();
+      console.log(res);
+      if (res.isSuccess) {
+        setLastView();
       }
-      return conv;
-    });
-    setconvers(_convers);
+      console.log("load all last view err", error);
+    } catch (error) {
+      console.log("load all last view err", error);
+    }
   }
 
   async function sendMessage(props) {
@@ -111,6 +110,7 @@ const ConversationContextProvider = ({ children }) => {
 
   // thêm mới message offline
   function addNewMessage(newMessage) {
+    console.log("new", newMessage);
     let _conv = getConverById(newMessage.conversationId);
     _conv.messages.push(newMessage);
     _conv.lastMessageId = { ...newMessage };
@@ -120,6 +120,7 @@ const ConversationContextProvider = ({ children }) => {
 
   // cập nhật thay đổi của 1  message offine
   function updateMessage(newMessage) {
+    console.log("new 2:", newMessage);
     let _conv = getConverById(newMessage.conversationId);
     let index = -1;
     for (let i = 0; i < _conv.messages.length; i++) {
@@ -153,6 +154,7 @@ const ConversationContextProvider = ({ children }) => {
     }
   }
 
+  // offline
   function getMember(converId, memberId) {
     const members = getMembers(converId);
     if (Array.isArray(members))
@@ -163,10 +165,12 @@ const ConversationContextProvider = ({ children }) => {
       }
   }
 
+  // offline
   function addNewConver(conver) {
     setconvers([conver, ...convers]);
   }
 
+  // get conver by id offline
   function getConverById(_id) {
     for (let i = 0; i < convers.length; i++) {
       if (convers[i]._id == _id) {
@@ -240,13 +244,13 @@ const ConversationContextProvider = ({ children }) => {
       console.log(res);
       if (res.isSuccess) {
         console.log("leave ok");
-        let _convers = [...convers];
+        // let _convers = [...convers];
 
-        let newArr = _convers.filter((conver) => {
-          return conver._id != converId;
-        });
+        // let newArr = _convers.filter((conver) => {
+        //   return conver._id != converId;
+        // });
 
-        setconvers(newArr);
+        // setconvers(newArr);
 
         return true;
       } else {
@@ -264,15 +268,6 @@ const ConversationContextProvider = ({ children }) => {
       const res = await converApi.rename(converId, newName);
       if (res.isSuccess) {
         console.log("rename ok");
-        let _convers = [...convers];
-        let newArr = _convers.map((cv) => {
-          if (cv._id == converId) {
-            cv.name = newName;
-          }
-          return cv;
-        });
-        setconvers(newArr);
-
         return true;
       } else {
         return false;
@@ -297,7 +292,6 @@ const ConversationContextProvider = ({ children }) => {
     try {
       const res = await converApi.updateAvatar(converId, formData);
       if (res.isSuccess) {
-        await loadAllConversation();
         console.log("update success");
         return true;
       }
@@ -312,10 +306,6 @@ const ConversationContextProvider = ({ children }) => {
       const res = await converApi.addMembers(converId, userIds);
       if (res.isSuccess) {
         console.log("add members ok");
-
-        await loadAllConversation();
-        // const members = await loadAllMemberOfConver(converId);
-        // return members;
         return true;
       }
     } catch (error) {
@@ -327,16 +317,12 @@ const ConversationContextProvider = ({ children }) => {
   // get all members of conver
   async function loadAllMemberOfConver(converId) {
     try {
-      const res = await converApi.getAllMembers(converId);
+      const res = await memberApi.getAllMembers(converId);
       if (res.isSuccess) {
-        let _convers = [...convers];
-        for (let i = 0; i < _convers.length; i++) {
-          if (_convers[i]._id == converId) {
-            _convers[i].members = res.data;
-          }
-        }
-        setconvers(_convers);
-        return res.data;
+        const _newConver = getConverById(converId);
+        _newConver.members = res.data;
+        updateConver(_newConver);
+        return true;
       }
     } catch (error) {
       console.log("get mmebers err", error);
@@ -462,6 +448,7 @@ const ConversationContextProvider = ({ children }) => {
 
   const ConversationContextData = {
     convers: convers,
+    setconvers,
     getMembers,
     getMember,
     sendMessage,
@@ -483,6 +470,8 @@ const ConversationContextProvider = ({ children }) => {
     loadAllConversation,
     addNewMessage,
     updateMessage,
+    updateConver,
+    loadAllMemberOfConver,
     socket: socketRef.current,
   };
   return (

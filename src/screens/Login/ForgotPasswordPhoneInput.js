@@ -20,12 +20,9 @@ const ForgotPasswordPhoneInput = ({ navigation, route }) => {
 
       setIsLoading(false);
       if (res.isSuccess) {
-        // navigation.navigate("RegisterVerify", {
-        //   phoneInput,
-        // });
-
-        navigation.navigate("ForgotPassword", {
+        navigation.navigate("RegisterVerify", {
           phoneInput,
+          nextScreen: "ForgotPassword",
         });
       } else {
         setErrText("Số điện thoại chưa có tài khoản");

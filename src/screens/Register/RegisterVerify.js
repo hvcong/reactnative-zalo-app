@@ -90,7 +90,7 @@ const RegisterVerify = ({ navigation, route }) => {
       const credential = PhoneAuthProvider.credential(verificationId, otpInput);
       await signInWithCredential(auth, credential);
       setIsLoading(false);
-      navigation.navigate("RegisterInput", {
+      navigation.navigate(route.params.nextScreen, {
         phoneInput: route.params.phoneInput,
       });
     } catch (error) {

@@ -22,6 +22,7 @@ const RegisterPhoneInput = ({ navigation, route }) => {
       if (!res.isSuccess) {
         navigation.navigate("RegisterVerify", {
           phoneInput,
+          nextScreen: "RegisterInput",
         });
       } else {
         setErrText("Số điện thoại đã có tài khoản");

@@ -20,6 +20,7 @@ function GlobalContextProvider({ children }) {
 
   useEffect(() => {
     onLoadUser();
+
     return () => {};
   }, []);
 
@@ -98,6 +99,21 @@ function GlobalContextProvider({ children }) {
     }
   }
 
+  // login
+  async function login(phoneNumber, password) {
+    try {
+      const res = await authApi.login(phoneNumber, password);
+
+      if (res.isSuccess) {
+        console.log("login ok");
+        onLoginSuccess(res);
+      }
+      console.log("login faild");
+    } catch (error) {
+      console.log("login err", error);
+    }
+  }
+
   const GlobalContextData = {
     isLoading: state.isLoading,
     isLogout: state.isLogout,
@@ -108,6 +124,7 @@ function GlobalContextProvider({ children }) {
     modalProfile,
     setModalProfile,
     updateInfor,
+    login,
   };
 
   return (
