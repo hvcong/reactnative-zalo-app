@@ -19,38 +19,49 @@ const HandleFriendIo = () => {
   }, [user, socket]);
 
   function handle(socket) {
-    console.log("io friend --- ", user.name);
+    // gửi yêu cầu kết bạn
     socket.on("send-friend-invite", (data) => {
       loadAllRequestToMe();
       loadAllRequestFromMe();
     });
 
-    socket.on("deleted-invite-was-send", (data) => {
-      console.log("deleted-invite-was-send", user.name, data);
-      loadAllRequestToMe();
-      loadAllRequestFromMe();
-    });
-
+    // chấp nhận kết bạn
     socket.on("accept-friend", (data) => {
-      console.log("accept-friend", user.name, data);
+      console.log("emit accept-friend" + "--" + user.name);
       loadAllRequestToMe();
       loadFriends();
       loadAllRequestFromMe();
     });
 
-    socket.on("deleted-friend-invite", (data) => {
-      console.log("deleted-friend-invite", user.name, data);
+    // xóa bạn
+    socket.on("deleted-friend", (userId) => {
+      console.log("emit deleted-friend" + "--" + user.name);
       loadAllRequestToMe();
       loadFriends();
+      loadAllRequestFromMe();
+    });
+
+    // thu hồi request đã gửi
+    socket.on("deleted-invite-was-send", (data) => {
+      console.log("deleted-invite-was-send" + "---" + user.name);
+      loadAllRequestToMe();
+      loadAllRequestFromMe();
+    });
+
+    // từ chối kết bạn
+    socket.on("deleted-friend-invite", (data) => {
+      console.log("emit deleted-friend-invite" + "---" + user.name);
+      loadAllRequestToMe();
       loadAllRequestFromMe();
     });
   }
 
   function removeListentIo(socket) {
+    socket.removeListener("accept-friend");
+    socket.removeListener("deleted-friend");
     socket.removeListener("send-friend-invite");
     socket.removeListener("deleted-friend-invite");
     socket.removeListener("deleted-invite-was-send");
-    socket.removeListener("accept-friend");
   }
 
   return <View></View>;

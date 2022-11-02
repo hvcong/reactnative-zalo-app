@@ -63,7 +63,6 @@ const RoomChatGroupMore = (props) => {
   }
 
   async function onLeaveGroup() {
-    console.log("leave");
     const is = await leaveGroup(conver._id);
   }
 

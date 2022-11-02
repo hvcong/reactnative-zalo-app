@@ -22,7 +22,6 @@ const FriendRequestSendItem = (props) => {
   } = useFriendContext();
 
   async function onRequestFriend() {
-    console.log("send");
     const is = await sendRequestFriend(_id);
     if (is) {
       console.log("send request ok");
@@ -59,7 +58,6 @@ const FriendRequestSendItem = (props) => {
     );
   }
   async function onShowProfile() {
-    console.log("send");
     try {
       let acc = await userApi.findUserById(_id);
       setModalProfile({

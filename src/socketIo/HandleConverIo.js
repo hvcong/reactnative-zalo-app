@@ -16,6 +16,8 @@ const HandleConverIo = () => {
     updateConver,
     getConverById,
     loadAllMemberOfConver,
+    deleteConver,
+    addManagerOfline,
   } = useConversationContext();
   const { user } = useGlobalContext();
   const [hasListens, sethasListens] = useState({});
@@ -41,28 +43,34 @@ const HandleConverIo = () => {
   }, [user, socket]);
 
   function handle(socket) {
+    // khi tạo một conver
     socket.on("create-group-conversation", (data) => {
-      console.log("create-group-conversation" + user.name + data);
+      console.log("create-group-conversation --- " + user.name);
       loadAllConversation();
     });
 
+    // tạo một cuộc trò chuyện đôi
     socket.on("create-simple-conversation", (data) => {
-      console.log("create-simple-conversation", user.name);
+      console.log("create-simple-conversation --- ", user.name);
       loadAllConversation();
     });
 
+    // tin nhắn mới
     socket.on("new-message", async ({ message }) => {
       console.log("emit new-message");
       addNewMessage(message);
     });
 
+    // tin nhắn bị thu hồi với tất cả mọi người
     socket.on("delete-message", ({ message }) => {
       message.isDeleted = true;
       updateMessage(message);
     });
 
-    socket.on("add-managers", (data) => {
-      console.log("emit add-managers", data);
+    // thêm trưởng nhóm
+    socket.on("add-managers", ({ conversationId, managerIds }) => {
+      console.log("emit add-managers ---", user.name);
+      addManagerOfline(conversationId, managerIds);
     });
 
     // delete manager
@@ -70,19 +78,25 @@ const HandleConverIo = () => {
       console.log("emit delete-managers", data);
     });
 
-    socket.on("delete");
-
-    // when delete member
-    socket.on("deleted-group", (data) => {
-      console.log("emit deleted-group", data);
+    // khi bị xóa khỏi group - done
+    socket.on("deleted-group", (converId) => {
+      console.log("emit deleted-group ---", user.name);
+      deleteConver(converId);
     });
 
-    // when add member
+    // when add member - done
     socket.on("update-member", (converId) => {
+      console.log("emit update-member" + "---" + user.name);
       loadAllMemberOfConver(converId);
     });
 
-    // rename
+    // được ai đó add vào group - done
+    socket.on("added-group", (converId) => {
+      console.log("emit added-group ---" + user.name);
+      loadAllConversation();
+    });
+
+    // rename - done
     socket.on("rename-conversation", (converId, name, saveMessage) => {
       console.log("emit rename-conversation");
       let _convers = [...convers];
@@ -95,7 +109,7 @@ const HandleConverIo = () => {
       setconvers(newConvers);
     });
 
-    // cập nhật avatar
+    // cập nhật avatar - done
     socket.on(
       "update-avatar-conversation",
       (converId, avatarUrl, saveMessage) => {
@@ -120,6 +134,7 @@ const HandleConverIo = () => {
     socket.removeListener("deleted-group");
     socket.removeListener("rename-conversation");
     socket.removeListener("update-avatar-conversation");
+    socket.removeListener("added-group");
   }
 
   return <View></View>;

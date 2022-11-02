@@ -21,9 +21,10 @@ class FriendApi {
     return axiosClient.post(url);
   }
 
-  // refuseFriend(_id) {
-  //   let url =
-  // }
+  refuseFriend(userId) {
+    let url = `friends/invites/${userId}`;
+    return axiosClient.delete(url);
+  }
 
   deleteFriend(_id) {
     let url = "friends/" + _id;

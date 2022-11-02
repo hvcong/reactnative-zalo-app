@@ -142,6 +142,20 @@ const FriendContextProvider = ({ children }) => {
     }
   }
 
+  async function refuseFriend(userId) {
+    try {
+      const res = await friendApi.refuseFriend(userId);
+      if (res.isSuccess) {
+        console.log("refuse ok");
+        await loadAllRequestToMe();
+        return true;
+      }
+      console.log("refuse friend faild");
+    } catch (error) {
+      console.log("refuse friend err", error);
+    }
+  }
+
   // check is exists in request from me
   function checkIsRequested(_id) {
     const _requestFromMe = [...requestFromMe];
@@ -177,6 +191,7 @@ const FriendContextProvider = ({ children }) => {
     loadFriends,
     loadAllRequestToMe,
     loadAllRequestFromMe,
+    refuseFriend,
   };
   return (
     <FriendContext.Provider value={FriendContextData}>

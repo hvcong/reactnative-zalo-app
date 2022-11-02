@@ -18,7 +18,7 @@ const FriendRequestReceiveItem = (props) => {
   const { senderId, updatedAt } = props;
   console.log(senderId);
 
-  const { acceptFriend } = useFriendContext();
+  const { acceptFriend, refuseFriend } = useFriendContext();
   const { modalProfile, setModalProfile } = useGlobalContext();
 
   let date = converDate(updatedAt);
@@ -33,7 +33,9 @@ const FriendRequestReceiveItem = (props) => {
     }
   }
 
-  function onRefuse() {}
+  async function onRefuse() {
+    let is = await refuseFriend(senderId._id);
+  }
 
   async function onShowProfile() {
     try {

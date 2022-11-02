@@ -12,6 +12,7 @@ import startSocketIO from "../../socketIo";
 import handleConverIo from "../../socketIo/converIO";
 import { useGlobalContext } from "./GlobalContext";
 import memberApi from "../../api/memberApi";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const ConversationContext = createContext();
 
@@ -110,7 +111,6 @@ const ConversationContextProvider = ({ children }) => {
 
   // thêm mới message offline
   function addNewMessage(newMessage) {
-    console.log("new", newMessage);
     let _conv = getConverById(newMessage.conversationId);
     _conv.messages.push(newMessage);
     _conv.lastMessageId = { ...newMessage };
@@ -120,7 +120,6 @@ const ConversationContextProvider = ({ children }) => {
 
   // cập nhật thay đổi của 1  message offine
   function updateMessage(newMessage) {
-    console.log("new 2:", newMessage);
     let _conv = getConverById(newMessage.conversationId);
     let index = -1;
     for (let i = 0; i < _conv.messages.length; i++) {
@@ -185,7 +184,6 @@ const ConversationContextProvider = ({ children }) => {
       const res = await converApi.createSimpleChat({ userId: _id });
       if (res.isSuccess) {
         console.log("create ok");
-        console.log(res);
         return res._id;
       } else {
         console.log("create faild");
@@ -319,8 +317,13 @@ const ConversationContextProvider = ({ children }) => {
     try {
       const res = await memberApi.getAllMembers(converId);
       if (res.isSuccess) {
+        let _data = res.data;
+        let _members = _data.map((item) => {
+          return item.userId;
+        });
+
         const _newConver = getConverById(converId);
-        _newConver.members = res.data;
+        _newConver.members = _members;
         updateConver(_newConver);
         return true;
       }
@@ -341,6 +344,16 @@ const ConversationContextProvider = ({ children }) => {
       console.log("get lass view err", error);
       return false;
     }
+  }
+
+  // delete a conver offline
+  function deleteConver(converId) {
+    let _convers = [...convers];
+
+    let newConvers = _convers.filter((conv) => {
+      return conv._id != converId;
+    });
+    setconvers(newConvers);
   }
 
   // delete history messages at my side
@@ -398,11 +411,6 @@ const ConversationContextProvider = ({ children }) => {
       const res = await converApi.addManager(converId, memberId);
       if (res.isSuccess) {
         console.log("add manager ok");
-
-        let newConver = getConverById(converId);
-        newConver.managerIds.push(memberId);
-        updateConver(newConver);
-
         return true;
       } else {
         console.log("add manager faild");
@@ -410,6 +418,13 @@ const ConversationContextProvider = ({ children }) => {
     } catch (error) {
       console.log("add manager err", error);
     }
+  }
+
+  // add manager offline
+  function addManagerOfline(converId, managerIds) {
+    let newConver = getConverById(converId);
+    newConver.managerIds.push(managerIds[0]);
+    updateConver(newConver);
   }
 
   // remove manager
@@ -472,6 +487,8 @@ const ConversationContextProvider = ({ children }) => {
     updateMessage,
     updateConver,
     loadAllMemberOfConver,
+    deleteConver,
+    addManagerOfline,
     socket: socketRef.current,
   };
   return (

@@ -27,7 +27,6 @@ const AddFriendItem = (props) => {
   const conver = converId && getConverById(converId);
 
   async function onRequestFriend() {
-    console.log("send");
     const is = await sendRequestFriend(_id);
     if (is) {
       console.log("send request ok");
@@ -81,7 +80,6 @@ const AddFriendItem = (props) => {
   }
 
   async function onShowProfile() {
-    console.log("send");
     try {
       let acc = await userApi.findUserById(_id);
       setModalProfile({
