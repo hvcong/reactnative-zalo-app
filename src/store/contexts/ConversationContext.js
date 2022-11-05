@@ -53,6 +53,13 @@ const ConversationContextProvider = ({ children }) => {
     return () => {};
   }, [user]);
 
+  useEffect(() => {
+    if (convers && convers.length > 0) {
+      loadAllLastView();
+    }
+    return () => {};
+  }, [convers]);
+
   // load and setting io
   async function connectIo() {
     if (!socketRef.current || !socketRef.current.connected) {
@@ -71,19 +78,6 @@ const ConversationContextProvider = ({ children }) => {
         setconvers(res.data);
       }
     } catch (error) {}
-  }
-
-  async function loadAllLastView() {
-    try {
-      const res = await memberApi.getAllLastView();
-      console.log(res);
-      if (res.isSuccess) {
-        setLastView();
-      }
-      console.log("load all last view err", error);
-    } catch (error) {
-      console.log("load all last view err", error);
-    }
   }
 
   async function sendMessage(props) {
@@ -459,6 +453,20 @@ const ConversationContextProvider = ({ children }) => {
     });
 
     setconvers(_convers);
+  }
+
+  //// handle lastView
+  // load all lastview
+  async function loadAllLastView() {
+    try {
+      const res = await memberApi.getAllLastView();
+      console.log(res);
+      if (res.isSuccess) {
+        // setLastView();
+      }
+    } catch (error) {
+      console.log("load all last view err", error);
+    }
   }
 
   const ConversationContextData = {
