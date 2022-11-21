@@ -8,7 +8,9 @@ import {
   Text,
   ActivityIndicator,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
+import { FontAwesome5, Feather } from "@expo/vector-icons";
 import { useGlobalContext } from "../store/contexts/GlobalContext";
 import { AntDesign } from "@expo/vector-icons";
 import { converDate } from "../utils";
@@ -16,14 +18,22 @@ import { useConversationContext } from "../store/contexts/ConversationContext";
 import { useFriendContext } from "../store/contexts/FriendContext";
 
 const ProfileModal = () => {
-  const { modalProfile, setModalProfile, user, updateInfor } =
+  const { modalProfile, setModalProfile, user, updateInfor, updateAvatar } =
     useGlobalContext();
-  const { checkIsMyFriend, checkIsRequested, checkIsRequestedToMe } =
-    useFriendContext();
+  const {
+    checkIsMyFriend,
+    checkIsRequested,
+    checkIsRequestedToMe,
+    deleteRequestFriend,
+    sendRequestFriend,
+    acceptFriend,
+    refuseFriend,
+  } = useFriendContext();
 
   const { acc, isShow } = modalProfile;
   const [image, setImage] = useState(null);
   const [inforInput, setInforInput] = useState({});
+  const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
 
   const [isEditName, setIsEditName] = useState(false);
 
@@ -37,6 +47,18 @@ const ProfileModal = () => {
     return () => {};
   }, [modalProfile]);
 
+  // pick and change avatar
+  async function onChangeAvatar() {
+    console.log("pick");
+    console.log("pick image");
+    let result = await ImagePicker.launchImageLibraryAsync();
+    if (!result.cancelled) {
+      setIsUpdatingAvatar(true);
+      let is = await updateAvatar(result);
+      setIsUpdatingAvatar(false);
+    }
+  }
+
   async function onSaveChange() {
     setIsEditName(false);
     let is = await updateInfor(inforInput);
@@ -44,22 +66,39 @@ const ProfileModal = () => {
 
   function renderBtns() {
     if (acc && checkIsMyFriend(acc._id)) {
-      return <Text style={styles.btn}>Nhắn tin</Text>;
+      return null;
     } else if (checkIsRequested(acc._id)) {
       return (
-        <Text style={[styles.btn, { color: "red" }]}>
+        <Text
+          style={[styles.btn, { color: "red" }]}
+          onPress={() => deleteRequestFriend(acc._id)}
+        >
           Thu hồi yêu cầu kết bạn
         </Text>
       );
     } else if (checkIsRequestedToMe(acc._id)) {
       return (
         <>
-          <Text style={[styles.btn, styles.btnAcceptFriend]}>Đồng ý</Text>
-          <Text style={[styles.btn, { color: "red" }]}>Từ chối</Text>
+          <Text
+            style={[styles.btn, styles.btnAcceptFriend]}
+            onPress={() => acceptFriend(acc._id)}
+          >
+            Đồng ý
+          </Text>
+          <Text
+            style={[styles.btn, { color: "red" }]}
+            onPress={() => refuseFriend(acc._id)}
+          >
+            Từ chối
+          </Text>
         </>
       );
     } else {
-      return <Text style={styles.btn}>Kết bạn</Text>;
+      return (
+        <Text style={styles.btn} onPress={() => sendRequestFriend(acc._id)}>
+          Kết bạn
+        </Text>
+      );
     }
   }
 
@@ -87,17 +126,32 @@ const ProfileModal = () => {
             />
           </View>
           <View style={styles.avatarContainer}>
-            {acc && modalProfile.acc.avatar ? (
-              <Image
-                source={{ uri: modalProfile.acc.avatar }}
-                style={styles.avatar}
-              />
-            ) : (
-              <Image
-                source={require("../../assets/avatar.jpg")}
-                style={styles.avatar}
-              />
-            )}
+            <View style={styles.avatarWraper}>
+              {acc && modalProfile.acc.avatar ? (
+                <Image
+                  source={{ uri: modalProfile.acc.avatar }}
+                  style={styles.avatar}
+                />
+              ) : (
+                <Image
+                  source={require("../../assets/avatar.jpg")}
+                  style={styles.avatar}
+                />
+              )}
+              {isUpdatingAvatar && (
+                <ActivityIndicator style={styles.spiner} size="large" />
+              )}
+
+              {acc && acc._id == user._id && (
+                <Feather
+                  style={styles.cameraIcon}
+                  name="camera"
+                  size={24}
+                  color="black"
+                  onPress={onChangeAvatar}
+                />
+              )}
+            </View>
           </View>
           <View style={styles.nameContainer}>
             {isEditName ? (
@@ -194,10 +248,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
   },
+  avatarWraper: {
+    position: "relative",
+  },
   avatar: {
     width: 150,
     height: 150,
     borderRadius: 75,
+  },
+  spiner: {
+    position: "absolute",
+    top: 50,
+    left: 50,
+  },
+  cameraIcon: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
   },
   nameContainer: {
     flexDirection: "row",

@@ -54,6 +54,13 @@ const HandleFriendIo = () => {
       loadAllRequestToMe();
       loadAllRequestFromMe();
     });
+
+    socket.on("user-online", (userId) => {
+      console.log("emit user-online ---", userId);
+    });
+    socket.on("user-offline", (userId) => {
+      console.log("emit user-offline ---", userId);
+    });
   }
 
   function removeListentIo(socket) {
@@ -62,6 +69,8 @@ const HandleFriendIo = () => {
     socket.removeListener("send-friend-invite");
     socket.removeListener("deleted-friend-invite");
     socket.removeListener("deleted-invite-was-send");
+    socket.removeListener("user-online");
+    socket.removeListener("user-offline");
   }
 
   return <View></View>;

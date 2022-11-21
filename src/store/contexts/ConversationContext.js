@@ -6,13 +6,11 @@ import React, {
   useState,
 } from "react";
 import { View, StyleSheet } from "react-native";
-import { startDetecting } from "react-native/Libraries/Utilities/PixelRatio";
 import converApi from "../../api/converApi";
 import startSocketIO from "../../socketIo";
-import handleConverIo from "../../socketIo/converIO";
 import { useGlobalContext } from "./GlobalContext";
 import memberApi from "../../api/memberApi";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import messApi from "../../api/messApi";
 
 const ConversationContext = createContext();
 
@@ -21,7 +19,9 @@ const ConversationContextProvider = ({ children }) => {
   const [hasListens, sethasListens] = useState({});
   const { user } = useGlobalContext();
   const socketRef = useRef();
-  const [lastView, setLastView] = useState([]);
+  const [lastViews, setLastViews] = useState([]);
+  const [typingList, setTypingList] = useState({});
+  const [pinMessages, setPinMessages] = useState([]);
 
   // io listen converId
   // useEffect(() => {
@@ -55,10 +55,23 @@ const ConversationContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (convers && convers.length > 0) {
-      loadAllLastView();
+      loadAllLastViews();
+      initTypingList();
     }
     return () => {};
   }, [convers]);
+
+  // init typingList
+  function initTypingList() {
+    let _typingList = { ...typingList };
+
+    convers.forEach((conv) => {
+      if (!_typingList[conv._id]) {
+        _typingList[conv._id] = [];
+      }
+    });
+    setTypingList(_typingList);
+  }
 
   // load and setting io
   async function connectIo() {
@@ -176,8 +189,10 @@ const ConversationContextProvider = ({ children }) => {
   async function createSimpleConver(_id) {
     try {
       const res = await converApi.createSimpleChat({ userId: _id });
+      console.log("res", res);
       if (res.isSuccess) {
         console.log("create ok");
+        await loadAllConversation();
         return res._id;
       } else {
         console.log("create faild");
@@ -236,13 +251,13 @@ const ConversationContextProvider = ({ children }) => {
       console.log(res);
       if (res.isSuccess) {
         console.log("leave ok");
-        // let _convers = [...convers];
+        let _convers = [...convers];
 
-        // let newArr = _convers.filter((conver) => {
-        //   return conver._id != converId;
-        // });
+        let newArr = _convers.filter((conver) => {
+          return conver._id != converId;
+        });
 
-        // setconvers(newArr);
+        setconvers(newArr);
 
         return true;
       } else {
@@ -323,20 +338,6 @@ const ConversationContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.log("get mmebers err", error);
-    }
-  }
-
-  // get lassview of a conver
-  async function getLastView(converId) {
-    try {
-      const res = await converApi.getLastView(converId);
-      if (res.isSuccess) {
-        console.log(res);
-        return res;
-      }
-    } catch (error) {
-      console.log("get lass view err", error);
-      return false;
     }
   }
 
@@ -425,15 +426,9 @@ const ConversationContextProvider = ({ children }) => {
   async function deleteManager(converId, memberId) {
     try {
       const res = await converApi.deleteManager(converId, memberId);
-      console.log(res);
       if (res.isSuccess) {
         console.log("delete manager ok");
-
-        let newConver = getConverById(converId);
-
-        newConver.managerIds.plice(newConver.managerIds.indexOf(memberId));
-        updateConver(newConver);
-
+        deleteManagerOffline(converId, memberId);
         return true;
       } else {
         console.log("delete manager faild");
@@ -441,6 +436,13 @@ const ConversationContextProvider = ({ children }) => {
     } catch (error) {
       console.log("delete manager err", error);
     }
+  }
+
+  // delete manager offline
+  function deleteManagerOffline(converId, memberId) {
+    let newConver = getConverById(converId);
+    newConver.managerIds.splice(newConver.managerIds.indexOf(memberId), 1);
+    updateConver(newConver);
   }
 
   //update conver offline
@@ -455,17 +457,114 @@ const ConversationContextProvider = ({ children }) => {
     setconvers(_convers);
   }
 
+  // delete group by leader
+  async function deleteGroupByLeader(converId) {
+    try {
+      const res = await converApi.deleteGroupByLeader(converId);
+      if (res.isSuccess) {
+        console.log("delete group ok");
+        let _convers = [...convers];
+        _convers = _convers.filter((conv) => {
+          return conv._id != converId;
+        });
+        setconvers(_convers);
+
+        return true;
+      }
+      console.log("delete group faild");
+    } catch (error) {
+      console.log("delete group err", error);
+    }
+  }
+
+  // send file
+  async function sendFile(converId, pickerResult) {
+    try {
+      const res = await converApi.sendFile(converId, pickerResult);
+      if (res.isSuccess) {
+        console.log("send file ok");
+        return true;
+      }
+      console.log("send file faild");
+    } catch (error) {
+      console.log("send file errr", error);
+    }
+  }
+
   //// handle lastView
   // load all lastview
-  async function loadAllLastView() {
+  async function loadAllLastViews() {
     try {
       const res = await memberApi.getAllLastView();
-      console.log(res);
       if (res.isSuccess) {
-        // setLastView();
+        setLastViews(res.data);
       }
     } catch (error) {
       console.log("load all last view err", error);
+    }
+  }
+
+  // update lastVeiw offline
+  function updateLastViewOffline(converId) {
+    const _lasVs = [...lastViews];
+    for (let i = 0; i < _lasVs.length; i++) {
+      if (_lasVs[i].conversationId == converId) {
+        _lasVs[i].lastView = new Date();
+        return;
+      }
+    }
+  }
+
+  // handle add typing
+  function addTypingUser(converId, userId) {
+    console.log(typingList);
+    let _typingList = { ...typingList };
+    console.log(_typingList);
+
+    if (!_typingList[converId]) {
+      _typingList[converId] = [];
+    }
+
+    if (
+      Array.isArray(_typingList[converId]) &&
+      _typingList[converId].indexOf(userId) == -1
+    ) {
+      console.log("add");
+      _typingList[converId].push(userId);
+    }
+
+    setTypingList({ ..._typingList });
+  }
+
+  // handle remove typing
+  function removeTypingUser(converId, userId) {
+    let _typingList = { ...typingList };
+    let index = -1;
+    if (_typingList[converId] && Array.isArray(_typingList[converId])) {
+      index = _typingList[converId].indexOf(userId);
+    }
+
+    if (index != -1) {
+      _typingList[converId].splice(index, 1);
+      console.log("remove");
+    }
+    console.log(_typingList);
+    setTypingList({ ..._typingList });
+  }
+
+  // pin message
+  async function pinMessage(messageId) {
+    try {
+      const res = await messApi.pinMessage(messageId);
+      if (res.isSuccess) {
+        console.log("pin message ok");
+
+        return true;
+      } else {
+        console.log("pin message faild");
+      }
+    } catch (error) {
+      console.log("pin message error");
     }
   }
 
@@ -485,7 +584,6 @@ const ConversationContextProvider = ({ children }) => {
     updateAvatar,
     sendImageMessage,
     addMembers,
-    getLastView,
     deleteHistoryMessages,
     deleteMember,
     addManager,
@@ -497,7 +595,16 @@ const ConversationContextProvider = ({ children }) => {
     loadAllMemberOfConver,
     deleteConver,
     addManagerOfline,
+    deleteGroupByLeader,
     socket: socketRef.current,
+    deleteManagerOffline,
+    updateLastViewOffline,
+    lastViews,
+    sendFile,
+    typingList,
+    addTypingUser,
+    removeTypingUser,
+    pinMessage,
   };
   return (
     <ConversationContext.Provider value={ConversationContextData}>

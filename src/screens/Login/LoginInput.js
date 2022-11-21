@@ -18,8 +18,8 @@ import { useGlobalContext } from "../../store/contexts/GlobalContext";
 import LoadingModal from "../../components/LoadingModal";
 export default function LoginInput({ navigation }) {
   const { onLoginSuccess } = useGlobalContext();
-  const [phoneInput, setPhoneInput] = useState("0977777777");
-  const [pwdInput, setPwdInput] = useState("1234567");
+  const [phoneInput, setPhoneInput] = useState("0868283915");
+  const [pwdInput, setPwdInput] = useState("111111");
   const [isDisSubmit, setIsDisSubmit] = useState(true);
   const [isLoading, setisLoading] = useState(false);
   const [textErrRes, settextErrRes] = useState("");

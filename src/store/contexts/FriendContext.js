@@ -107,6 +107,7 @@ const FriendContextProvider = ({ children }) => {
     try {
       const res = await friendApi.deleteRequest(_id);
       if (res.isSuccess) {
+        console.log("thu hồi request ok");
         loadAllRequestFromMe();
         return true;
       } else {

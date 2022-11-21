@@ -18,7 +18,6 @@ import {
   AntDesign,
 } from "@expo/vector-icons";
 import NotifyMessage from "./MessageType/NotifyMessage";
-import ReactModal from "./ReactModal";
 import DeletedMessage from "./MessageType/DeletedMessage";
 
 const Message = (props) => {
@@ -31,16 +30,18 @@ const Message = (props) => {
     sender,
     idSelected,
     setIdSelected,
+    showModalReact,
   } = props;
   let { type, senderId, isDeleted } = item;
 
-  const [isShowModal, setisShowModal] = useState(false);
   const [isOnReact, setisOnReact] = useState(false);
 
   function renderMessageContent() {
     if (isDeleted) {
       return <DeletedMessage isMyMessage={isMyMessage} />;
     }
+
+    // console.log(type);
     if (type === "TEXT") {
       return (
         <TextMessage
@@ -49,6 +50,7 @@ const Message = (props) => {
           sender={sender}
           idSelected={idSelected}
           setIdSelected={setIdSelected}
+          showModalReact={showModalReact}
         />
       );
     } else if (type === "NOTIFY") {
@@ -134,7 +136,6 @@ const Message = (props) => {
           </View>
         )}
       </TouchableOpacity>
-      <ReactModal isShowModal={isShowModal} setisShowModal={setisShowModal} />
     </Pressable>
   );
 };

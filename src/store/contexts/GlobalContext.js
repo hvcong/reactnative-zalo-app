@@ -114,6 +114,40 @@ function GlobalContextProvider({ children }) {
     }
   }
 
+  // update avatar
+  async function updateAvatar(pickerResult) {
+    try {
+      const res = await userApi.updateAvatar(pickerResult);
+      if (res.isSuccess) {
+        console.log("update avatar ok");
+        if (
+          modalProfile &&
+          modalProfile.acc &&
+          modalProfile.acc._id == state.user._id
+        ) {
+          const _user = await userApi.getMyInfor();
+          setState({
+            ...state,
+            user: _user,
+          });
+
+          setModalProfile({
+            ...modalProfile,
+            acc: _user,
+          });
+        }
+
+        return true;
+      }
+
+      console.log("update avatar faild");
+      return false;
+    } catch (error) {
+      console.log("update avatar err", error);
+      return false;
+    }
+  }
+
   const GlobalContextData = {
     isLoading: state.isLoading,
     isLogout: state.isLogout,
@@ -125,6 +159,7 @@ function GlobalContextProvider({ children }) {
     setModalProfile,
     updateInfor,
     login,
+    updateAvatar,
   };
 
   return (

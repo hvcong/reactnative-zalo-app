@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+import { useConversationContext } from "../store/contexts/ConversationContext";
 import { useGlobalContext } from "../store/contexts/GlobalContext";
+import { converDate } from "../utils";
 
 const ChatItem = ({ conver, navigation }) => {
-  const { name, lastMessageId, _id, type, avatar } = conver;
+  const { name, lastMessageId, _id, type, avatar, members } = conver;
+  const { lastViews, getMember } = useConversationContext();
   const { user } = useGlobalContext();
 
   function onPressItem() {
@@ -29,13 +32,88 @@ const ChatItem = ({ conver, navigation }) => {
       }
     }
   }
-  return (
-    <View style={styles.wrap}>
-      <TouchableOpacity
-        onPress={() => onPressItem()}
-        activeOpacity={0.9}
-        style={styles.container}
-      >
+
+  function countMessagesUnseen() {
+    let _messages = [...conver.messages];
+    let _lastView = getlastViewsByConverId(_id);
+    if (!_lastView) return 0;
+    let count = 0;
+    let dateLastView = new Date(_lastView.lastView);
+
+    _messages.forEach((mess) => {
+      let d1 = new Date(mess.createdAt);
+      if (d1 > dateLastView) {
+        count++;
+      }
+    });
+    return count;
+  }
+
+  function getlastViewsByConverId(converId) {
+    for (let i = 0; i < lastViews.length; i++) {
+      if (converId == lastViews[i].conversationId) {
+        return lastViews[i];
+      }
+    }
+  }
+
+  function renderNumOfMessagesUnSeen() {
+    let count = countMessagesUnseen();
+    if (count == 0) return null;
+    if (count > 5)
+      return (
+        <Text numberOfLine={1} style={styles.numberOfNewMessage}>
+          {"5+"}
+        </Text>
+      );
+    return (
+      <Text numberOfLine={1} style={styles.numberOfNewMessage}>
+        {count}
+      </Text>
+    );
+  }
+
+  function renderTime() {
+    let nowDate = converDate(new Date());
+    let date = converDate(lastMessageId && lastMessageId.createdAt);
+
+    if (
+      nowDate.year == date.year &&
+      nowDate.month == date.month &&
+      nowDate.date == date.date &&
+      nowDate.hour == date.hour &&
+      nowDate.min == date.min
+    ) {
+      return nowDate.sec - date.sec + " giây trước";
+    }
+
+    if (
+      nowDate.year == date.year &&
+      nowDate.month == date.month &&
+      nowDate.date == date.date &&
+      nowDate.hour == date.hour
+    ) {
+      return nowDate.min - date.min + " phút trước";
+    }
+
+    if (
+      nowDate.year == date.year &&
+      nowDate.month == date.month &&
+      nowDate.date == date.date
+    ) {
+      return nowDate.hour - date.hour + " giờ trước";
+    }
+    if (nowDate.year == date.year && nowDate.month == date.month) {
+      return nowDate.date - date.date + " ngày trước";
+    }
+
+    return date.toStringDMY;
+  }
+
+  // render avatar
+  function renderAvatar() {
+    if (type) {
+      return (
         <View style={styles.imageContainer}>
           {avatar ? (
             <Image
@@ -51,19 +129,68 @@ const ChatItem = ({ conver, navigation }) => {
             />
           )}
         </View>
+      );
+    } else {
+      let member;
+      members.forEach((item) => {
+        if (item._id != user._id) {
+          member = item;
+        }
+      });
+      if (member) {
+        return (
+          <View style={styles.imageContainer}>
+            {member.avatar ? (
+              <Image
+                source={{
+                  uri: member.avatar,
+                }}
+                style={styles.avatar}
+              />
+            ) : (
+              <Image
+                source={require("../../assets/avatar.jpg")}
+                style={styles.avatar}
+              />
+            )}
+          </View>
+        );
+      }
+    }
+  }
+
+  return (
+    <View style={styles.wrap}>
+      <TouchableOpacity
+        onPress={() => onPressItem()}
+        activeOpacity={0.9}
+        style={styles.container}
+      >
+        {renderAvatar()}
         <View style={styles.centerContainer}>
-          <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+          <Text
+            style={[
+              styles.name,
+              countMessagesUnseen() > 0 && styles.nameRoomUnMessages,
+            ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {type ? name : getNameOfSimpleConver()}
           </Text>
-          <Text numberOfLines={1} style={styles.lastMessage}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.lastMessage,
+              countMessagesUnseen() > 0 && styles.lastMessageUnSeen,
+            ]}
+          >
             {renderLastMessage()}
           </Text>
         </View>
         <View style={styles.rightContainer}>
-          <Text style={styles.lastTime}>4 giờ</Text>
-          {/* <Text numberOfLine={1} style={styles.numberOfNewMessage}>
-            3
-          </Text> */}
+          <Text style={styles.lastTime}>{renderTime()}</Text>
+          {renderNumOfMessagesUnSeen()}
         </View>
       </TouchableOpacity>
     </View>
@@ -97,13 +224,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   name: {
-    fontSize: 14,
+    fontSize: 16,
+  },
+  nameRoomUnMessages: {
     fontWeight: "bold",
   },
   lastMessage: {
     paddingTop: 4,
     fontSize: 14,
     color: "#858383",
+  },
+  lastMessageUnSeen: {
+    color: "black",
   },
   rightContainer: {
     justifyContent: "center",
@@ -121,6 +253,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 4,
     borderRadius: 50,
+    lineHeight: 20,
+    width: 20,
+    height: 20,
+    marginLeft: "auto",
   },
 });
 

@@ -29,6 +29,7 @@ const RoomChatGroupMore = (props) => {
     getConverById,
     convers,
     deleteHistoryMessages,
+    deleteGroupByLeader,
   } = useConversationContext();
   const { route, navigation } = props;
   const { converId } = route.params;
@@ -42,7 +43,13 @@ const RoomChatGroupMore = (props) => {
   // useEffect
   useEffect(() => {
     console.log("convers change");
-    setConver(getConverById(converId));
+
+    let _conv = getConverById(converId);
+    if (_conv) {
+      setConver(_conv);
+    } else {
+      navigation.navigate("ListChat");
+    }
     return () => {};
   }, [convers]);
 
@@ -64,6 +71,10 @@ const RoomChatGroupMore = (props) => {
 
   async function onLeaveGroup() {
     const is = await leaveGroup(conver._id);
+  }
+
+  async function onDeleteGroupByLeader() {
+    let is = await deleteGroupByLeader(conver._id);
   }
 
   async function onRenameConver() {
@@ -197,10 +208,15 @@ const RoomChatGroupMore = (props) => {
             Xóa lịch sử trò chuyện
           </Text>
         </TouchableOpacity>
-        {conver.leaderId != user._id && (
+        {conver.leaderId != user._id ? (
           <TouchableOpacity style={styles.item} onPress={onLeaveGroup}>
             <SimpleLineIcons name="logout" size={24} color="red" />
             <Text style={[styles.text, styles.removeText]}>Rời nhóm</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.item} onPress={onDeleteGroupByLeader}>
+            <SimpleLineIcons name="logout" size={24} color="red" />
+            <Text style={[styles.text, styles.removeText]}>Xóa nhóm</Text>
           </TouchableOpacity>
         )}
       </View>

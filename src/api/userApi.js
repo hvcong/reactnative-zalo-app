@@ -27,6 +27,22 @@ class UserApi {
       password: newPass,
     });
   }
+
+  // change avatar
+  updateAvatar(pickerResult) {
+    let url = "me/avatar";
+    let localUri = pickerResult.uri;
+    let filename = localUri.split("/").pop();
+    let match = /\.(\w+)$/.exec(filename);
+    let type = match ? `image/${match[1]}` : `image`;
+
+    let formData = new FormData();
+    formData.append("file", { uri: localUri, name: filename, type });
+
+    return axiosClient.patch(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  }
 }
 
 const userApi = new UserApi();

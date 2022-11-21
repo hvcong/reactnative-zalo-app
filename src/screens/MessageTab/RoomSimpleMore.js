@@ -1,29 +1,83 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import { useConversationContext } from "../../store/contexts/ConversationContext";
+import userApi from "../../api/userApi";
+import { useGlobalContext } from "../../store/contexts/GlobalContext";
 
 const RoomSimpleMore = (props) => {
-  const [isNotify, setisNotify] = useState(false);
+  const { getConverById, convers, deleteHistoryMessages } =
+    useConversationContext();
+  const { user, setModalProfile } = useGlobalContext();
   const { route } = props;
+  const { converId } = route.params;
+  const [conver, setConver] = useState(getConverById(converId));
+  const [member, setMember] = useState();
+  const [isNotify, setisNotify] = useState(false);
 
-  const { conver } = route.params;
+  useEffect(() => {
+    if (converId) {
+      setConver(getConverById(converId));
+      loadMember();
+    }
+    return () => {};
+  }, [converId, convers]);
+
+  if (!conver) return null;
+
+  function loadMember() {
+    if (conver) {
+      let member;
+      conver.members.forEach((item) => {
+        if (item._id != user._id) {
+          member = item;
+        }
+      });
+      if (member) {
+        setMember(member);
+      }
+    }
+  }
+
+  async function onDetailProfilePress() {
+    console.log("show");
+
+    let acc = await userApi.findUserById(member._id);
+    if (acc.isSuccess) {
+      setModalProfile({
+        acc: acc,
+        isShow: true,
+      });
+    }
+  }
+
+  // xóa lịch sử
+  async function onDeleteHistoryMessages() {
+    let is = await deleteHistoryMessages(converId);
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
-        <Image
-          source={require("../../../assets/avatar.jpg")}
-          style={styles.image}
-        />
+        {member && member.avatar ? (
+          <Image source={{ uri: member.avatar }} style={styles.image} />
+        ) : (
+          <Image
+            source={require("../../../assets/avatar.jpg")}
+            style={styles.image}
+          />
+        )}
       </View>
-      <Text style={styles.name}>{conver.name}</Text>
+      <Text style={styles.name}>{member && member.name}</Text>
       <View style={styles.sections}>
         <View style={styles.section}>
           <View style={styles.sectionIcon}>
             <Ionicons name="person-outline" size={20} color="black" />
           </View>
-          <Text style={styles.label}>Trang cá nhân</Text>
+          <Text style={styles.label} onPress={onDetailProfilePress}>
+            Trang cá nhân
+          </Text>
         </View>
         <Pressable
           onPress={() => setisNotify(!isNotify)}
@@ -54,14 +108,14 @@ const RoomSimpleMore = (props) => {
           )}
         </Pressable>
       </View>
-      <View style={styles.body}>
+      <Pressable onPress={onDeleteHistoryMessages} style={styles.body}>
         <View style={styles.item}>
           <Feather name="trash-2" size={24} color="red" />
           <Text style={[styles.text, styles.removeText]}>
             Xóa lịch sử trò chuyện
           </Text>
         </View>
-      </View>
+      </Pressable>
     </View>
   );
 };

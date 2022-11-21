@@ -3,7 +3,7 @@ import axiosClient from "./axiosClient";
 class MemberApi {
   // get last View
   getAllLastView() {
-    let url = `conversation/6354b2fb72627b4fe7950fa3/last-view`;
+    let url = `conversation/last-view-member`;
     return axiosClient.get(url);
   }
 

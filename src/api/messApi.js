@@ -10,6 +10,21 @@ class MessApi {
     let url = `/message/${id}`;
     return axiosClient.get(url);
   }
+
+  pinMessage(messageId) {
+    let url = "message/pins/" + messageId;
+    return axiosClient.post(url);
+  }
+
+  getAllPinMessageByConverId(converId) {
+    let url = `message/pins/${converId}`;
+    return axiosClient.get(url);
+  }
+
+  removePinMessage(messageId) {
+    let url = "message/pins/" + messageId;
+    return axiosClient.delete(url);
+  }
 }
 
 const messApi = new MessApi();

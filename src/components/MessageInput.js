@@ -12,15 +12,22 @@ import {
   FontAwesome5,
 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
 import { useConversationContext } from "../store/contexts/ConversationContext";
+import { useGlobalContext } from "../store/contexts/GlobalContext";
 
 const MessageInput = ({ converId }) => {
+  const { sendImageMessage, sendMessage, sendFile, socket } =
+    useConversationContext();
+  const { user } = useGlobalContext();
   const [textInput, setTextInput] = useState("");
   const inputRef = useRef(null);
   const [isShowOption, setIsShowOption] = useState(false);
   const [imageOrVideo, setImageOrVideo] = useState(null);
-  const { sendImageMessage, sendMessage } = useConversationContext();
 
+  const [filePicker, setFilePicker] = useState(null);
+
+  // pick image or video
   async function onPickImageOrVideo() {
     console.log("pick");
 
@@ -38,7 +45,15 @@ const MessageInput = ({ converId }) => {
     }
   }
 
-  function onPickFile() {}
+  // pick file
+  async function onPickFile() {
+    console.log("pick file");
+    let result = await DocumentPicker.getDocumentAsync({});
+
+    if (result.type != "cancel") {
+      sendFile(converId, result);
+    }
+  }
 
   function onPickSticker() {}
 
@@ -49,6 +64,22 @@ const MessageInput = ({ converId }) => {
     sendMessage({ ...data, conversationId: converId });
   }
 
+  // soket typing
+  function onTyping() {
+    setIsShowOption(false);
+    if (socket) {
+      console.log("typing emit to server");
+      socket.emit("typing", converId, user._id);
+    }
+  }
+  // soket typing
+  function onNotTyping() {
+    if (socket) {
+      console.log("not-typing emit to server");
+      socket.emit("not-typing", converId, user._id);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -57,8 +88,9 @@ const MessageInput = ({ converId }) => {
         style={styles.input}
         placeholder="Nhập tin nhắn"
         ref={inputRef}
-        onFocus={() => setIsShowOption(false)}
+        onFocus={onTyping}
         onChange={() => setIsShowOption(false)}
+        onBlur={onNotTyping}
       />
       {isShowOption ? (
         <FontAwesome

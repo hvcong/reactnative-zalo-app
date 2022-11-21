@@ -24,6 +24,7 @@ const FriendsItem = (props) => {
     setIdOptionShow,
     index,
     length,
+    isOnline,
   } = props;
   const { createSimpleConver } = useConversationContext();
 
@@ -85,8 +86,13 @@ const FriendsItem = (props) => {
             style={styles.avatar}
           />
         )}
+
+        {isOnline && <View style={styles.onlineIcon}></View>}
       </View>
-      <Text style={styles.name}>{name}</Text>
+      <View style={styles.body}>
+        <Text style={styles.name}>{name}</Text>
+        {isOnline && <Text style={styles.des}>Dang online</Text>}
+      </View>
       <View style={styles.icon}>
         {/* <Ionicons
           name="chatbox-ellipses-outline"
@@ -143,15 +149,32 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     paddingRight: 12,
+    position: "relative",
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 50,
   },
-  name: {
+  onlineIcon: {
+    width: 15,
+    height: 15,
+    borderRadius: 50,
+    backgroundColor: "#42f569",
+    position: "absolute",
+    right: 10,
+    top: -4,
+  },
+  body: {
     flex: 1,
+  },
+  name: {
     fontSize: 16,
+  },
+  des: {
+    paddingTop: 2,
+    fontSize: 12,
+    color: "#42f569",
   },
   icon: {
     paddingHorizontal: 8,

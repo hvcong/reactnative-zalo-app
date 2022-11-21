@@ -26,11 +26,13 @@ const TextMessage = ({
   sender,
   idSelected,
   setIdSelected,
+  showModalReact,
 }) => {
   const { content, createdAt, _id, conversationId } = item;
   const [isShowOptions, setIsShowOptions] = useState(false);
   const date = converDate(createdAt);
-  const { recallMessage, recallMessageOnly } = useConversationContext();
+  const { recallMessage, recallMessageOnly, pinMessage } =
+    useConversationContext();
 
   useEffect(() => {
     setIsShowOptions(false);
@@ -44,9 +46,10 @@ const TextMessage = ({
     let is = await recallMessage(_id, conversationId);
   }
 
-  // gim message
+  // ghim message
   function onPinMessage() {
     setIsShowOptions(false);
+    pinMessage(_id);
     console.log("pin");
   }
   // delete message only me
@@ -59,7 +62,10 @@ const TextMessage = ({
 
   function renderBody() {
     return (
-      <View
+      <TouchableOpacity
+        onLongPress={() => {
+          showModalReact(item);
+        }}
         style={[
           isMyMessage ? styles.myMessageContainer : styles.container,
           styles.wrap,
@@ -129,7 +135,7 @@ const TextMessage = ({
           </>
         )}
         <Text style={styles.time}>{date.toString}</Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -141,7 +147,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   backgroundColorSelected: {
-    backgroundColor: "#ddd",
+    backgroundColor: "#aaa",
   },
   container: {
     paddingHorizontal: 12,
@@ -217,9 +223,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   optionText: {
-    paddingVertical: 4,
+    paddingVertical: 6,
     paddingLeft: 6,
-    fontSize: 11,
+
+    fontSize: 13,
   },
 });
 

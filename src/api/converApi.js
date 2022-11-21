@@ -33,7 +33,7 @@ class ConverApi {
 
   // rời nhóm
   leaveGroup(converId) {
-    let url = `conversation/${converId}/member/leave`;
+    let url = `conversation/${converId}/members/leave`;
     console.log(url);
     return axiosClient.delete(url);
   }
@@ -55,9 +55,8 @@ class ConverApi {
 
   // không cho làm phó nhóm nữa
   deleteManager(converId, memberId) {
-    let url = `conversation/${converId}/managers`;
-    console.log(converId, memberId);
-    return axiosClient.delete(url, {
+    let url = `conversation/${converId}/managers/leave`;
+    return axiosClient.post(url, {
       managerId: [memberId],
     });
   }
@@ -130,6 +129,35 @@ class ConverApi {
       conversationId: converId,
       content: content,
       type: "TEXT",
+    });
+  }
+
+  // delete group by leader
+  deleteGroupByLeader(converId) {
+    let url = `conversation/${converId}`;
+    return axiosClient.delete(url);
+  }
+
+  // send file
+  sendFile(converId, pickerResult) {
+    let url = "file/FILE/" + converId;
+    console.log(url);
+    let { name, size, uri } = pickerResult;
+    let nameParts = name.split(".");
+    let fileType = nameParts[nameParts.length - 1];
+    var fileToUpload = {
+      name: name,
+      size: size,
+      uri: uri,
+      type: "application/" + fileType,
+    };
+
+    const fileUri = fileToUpload.uri;
+    const formData = new FormData();
+    formData.append("file", fileToUpload);
+
+    return axiosClient.post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
   }
 }

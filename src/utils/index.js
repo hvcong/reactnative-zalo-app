@@ -15,7 +15,7 @@ export function converDate(date) {
     "Dec",
   ];
   var year = created_date.getFullYear();
-  var month = created_date.getMonth();
+  var month = created_date.getMonth() + 1;
   var date = created_date.getDate();
   var hour = created_date.getHours();
   var min = created_date.getMinutes();

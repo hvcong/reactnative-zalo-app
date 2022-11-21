@@ -18,29 +18,21 @@ const HandleConverIo = () => {
     loadAllMemberOfConver,
     deleteConver,
     addManagerOfline,
+    deleteManagerOffline,
+    updateLastViewOffline,
+    addTypingUser,
+    removeTypingUser,
   } = useConversationContext();
   const { user } = useGlobalContext();
-  const [hasListens, sethasListens] = useState({});
-
-  // io listen converId
-  // useEffect(() => {
-  //   if (convers && socket) {
-  //     convers.forEach((conv) => {
-  //       let conversationId = conv._id;
-
-  //       socket.emit("join-conversation", conversationId);
-  //     });
-  //   }
-  //   return () => {};
-  // }, [convers.socket]);
 
   useEffect(() => {
     if (socket) {
+      console.log("reload io");
       remove(socket);
       handle(socket);
     }
     return () => {};
-  }, [user, socket]);
+  }, [user, socket, convers]);
 
   function handle(socket) {
     // khi tạo một conver
@@ -55,27 +47,28 @@ const HandleConverIo = () => {
       loadAllConversation();
     });
 
-    // tin nhắn mới
+    // tin nhắn mới - done
     socket.on("new-message", async ({ message }) => {
       console.log("emit new-message");
       addNewMessage(message);
     });
 
-    // tin nhắn bị thu hồi với tất cả mọi người
+    // tin nhắn bị thu hồi với tất cả mọi người - done
     socket.on("delete-message", ({ message }) => {
       message.isDeleted = true;
       updateMessage(message);
     });
 
-    // thêm trưởng nhóm
+    // thêm trưởng nhóm - done
     socket.on("add-managers", ({ conversationId, managerIds }) => {
       console.log("emit add-managers ---", user.name);
       addManagerOfline(conversationId, managerIds);
     });
 
-    // delete manager
-    socket.on("delete-managers", (data) => {
-      console.log("emit delete-managers", data);
+    // delete manager - done
+    socket.on("delete-managers", ({ conversationId, managerIds }) => {
+      console.log("emit delete-managers", user.name);
+      deleteManagerOffline(conversationId, managerIds[0]);
     });
 
     // khi bị xóa khỏi group - done
@@ -121,7 +114,17 @@ const HandleConverIo = () => {
       }
     );
 
-    //
+    //// handle typing
+    socket.on("typing", (converId, userId) => {
+      console.log("emit typing", converId, userId + "----" + user.name);
+      addTypingUser(converId, userId);
+    });
+    socket.on("not-typing", (converId, userId) => {
+      console.log("emit not-typing", converId, userId + "----" + user.name);
+      removeTypingUser(converId, userId);
+    });
+
+    ////// lastView handle
   }
 
   function remove(socket) {
@@ -135,6 +138,8 @@ const HandleConverIo = () => {
     socket.removeListener("rename-conversation");
     socket.removeListener("update-avatar-conversation");
     socket.removeListener("added-group");
+    socket.removeListener("typing");
+    socket.removeListener("not-typing");
   }
 
   return <View></View>;

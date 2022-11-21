@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
+import { useFriendContext } from "../../store/contexts/FriendContext";
 
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 
 const HeaderTitlteChatRoomSimple = (props) => {
   const { converName, navigation, conver } = props;
+  const { friends } = useFriendContext();
+  const [member, setMember] = useState();
 
   function onNamePress() {
-    console.warn("press name");
+    navigation.navigate("RoomSimpleMore", {
+      converId: conver._id,
+    });
   }
 
   function onPhoneCallPress() {
@@ -19,12 +24,24 @@ const HeaderTitlteChatRoomSimple = (props) => {
   }
 
   function onListPress() {
-    console.warn("onListPress");
     navigation.navigate("RoomSimpleMore", {
-      conver,
+      converId: conver._id,
     });
   }
 
+  // function loadMember() {
+  //   if (conver) {
+  //     let member;
+  //     conver.members.forEach((item) => {
+  //       if (item._id != user._id) {
+  //         member = item;
+  //       }
+  //     });
+  //     if (member) {
+  //       setMember(member);
+  //     }
+  //   }
+  // }
   return (
     <View style={styles.container}>
       <Pressable style={styles.itemGroup} onPress={onNamePress}>

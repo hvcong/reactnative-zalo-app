@@ -8,6 +8,7 @@ import {
   Keyboard,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import HeaderTitleChatRoom from "../../components/Header/HeaderTitleChatRoom";
 import Message from "../../components/Message";
@@ -16,18 +17,52 @@ import { useConversationContext } from "../../store/contexts/ConversationContext
 import { useGlobalContext } from "../../store/contexts/GlobalContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import messApi from "../../api/messApi";
+import ReactModal from "../../components/ReactModal";
 
 const ChatRoom = (props) => {
   const { converId, name } = props.route.params;
   const { navigation } = props;
   const { user } = useGlobalContext();
-  const { getMember, getMembers, convers, getConverById } =
-    useConversationContext();
+  const {
+    getMember,
+    getMembers,
+    convers,
+    getConverById,
+    socket,
+    updateLastViewOffline,
+    typingList,
+  } = useConversationContext();
   const flastListRef = useRef();
   const [idSelected, setIdSelected] = useState(null);
   const [conver, setConver] = useState(null);
+  const [typingItems, setTypingItems] = useState("");
   //pin
+  const [pinMessages, setPinMessages] = useState([]);
   const [isShowMorePin, setIsShowMorePin] = useState(false);
+  const [flastListIndexs, setFlastListIndexs] = useState({});
+  const [isShowReactModal, setIsShowReactModal] = useState(false);
+  const [messSelected, setMessSelected] = useState(null);
+  // emit to server when open room
+  useEffect(() => {
+    const focusSubc = navigation.addListener("focus", () => {
+      if (socket) {
+        socket.emit("open-room", converId);
+        updateLastViewOffline(converId);
+      }
+    });
+    return focusSubc;
+  }, [navigation]);
+
+  // emit to server when close room
+  useEffect(() => {
+    const blurSubc = navigation.addListener("blur", () => {
+      if (socket) {
+        socket.emit("close-room", converId);
+      }
+    });
+    return blurSubc;
+  }, [navigation]);
 
   useEffect(() => {
     let _conver = getConverById(converId);
@@ -41,6 +76,25 @@ const ChatRoom = (props) => {
     }
     return () => {};
   }, [convers]);
+
+  useEffect(() => {
+    let str = "";
+    let userIds = typingList[converId];
+    if (userIds && Array.isArray(userIds)) {
+      userIds.forEach((userId) => {
+        let user = getMember(converId, userId);
+        if (user) {
+          if (str) {
+            str += ",";
+          }
+          str += user.name;
+        }
+      });
+      setTypingItems(str);
+    }
+
+    return () => {};
+  }, [typingList]);
 
   //header
   useEffect(() => {
@@ -79,9 +133,48 @@ const ChatRoom = (props) => {
   }
 
   // handle pin message
+
+  useEffect(() => {
+    if (conver) {
+      loadAllPinMessage(conver._id);
+      let _indexs = { ...flastListIndexs };
+
+      conver.messages.forEach((item, index) => {
+        _indexs[item._id] = index;
+      });
+      setFlastListIndexs(_indexs);
+    }
+
+    return () => {};
+  }, [conver]);
+
+  async function loadAllPinMessage(converId) {
+    try {
+      const res = await messApi.getAllPinMessageByConverId(converId);
+      if (res.isSuccess) {
+        setPinMessages(res.data);
+      } else {
+        console.log("load pinmessage faild");
+      }
+    } catch (error) {
+      console.log("load pinmessage err");
+    }
+  }
   function renderItemPinMessage({ index, item }) {
+    let { type } = item;
+    let count = pinMessages.length;
     return (
-      <View style={styles.pinItem}>
+      <TouchableOpacity
+        style={styles.pinItem}
+        onPress={() => {
+          setIsShowMorePin(false);
+          setIdSelected(item._id);
+          flastListRef.current.scrollToIndex({
+            index: flastListIndexs[item._id],
+          });
+        }}
+        onLongPress={() => showAlert(item._id)}
+      >
         <View style={styles.pinIconContainer}>
           <AntDesign name="message1" size={24} color="#1a69d9" />
         </View>
@@ -91,22 +184,55 @@ const ChatRoom = (props) => {
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            contenet
-            nefsfasfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            {type == "TEXT" ? item.content : `[${item.type}]`}
           </Text>
-          <Text style={styles.pinSender}>Tin nhắn của hoàng văn công</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.pinSender}>
+            Tin nhắn của {item.senderId.name}
+          </Text>
         </View>
-        <TouchableOpacity style={styles.pinItemRight}>
-          <Text style={styles.pinRightNum}>+1</Text>
-          <Feather name="chevrons-down" size={24} color="#1a69d9" />
-          {/* <Feather name="chevrons-up" size={24} color="black" /> */}
+        <TouchableOpacity>
+          {index == 0 && count > 0 && (
+            <TouchableOpacity
+              style={styles.pinItemRight}
+              onPress={() => setIsShowMorePin(!isShowMorePin)}
+            >
+              <Text style={styles.pinRightNum}>+ {count}</Text>
+              {!isShowMorePin ? (
+                <Feather name="chevrons-down" size={24} color="#1a69d9" />
+              ) : (
+                <Feather name="chevrons-up" size={24} color="#1a69d9" />
+              )}
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     );
   }
 
-  function getPinMessages() {
-    let _pinMessages = [];
+  function showAlert(messageId) {
+    Alert.alert("Bỏ ghim tin nhắn này", "", [
+      {
+        text: "Đồng ý",
+        onPress: () => removePinMessage(messageId),
+      },
+      {
+        text: "Quay lại",
+      },
+    ]);
+  }
+
+  async function removePinMessage(messageId) {
+    try {
+      const res = await messApi.removePinMessage(messageId);
+      if (res.isSuccess) {
+        console.log("remove pin ok");
+        loadAllPinMessage(conver._id);
+      } else {
+        console.log("remove pin faild");
+      }
+    } catch (error) {
+      console.log("remove pin message err");
+    }
   }
 
   function renderItem({ index, item }) {
@@ -123,8 +249,15 @@ const ChatRoom = (props) => {
         sender={senderId}
         idSelected={idSelected}
         setIdSelected={setIdSelected}
+        showModalReact={showModalReact}
       />
     );
+  }
+
+  // function on longpress message
+  function showModalReact(message) {
+    setIsShowReactModal(true);
+    setMessSelected(message);
   }
 
   function isRenderAvatarIcon(senderId, index) {
@@ -133,10 +266,6 @@ const ChatRoom = (props) => {
     }
     if (conver.messages[index - 1].senderId._id === senderId) return false;
     return true;
-  }
-
-  function scrollToEndFlastList() {
-    flastListRef.current.scrollToEnd();
   }
 
   if (!conver)
@@ -157,19 +286,36 @@ const ChatRoom = (props) => {
             ref={flastListRef}
             inverted={true}
             initialNumToRender={20}
+            onScroll={() => {
+              setIsShowMorePin(false);
+            }}
           ></FlatList>
         }
       </View>
       <View style={styles.enterContainer}>
+        {typingItems && (
+          <View style={styles.typingList}>
+            <Text style={styles.typingItem}>{typingItems} đang nhập...</Text>
+          </View>
+        )}
         <MessageInput converId={converId} />
       </View>
-      <View style={[styles.pinMessContainer]}>
-        {/* <FlatList
-          data={getPinMessages()}
-          renderItem={renderItemPinMessage}
-          key={(item) => item._id}
-        /> */}
-      </View>
+      {pinMessages && pinMessages.length > 0 && (
+        <View
+          style={[styles.pinMessContainer, !isShowMorePin && { height: 50 }]}
+        >
+          <FlatList
+            data={pinMessages}
+            renderItem={renderItemPinMessage}
+            key={(item) => item._id}
+          />
+        </View>
+      )}
+
+      <ReactModal
+        isShowModal={isShowReactModal}
+        setisShowModal={setIsShowReactModal}
+      />
     </View>
   );
 };
@@ -183,7 +329,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   listMessContainer: {
-    backgroundColor: "#92918e",
+    backgroundColor: "#ddd",
     paddingTop: 60,
     height: "100%",
   },
@@ -193,7 +339,19 @@ const styles = StyleSheet.create({
   enterContainer: {
     height: 60,
     backgroundColor: "white",
+    position: "relative",
   },
+  typingList: {
+    position: "absolute",
+    top: -24,
+    left: 0,
+    right: 0,
+    backgroundColor: "#ddd",
+    height: 24,
+    justifyContent: "center",
+    paddingLeft: 12,
+  },
+  typingItem: {},
   pinMessContainer: {
     // width: "100%",
     position: "absolute",
@@ -202,6 +360,7 @@ const styles = StyleSheet.create({
     right: 4,
     backgroundColor: "white",
     borderRadius: 8,
+    // height: 50,
   },
   pinItem: {
     flexDirection: "row",
@@ -214,6 +373,8 @@ const styles = StyleSheet.create({
   pinBody: {
     flex: 1,
     paddingHorizontal: 8,
+    borderRightWidth: 2,
+    borderRightColor: "#eee",
   },
   pinContent: {
     fontWeight: "bold",
@@ -227,8 +388,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     flexDirection: "row",
-    borderLeftWidth: 2,
-    borderLeftColor: "#eee",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 65,
   },
   pinRightNum: {
     fontSize: 15,
