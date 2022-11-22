@@ -55,11 +55,12 @@ const ConversationContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (convers && convers.length > 0) {
+      console.log("load last view");
       loadAllLastViews();
       initTypingList();
     }
     return () => {};
-  }, [convers]);
+  }, [convers.length]);
 
   // init typingList
   function initTypingList() {
@@ -491,6 +492,43 @@ const ConversationContextProvider = ({ children }) => {
     }
   }
 
+  // add reaction
+  async function addReaction(messageId, typeOfReact) {
+    try {
+      const res = await messApi.addReaction(messageId, typeOfReact);
+      if (res.isSuccess) {
+        console.log("add reaction ok");
+        return true;
+      } else {
+        console.log("add react faild");
+      }
+    } catch (error) {
+      console.log("add reaction err");
+    }
+  }
+
+  function addReactionOffline(converId, messageId, userId, typeOfReact) {
+    let _conver = getConverById(converId);
+    let _messages = _conver.messages;
+
+    for (let i = 0; i < _messages.length; i++) {
+      if (_messages[i]._id == messageId) {
+        let _reacts = _messages[i].reacts.filter((reactItem) => {
+          return reactItem.userId != userId;
+        });
+        _reacts.push({
+          _id: messageId,
+          type: typeOfReact,
+          userId,
+        });
+        _messages[i].reacts = _reacts;
+        break;
+      }
+    }
+
+    updateConver(_conver);
+  }
+
   //// handle lastView
   // load all lastview
   async function loadAllLastViews() {
@@ -605,6 +643,8 @@ const ConversationContextProvider = ({ children }) => {
     addTypingUser,
     removeTypingUser,
     pinMessage,
+    addReaction,
+    addReactionOffline,
   };
   return (
     <ConversationContext.Provider value={ConversationContextData}>

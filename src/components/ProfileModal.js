@@ -7,15 +7,18 @@ import {
   TextInput,
   Text,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
-import { FontAwesome5, Feather } from "@expo/vector-icons";
+import { FontAwesome5, Feather, MaterialIcons } from "@expo/vector-icons";
 import { useGlobalContext } from "../store/contexts/GlobalContext";
 import { AntDesign } from "@expo/vector-icons";
 import { converDate } from "../utils";
 import { useConversationContext } from "../store/contexts/ConversationContext";
 import { useFriendContext } from "../store/contexts/FriendContext";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import moment from "moment";
 
 const ProfileModal = () => {
   const { modalProfile, setModalProfile, user, updateInfor, updateAvatar } =
@@ -29,6 +32,7 @@ const ProfileModal = () => {
     acceptFriend,
     refuseFriend,
   } = useFriendContext();
+  const [date, setDate] = useState("09-10-2020");
 
   const { acc, isShow } = modalProfile;
   const [image, setImage] = useState(null);
@@ -101,6 +105,23 @@ const ProfileModal = () => {
       );
     }
   }
+
+  // date picker
+  const [selectedDate, setSelectedDate] = useState(acc.dateOfBirth);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    setSelectedDate(date);
+    hideDatePicker();
+  };
 
   return (
     <Modal visible={modalProfile.isShow} transparent={true}>
@@ -198,9 +219,33 @@ const ProfileModal = () => {
             </View>
             <View style={styles.bodyItem}>
               <Text style={styles.bodyLabel}>Ngày sinh</Text>
-              <Text style={styles.bodyValue}>
-                {acc && converDate(acc.dateOfBirth).toStringDMY}
-              </Text>
+              {/* // date picker */}
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text>
+                  {selectedDate
+                    ? moment(selectedDate).format("MM/DD/YYYY")
+                    : "Please select date"}
+                </Text>
+                <MaterialIcons
+                  name="date-range"
+                  size={24}
+                  color="black"
+                  onPress={showDatePicker}
+                />
+                <DateTimePickerModal
+                  isVisible={isDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleConfirm}
+                  onCancel={hideDatePicker}
+                />
+              </View>
             </View>
           </View>
         </View>
@@ -328,6 +373,10 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   bodyValue: {},
+  datePickerStyle: {
+    width: 200,
+    marginTop: 20,
+  },
 });
 
 export default ProfileModal;

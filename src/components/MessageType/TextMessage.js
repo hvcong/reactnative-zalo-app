@@ -6,6 +6,7 @@ import {
   Touchable,
   useWindowDimensions,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { converDate } from "../../utils";
 import {
@@ -58,6 +59,76 @@ const TextMessage = ({
     const resutl = await recallMessageOnly(_id, conversationId);
 
     console.log("delete");
+  }
+
+  function renderReactList(reacts) {
+    if (!reacts || (reacts && reacts.length == 0)) return null;
+    let typeCheck = {};
+    reacts.forEach((item) => {
+      typeCheck[item.type] = true;
+    });
+
+    return (
+      <View
+        style={[
+          reactListStyles.reactList,
+          isMyMessage && reactListStyles.reactListOfMyMessage,
+        ]}
+      >
+        <View style={reactListStyles.reactItem}>
+          <Text style={reactListStyles.reactItemCount}>{reacts.length}</Text>
+        </View>
+        {typeCheck["1"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../../assets/like.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+
+        {typeCheck["2"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../../assets/love.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["3"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../../assets/haha.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["4"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../../assets/wow.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["5"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../../assets/sad.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["6"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../../assets/angry.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+    );
   }
 
   function renderBody() {
@@ -135,6 +206,7 @@ const TextMessage = ({
           </>
         )}
         <Text style={styles.time}>{date.toString}</Text>
+        {renderReactList(item.reacts)}
       </TouchableOpacity>
     );
   }
@@ -145,6 +217,7 @@ const TextMessage = ({
 const styles = StyleSheet.create({
   wrap: {
     position: "relative",
+    marginBottom: 12,
   },
   backgroundColorSelected: {
     backgroundColor: "#aaa",
@@ -156,7 +229,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 16,
     maxWidth: "75%",
-    minWidth: "35%",
   },
   myMessageContainer: {
     padding: 12,
@@ -164,7 +236,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#e5efff",
     marginLeft: "auto",
     maxWidth: "75%",
-    minWidth: "35%",
   },
   name: {
     color: "#bd6d29",
@@ -225,9 +296,36 @@ const styles = StyleSheet.create({
   optionText: {
     paddingVertical: 6,
     paddingLeft: 6,
-
     fontSize: 13,
   },
 });
 
+const reactListStyles = StyleSheet.create({
+  // reacts style
+  reactList: {
+    flexDirection: "row",
+    position: "absolute",
+    bottom: -16,
+    backgroundColor: "#bbb",
+    borderRadius: 8,
+    paddingRight: 4,
+  },
+  reactListOfMyMessage: {
+    right: 0,
+  },
+  reactItem: {
+    flexDirection: "row",
+    paddingVertical: 4,
+    paddingHorizontal: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  reactItemCount: { fontSize: 12, paddingHorizontal: 4 },
+  reactIcon: {
+    width: 16,
+    height: 16,
+  },
+});
+
+export { reactListStyles };
 export default TextMessage;

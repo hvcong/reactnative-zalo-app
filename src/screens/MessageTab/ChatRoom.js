@@ -305,7 +305,7 @@ const ChatRoom = (props) => {
           style={[styles.pinMessContainer, !isShowMorePin && { height: 50 }]}
         >
           <FlatList
-            data={pinMessages}
+            data={[...pinMessages].reverse()}
             renderItem={renderItemPinMessage}
             key={(item) => item._id}
           />
@@ -314,7 +314,8 @@ const ChatRoom = (props) => {
 
       <ReactModal
         isShowModal={isShowReactModal}
-        setisShowModal={setIsShowReactModal}
+        setIsShowModal={setIsShowReactModal}
+        message={messSelected}
       />
     </View>
   );

@@ -22,6 +22,7 @@ const HandleConverIo = () => {
     updateLastViewOffline,
     addTypingUser,
     removeTypingUser,
+    addReactionOffline,
   } = useConversationContext();
   const { user } = useGlobalContext();
 
@@ -32,7 +33,7 @@ const HandleConverIo = () => {
       handle(socket);
     }
     return () => {};
-  }, [user, socket, convers]);
+  }, [user, socket, convers.length]);
 
   function handle(socket) {
     // khi tạo một conver
@@ -125,6 +126,12 @@ const HandleConverIo = () => {
     });
 
     ////// lastView handle
+
+    // add-reaction
+    socket.on("add-reaction", ({ conversationId, messageId, user, type }) => {
+      console.log("emit add-reaction");
+      addReactionOffline(conversationId, messageId, user.id, type);
+    });
   }
 
   function remove(socket) {
@@ -140,6 +147,7 @@ const HandleConverIo = () => {
     socket.removeListener("added-group");
     socket.removeListener("typing");
     socket.removeListener("not-typing");
+    socket.removeListener("add-reaction");
   }
 
   return <View></View>;

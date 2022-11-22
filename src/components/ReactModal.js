@@ -1,27 +1,249 @@
 import React from "react";
-import { View, StyleSheet, Modal, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Modal,
+  Text,
+  Image,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
+import { AntDesign, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { converDate } from "../utils";
+import { useGlobalContext } from "../store/contexts/GlobalContext";
+import { useConversationContext } from "../store/contexts/ConversationContext";
+import { reactListStyles } from "./MessageType/TextMessage";
 
-const ReactModal = ({ isShowModal, setisShowModal, message }) => {
+const ReactModal = ({ isShowModal, setIsShowModal, message }) => {
+  const { user } = useGlobalContext();
+  const { addReaction, recallMessage, recallMessageOnly, pinMessage } =
+    useConversationContext();
+  if (message == null || !isShowModal) return null;
+  let isMyMessage = user._id == message.senderId._id;
+
+  function onAddReaction(messageId, type) {
+    setIsShowModal(false);
+    addReaction(messageId, type);
+  }
+
+  function renderReactList(reacts) {
+    if (!reacts || (reacts && reacts.length == 0)) return null;
+    let typeCheck = {};
+    reacts.forEach((item) => {
+      typeCheck[item.type] = true;
+    });
+
+    return (
+      <View
+        style={[
+          reactListStyles.reactList,
+          isMyMessage && reactListStyles.reactListOfMyMessage,
+        ]}
+      >
+        <View style={reactListStyles.reactItem}>
+          <Text style={reactListStyles.reactItemCount}>{reacts.length}</Text>
+        </View>
+        {typeCheck["1"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../assets/like.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+
+        {typeCheck["2"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../assets/love.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["3"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../assets/haha.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["4"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../assets/wow.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["5"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../assets/sad.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+        {typeCheck["6"] && (
+          <TouchableOpacity style={reactListStyles.reactItem}>
+            <Image
+              source={require("../../assets/angry.png")}
+              style={reactListStyles.reactIcon}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  }
+
   return (
     <Modal visible={isShowModal} transparent={true}>
-      <View style={styles.container}>
-        <View style={styles.body}>
+      <Pressable onPress={() => setIsShowModal(false)} style={styles.container}>
+        <Pressable style={styles.body}>
           <View style={{ flexDirection: "row", width: "100%" }}>
-            <View style={styles.message}>
-              <Text style={styles.senderName}>cong</Text>
-              <Text style={styles.content}>
-                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            {!isMyMessage && (
+              <View style={styles.avatar}>
+                {message.senderId.avatar ? (
+                  <Image
+                    source={{ uri: message.senderId.avatar }}
+                    style={styles.avatarImage}
+                  />
+                ) : (
+                  <Image
+                    source={require("../../assets/avatar.jpg")}
+                    style={styles.avatarImage}
+                  />
+                )}
+              </View>
+            )}
+            <View style={[styles.message, isMyMessage && styles.myMessage]}>
+              {!isMyMessage && (
+                <Text style={styles.senderName}>{message.senderId.name}</Text>
+              )}
+              <Text style={styles.content}>{message.content}</Text>
+              <Text style={styles.time}>
+                {converDate(message.createdAt).toString}
               </Text>
-              <Text style={styles.time}>14:22</Text>
+              {renderReactList(message.reacts)}
             </View>
-            <View style={{ flex: 1 }}></View>
           </View>
 
-          <View style={styles.reactList}></View>
-          <View style={styles.options}></View>
-        </View>
-        <Text onPress={() => setisShowModal(false)}>close</Text>
-      </View>
+          <View style={styles.reactList}>
+            <TouchableOpacity
+              style={styles.reactItem}
+              onPress={() => onAddReaction(message._id, 1)}
+            >
+              <Image
+                source={require("../../assets/like.png")}
+                style={styles.reactIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.reactItem}
+              onPress={() => onAddReaction(message._id, 2)}
+            >
+              <Image
+                source={require("../../assets/love.png")}
+                style={styles.reactIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.reactItem}
+              onPress={() => onAddReaction(message._id, 3)}
+            >
+              <Image
+                source={require("../../assets/haha.png")}
+                style={styles.reactIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.reactItem}
+              onPress={() => onAddReaction(message._id, 4)}
+            >
+              <Image
+                source={require("../../assets/wow.png")}
+                style={styles.reactIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.reactItem}
+              onPress={() => onAddReaction(message._id, 5)}
+            >
+              <Image
+                source={require("../../assets/sad.png")}
+                style={styles.reactIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.reactItem}
+              onPress={() => onAddReaction(message._id, 6)}
+            >
+              <Image
+                source={require("../../assets/angry.png")}
+                style={styles.reactIcon}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.options}>
+            <TouchableOpacity
+              onPress={() => {
+                pinMessage(message._id);
+                setIsShowModal(false);
+              }}
+              style={styles.optionItem}
+            >
+              <AntDesign
+                style={styles.optionIcon}
+                name="pushpino"
+                size={32}
+                color="#d534eb"
+              />
+              <Text style={styles.optionName}>Ghim</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setIsShowModal(false);
+                recallMessageOnly(message._id, message.conversationId);
+              }}
+              style={styles.optionItem}
+            >
+              <Feather
+                name="trash"
+                size={32}
+                style={styles.optionIcon}
+                color="#f22424"
+              />
+              <Text style={styles.optionName}>Xóa</Text>
+            </TouchableOpacity>
+            {isMyMessage && (
+              <TouchableOpacity
+                onPress={() => {
+                  setIsShowModal(false);
+                  recallMessage(message._id, message.conversationId);
+                }}
+                style={styles.optionItem}
+              >
+                <MaterialCommunityIcons
+                  name="backup-restore"
+                  style={styles.optionIcon}
+                  size={32}
+                  color="#d41542"
+                />
+                <Text style={styles.optionName}>Thu hồi</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
+              <Feather
+                style={styles.optionIcon}
+                name="copy"
+                size={32}
+                color="black"
+              />
+              <Text style={styles.optionName}>Copy</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
@@ -30,12 +252,20 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "flex-end",
   },
   body: {
-    paddingHorizontal: 32,
+    paddingHorizontal: 12,
     paddingVertical: 32,
+  },
+  avatar: {
+    paddingRight: 12,
+  },
+  avatarImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 50,
   },
   message: {
     backgroundColor: "white",
@@ -45,6 +275,11 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
     borderWidth: 1,
     borderColor: "#1a69d9",
+    marginBottom: 12,
+  },
+  myMessage: {
+    backgroundColor: "#e5efff",
+    marginLeft: "auto",
   },
   senderName: {
     color: "#bd6d29",
@@ -57,8 +292,40 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     color: "#666",
   },
-  reactList: {},
-  options: {},
+  reactList: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    borderRadius: 14,
+    marginTop: 10,
+  },
+  reactItem: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  reactIcon: {
+    width: 32,
+    height: 32,
+  },
+  options: {
+    backgroundColor: "white",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    borderRadius: 14,
+    marginTop: 4,
+  },
+  optionItem: {
+    padding: 12,
+    width: "25%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  optionIcon: {},
+  optionName: {
+    paddingTop: 8,
+  },
 });
 
 export default ReactModal;

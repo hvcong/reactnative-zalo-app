@@ -34,8 +34,6 @@ const Message = (props) => {
   } = props;
   let { type, senderId, isDeleted } = item;
 
-  const [isOnReact, setisOnReact] = useState(false);
-
   function renderMessageContent() {
     if (isDeleted) {
       return <DeletedMessage isMyMessage={isMyMessage} />;
@@ -72,69 +70,28 @@ const Message = (props) => {
     return isRenderAvatarIcon(senderId._id, index);
   }
 
-  function onReaction() {
-    setIdSelected("" + item._id);
+  function renderAvatar(senderId) {
+    if (senderId && senderId.avatar) {
+      return (
+        <Image style={styles.image} source={{ uri: senderId.avatar }}></Image>
+      );
+    } else {
+      return (
+        <Image
+          style={styles.image}
+          source={require("../../assets/avatar.jpg")}
+        ></Image>
+      );
+    }
   }
 
   return (
     <Pressable style={[style, styles.wrapper]}>
       <View style={styles.imageContainer}>
-        {isRenderAvatar() && (
-          <Image
-            style={styles.image}
-            source={require("../../assets/avatar.jpg")}
-          ></Image>
-        )}
+        {isRenderAvatar() && renderAvatar(senderId)}
       </View>
-      <TouchableOpacity
-        style={styles.container}
-        activeOpacity={1}
-        onPress={onReaction}
-      >
+      <TouchableOpacity style={styles.container} activeOpacity={1}>
         {renderMessageContent()}
-
-        <View style={styles.listReacted}>
-          <SimpleLineIcons
-            style={styles.reactedIcon}
-            name="like"
-            size={24}
-            color="black"
-          />
-          <Feather
-            style={styles.reactedIcon}
-            name="heart"
-            size={24}
-            color="black"
-          />
-        </View>
-        {isOnReact && (
-          <View style={styles.reactContainer}>
-            <SimpleLineIcons
-              style={styles.reactIcon}
-              name="like"
-              size={24}
-              color="black"
-            />
-            <SimpleLineIcons
-              style={styles.reactIcon}
-              name="like"
-              size={24}
-              color="black"
-            />
-            <SimpleLineIcons
-              style={styles.reactIcon}
-              name="like"
-              size={24}
-              color="black"
-            />
-            <Feather
-              style={styles.reactIcon}
-              name="heart"
-              size={24}
-              color="black"
-            />
-          </View>
-        )}
       </TouchableOpacity>
     </Pressable>
   );
@@ -166,44 +123,6 @@ const styles = StyleSheet.create({
   body: {
     marginRight: "25%",
     borderRadius: 10,
-  },
-  listReacted: {
-    display: "none",
-  },
-  reactedIcon: {},
-  reactContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-    position: "absolute",
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    bottom: 0,
-    width: "100%",
-
-    borderColor: "#999",
-    borderWidth: 1,
-  },
-  reactIcon: {
-    paddingLeft: 8,
-  },
-  options: {
-    flexDirection: "row",
-    backgroundColor: "#ddd",
-    borderWidth: 1,
-    borderColor: "#eee",
-    position: "absolute",
-    padding: 8,
-    borderRadius: 8,
-    top: "20%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  optionContainer: {
-    paddingHorizontal: 4,
-    marginHorizontal: 8,
   },
 });
 

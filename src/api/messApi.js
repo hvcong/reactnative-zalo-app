@@ -25,6 +25,11 @@ class MessApi {
     let url = "message/pins/" + messageId;
     return axiosClient.delete(url);
   }
+
+  addReaction(messageId, typeOfReact) {
+    let url = `message/${messageId}/reacts/${typeOfReact}`;
+    return axiosClient.post(url);
+  }
 }
 
 const messApi = new MessApi();
