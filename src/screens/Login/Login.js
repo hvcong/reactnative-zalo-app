@@ -63,7 +63,7 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#dfdfdf",
+    backgroundColor: "white",
     alignItems: "center",
   },
   body: {

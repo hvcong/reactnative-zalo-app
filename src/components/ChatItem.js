@@ -29,6 +29,11 @@ const ChatItem = ({ conver, navigation }) => {
     if (lastMessageId) {
       if (lastMessageId.type == "TEXT" || lastMessageId.type == "NOTIFY") {
         return lastMessageId.content;
+      } else if (
+        lastMessageId.type == "FILE" ||
+        lastMessageId.type == "IMAGE"
+      ) {
+        return `[${lastMessageId.type}] ${lastMessageId.content}`;
       }
     }
   }
@@ -124,7 +129,7 @@ const ChatItem = ({ conver, navigation }) => {
             />
           ) : (
             <Image
-              source={require("../../assets/avatar.jpg")}
+              source={require("../../assets/groupAvatar.png")}
               style={styles.avatar}
             />
           )}

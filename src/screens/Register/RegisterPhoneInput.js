@@ -14,10 +14,8 @@ const RegisterPhoneInput = ({ navigation, route }) => {
   async function onSubmit() {
     if (validate()) {
       setIsLoading(true);
-      // let res = await userApi.findUserByPhoneNumber(phoneInput);
-      let res = {
-        isSuccess: false,
-      };
+      let res = await userApi.findUserByPhoneNumber(phoneInput);
+
       setIsLoading(false);
       if (!res.isSuccess) {
         navigation.navigate("RegisterVerify", {

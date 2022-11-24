@@ -100,7 +100,7 @@ const RoomChatGroupMore = (props) => {
 
     return (
       <Image
-        source={require("../../../assets/avatar.jpg")}
+        source={require("../../../assets/groupAvatar.png")}
         style={styles.avatar}
       />
     );

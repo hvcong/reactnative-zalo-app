@@ -19,6 +19,7 @@ import {
 } from "@expo/vector-icons";
 import NotifyMessage from "./MessageType/NotifyMessage";
 import DeletedMessage from "./MessageType/DeletedMessage";
+import FileMessage from "./MessageType/FileMessage";
 
 const Message = (props) => {
   let {
@@ -54,11 +55,15 @@ const Message = (props) => {
     } else if (type === "NOTIFY") {
       return <NotifyMessage item={item} isMyMessage={isMyMessage} />;
     } else if (type === "IMAGE") {
-      return <ImageMessage item={item} />;
-    } else if (type === "STICKER") {
-    } else if (type === "VIDEO") {
-    } else if (type === "VOTE") {
-    } else if (type === "HTML") {
+      return <ImageMessage item={item} showModalReact={showModalReact} />;
+    } else if (type == "FILE") {
+      return (
+        <FileMessage
+          item={item}
+          isMyMessage={isMyMessage}
+          showModalReact={showModalReact}
+        />
+      );
     }
   }
 

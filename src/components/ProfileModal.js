@@ -8,10 +8,16 @@ import {
   Text,
   ActivityIndicator,
   Button,
+  TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
-import { FontAwesome5, Feather, MaterialIcons } from "@expo/vector-icons";
+import {
+  FontAwesome5,
+  Feather,
+  MaterialIcons,
+  FontAwesome,
+} from "@expo/vector-icons";
 import { useGlobalContext } from "../store/contexts/GlobalContext";
 import { AntDesign } from "@expo/vector-icons";
 import { converDate } from "../utils";
@@ -32,10 +38,8 @@ const ProfileModal = () => {
     acceptFriend,
     refuseFriend,
   } = useFriendContext();
-  const [date, setDate] = useState("09-10-2020");
 
   const { acc, isShow } = modalProfile;
-  const [image, setImage] = useState(null);
   const [inforInput, setInforInput] = useState({});
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
 
@@ -107,8 +111,15 @@ const ProfileModal = () => {
   }
 
   // date picker
-  const [selectedDate, setSelectedDate] = useState(acc.dateOfBirth);
+  const [selectedDate, setSelectedDate] = useState(
+    (acc && acc.dateOfBirth) || ""
+  );
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  useEffect(() => {
+    setSelectedDate(acc && acc.dateOfBirth);
+    return () => {};
+  }, [acc]);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -119,9 +130,19 @@ const ProfileModal = () => {
   };
 
   const handleConfirm = (date) => {
+    if (date >= new Date()) {
+      hideDatePicker();
+      return;
+    }
+
+    updateInfor({
+      dateOfBirth: date,
+    });
     setSelectedDate(date);
     hideDatePicker();
   };
+
+  if (!acc) return null;
 
   return (
     <Modal visible={modalProfile.isShow} transparent={true}>
@@ -216,36 +237,46 @@ const ProfileModal = () => {
               <Text style={styles.bodyValue}>
                 {acc && modalProfile.acc.gender ? "Nam" : "Nữ"}
               </Text>
+              {acc && acc._id == user._id && (
+                <TouchableOpacity
+                  onPress={async () => {
+                    let is = await updateInfor({
+                      gender: !acc.gender,
+                    });
+                  }}
+                >
+                  <FontAwesome
+                    style={styles.genderChange}
+                    name="exchange"
+                    size={22}
+                    color="black"
+                  />
+                </TouchableOpacity>
+              )}
             </View>
             <View style={styles.bodyItem}>
               <Text style={styles.bodyLabel}>Ngày sinh</Text>
               {/* // date picker */}
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text>
-                  {selectedDate
-                    ? moment(selectedDate).format("MM/DD/YYYY")
-                    : "Please select date"}
-                </Text>
+
+              <Text style={styles.dateValue}>
+                {selectedDate
+                  ? moment(selectedDate).format("DD/MM/YYYY")
+                  : "././."}
+              </Text>
+              {acc && acc._id == user._id && (
                 <MaterialIcons
                   name="date-range"
                   size={24}
                   color="black"
                   onPress={showDatePicker}
                 />
-                <DateTimePickerModal
-                  isVisible={isDatePickerVisible}
-                  mode="date"
-                  onConfirm={handleConfirm}
-                  onCancel={hideDatePicker}
-                />
-              </View>
+              )}
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
             </View>
           </View>
         </View>
@@ -373,9 +404,15 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   bodyValue: {},
+  genderChange: {
+    paddingLeft: 12,
+  },
   datePickerStyle: {
     width: 200,
     marginTop: 20,
+  },
+  dateValue: {
+    paddingRight: 12,
   },
 });
 

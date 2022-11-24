@@ -1,12 +1,22 @@
 import React from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
-import { useGlobalContext } from "../../store/contexts/GlobalContext";
+import * as Linking from "expo-linking";
+import { Feather } from "@expo/vector-icons";
 import { reactListStyles } from "./TextMessage";
 
-const ImageMessage = (props) => {
-  const { item, showModalReact } = props;
-  const { user } = useGlobalContext();
-  let isMyMessage = user._id == item.senderId._id;
+const FileMessage = (props) => {
+  const { item, isMyMessage, showModalReact } = props;
+  function onLink() {
+    Linking.openURL(item.content);
+  }
+
+  function renderFileName(content) {
+    let newName = content.replace(
+      /https:\/\/upload-gavroche-chat-app\.s3\.ap-southeast-1\.amazonaws.com\/gavroche-[0-9]*-/g,
+      ""
+    );
+    return newName;
+  }
 
   function renderReactList(reacts) {
     if (!reacts || (reacts && reacts.length == 0)) return null;
@@ -79,44 +89,59 @@ const ImageMessage = (props) => {
   }
 
   return (
-    <TouchableOpacity
-      onLongPress={() => showModalReact(item)}
-      style={styles.container}
-    >
-      <View style={[isMyMessage ? styles.bodyOfMyMessage : styles.body]}>
-        <Image source={{ uri: item.content }} style={styles.image} />
-        {renderReactList(item.reacts)}
-      </View>
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <TouchableOpacity
+        onLongPress={() => showModalReact(item)}
+        style={[isMyMessage ? styles.bodyOfMyMessage : styles.body]}
+      >
+        <View style={styles.file}>
+          <Feather name="file-text" size={24} color="black" />
+          <Text style={styles.link}>
+            {renderFileName(item && item.content)}
+          </Text>
+          <Text style={styles.btnLink} onPress={onLink}>
+            Mở
+          </Text>
+          {renderReactList(item.reacts)}
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    marginBottom: 12,
+    width: "100%",
   },
   body: {
     paddingVertical: 2,
     paddingHorizontal: 2,
     flex: 1,
-    maxWidth: "75%",
-    minWidth: "35%",
-    position: "relative",
-    marginBottom: 12,
+    marginRight: "auto",
   },
   bodyOfMyMessage: {
     marginLeft: "auto",
-    flex: 1,
-    maxWidth: "75%",
-    minWidth: "35%",
-    position: "relative",
-    marginBottom: 12,
   },
-  image: {
-    height: 200,
-    width: 250,
-    resizeMode: "contain",
+  file: {
+    flexDirection: "row",
+    backgroundColor: "#b2c7d4",
+    padding: 8,
+    borderRadius: 4,
+    position: "relative",
+  },
+  link: {
+    color: "blue",
+    marginRight: 4,
+    paddingLeft: 4,
+    fontSize: 14,
+  },
+  btnLink: {
+    padding: 8,
+    borderRadius: 4,
+    fontWeight: "bold",
+    color: "#1a69d9",
   },
 });
 
-export default ImageMessage;
+export default FileMessage;

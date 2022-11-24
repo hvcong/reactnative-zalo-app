@@ -85,15 +85,8 @@ class ConverApi {
     let match = /\.(\w+)$/.exec(filename);
     let type = "";
     let url = "";
-    console.log(match);
-    if (match && match[1] == "mp4") {
-      type = "video/mp4";
-      url = "/message/file/FILE/" + converId;
-    } else {
-      type = match ? `image/${match[1]}` : `image`;
-      url = "/message/file/IMAGE/" + converId;
-    }
-    console.log(type);
+    type = match ? `image/${match[1]}` : `image`;
+    url = "/message/file/IMAGE/" + converId;
     let formData = new FormData();
     formData.append("file", { uri: localUri, name: filename, type });
 
@@ -140,21 +133,17 @@ class ConverApi {
 
   // send file
   sendFile(converId, pickerResult) {
-    let url = "file/FILE/" + converId;
-    console.log(url);
-    let { name, size, uri } = pickerResult;
-    let nameParts = name.split(".");
-    let fileType = nameParts[nameParts.length - 1];
-    var fileToUpload = {
-      name: name,
-      size: size,
-      uri: uri,
-      type: "application/" + fileType,
-    };
-
-    const fileUri = fileToUpload.uri;
+    let url = "message/file/FILE/" + converId;
+    const { name, uri } = pickerResult;
+    const uriParts = name.split(".");
+    const fileType = uriParts[uriParts.length - 1];
     const formData = new FormData();
-    formData.append("file", fileToUpload);
+    formData.append("file", {
+      uri,
+      name,
+      type: `application/${fileType}`,
+    });
+    console.log(url);
 
     return axiosClient.post(url, formData, {
       headers: { "Content-Type": "multipart/form-data" },

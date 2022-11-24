@@ -14,7 +14,12 @@ import { useGlobalContext } from "../store/contexts/GlobalContext";
 import { useConversationContext } from "../store/contexts/ConversationContext";
 import { reactListStyles } from "./MessageType/TextMessage";
 
-const ReactModal = ({ isShowModal, setIsShowModal, message }) => {
+const ReactModal = ({
+  isShowModal,
+  setIsShowModal,
+  message,
+  typeOfConversation,
+}) => {
   const { user } = useGlobalContext();
   const { addReaction, recallMessage, recallMessageOnly, pinMessage } =
     useConversationContext();
@@ -96,6 +101,14 @@ const ReactModal = ({ isShowModal, setIsShowModal, message }) => {
     );
   }
 
+  function renderFileName(content) {
+    let newName = content.replace(
+      /https:\/\/upload-gavroche-chat-app\.s3\.ap-southeast-1\.amazonaws.com\/gavroche-[0-9]*-/g,
+      ""
+    );
+    return newName;
+  }
+
   return (
     <Modal visible={isShowModal} transparent={true}>
       <Pressable onPress={() => setIsShowModal(false)} style={styles.container}>
@@ -120,7 +133,25 @@ const ReactModal = ({ isShowModal, setIsShowModal, message }) => {
               {!isMyMessage && (
                 <Text style={styles.senderName}>{message.senderId.name}</Text>
               )}
-              <Text style={styles.content}>{message.content}</Text>
+              {message.type == "TEXT" && (
+                <Text style={styles.content}>{message.content}</Text>
+              )}
+
+              {message.type == "IMAGE" && (
+                <Image
+                  source={{ uri: message.content }}
+                  style={styles.imageContent}
+                />
+              )}
+              {message.type == "FILE" && (
+                <View style={styles.file}>
+                  <Feather name="file-text" size={24} color="black" />
+                  <Text style={styles.link}>
+                    {renderFileName(message && message.content)}
+                  </Text>
+                </View>
+              )}
+
               <Text style={styles.time}>
                 {converDate(message.createdAt).toString}
               </Text>
@@ -185,21 +216,23 @@ const ReactModal = ({ isShowModal, setIsShowModal, message }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.options}>
-            <TouchableOpacity
-              onPress={() => {
-                pinMessage(message._id);
-                setIsShowModal(false);
-              }}
-              style={styles.optionItem}
-            >
-              <AntDesign
-                style={styles.optionIcon}
-                name="pushpino"
-                size={32}
-                color="#d534eb"
-              />
-              <Text style={styles.optionName}>Ghim</Text>
-            </TouchableOpacity>
+            {typeOfConversation == "group" && (
+              <TouchableOpacity
+                onPress={() => {
+                  pinMessage(message._id);
+                  setIsShowModal(false);
+                }}
+                style={styles.optionItem}
+              >
+                <AntDesign
+                  style={styles.optionIcon}
+                  name="pushpino"
+                  size={32}
+                  color="#d534eb"
+                />
+                <Text style={styles.optionName}>Ghim</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               onPress={() => {
                 setIsShowModal(false);
@@ -232,15 +265,6 @@ const ReactModal = ({ isShowModal, setIsShowModal, message }) => {
                 <Text style={styles.optionName}>Thu hồi</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
-              <Feather
-                style={styles.optionIcon}
-                name="copy"
-                size={32}
-                color="black"
-              />
-              <Text style={styles.optionName}>Copy</Text>
-            </TouchableOpacity>
           </View>
         </Pressable>
       </Pressable>
@@ -288,6 +312,10 @@ const styles = StyleSheet.create({
     fontSize: 17,
     textAlign: "justify",
   },
+  imageContent: {
+    width: 250,
+    height: 200,
+  },
   time: {
     paddingTop: 8,
     color: "#666",
@@ -325,6 +353,18 @@ const styles = StyleSheet.create({
   optionIcon: {},
   optionName: {
     paddingTop: 8,
+  },
+  file: {
+    flexDirection: "row",
+    backgroundColor: "#b2c7d4",
+    padding: 8,
+    borderRadius: 4,
+  },
+  link: {
+    color: "blue",
+    marginRight: 32,
+    paddingLeft: 4,
+    fontSize: 14,
   },
 });
 

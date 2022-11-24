@@ -43,22 +43,13 @@ const ChatRoom = (props) => {
   const [flastListIndexs, setFlastListIndexs] = useState({});
   const [isShowReactModal, setIsShowReactModal] = useState(false);
   const [messSelected, setMessSelected] = useState(null);
-  // emit to server when open room
-  useEffect(() => {
-    const focusSubc = navigation.addListener("focus", () => {
-      if (socket) {
-        socket.emit("open-room", converId);
-        updateLastViewOffline(converId);
-      }
-    });
-    return focusSubc;
-  }, [navigation]);
 
   // emit to server when close room
   useEffect(() => {
     const blurSubc = navigation.addListener("blur", () => {
       if (socket) {
         socket.emit("close-room", converId);
+        updateLastViewOffline(converId);
       }
     });
     return blurSubc;
@@ -102,7 +93,9 @@ const ChatRoom = (props) => {
       headerTitle: (props) => (
         <HeaderTitleChatRoom
           {...props}
-          typeOfConversation={conver && conver.type ? "group" : "simple"}
+          typeOfConversation={
+            conver && conver.type == true ? "group" : "simple"
+          }
           numOfMember={getMembers(converId) && getMembers(converId).length}
           converName={name}
           navigation={navigation}
@@ -135,7 +128,7 @@ const ChatRoom = (props) => {
   // handle pin message
 
   useEffect(() => {
-    if (conver) {
+    if (conver && conver.type == true) {
       loadAllPinMessage(conver._id);
       let _indexs = { ...flastListIndexs };
 
@@ -163,6 +156,7 @@ const ChatRoom = (props) => {
   function renderItemPinMessage({ index, item }) {
     let { type } = item;
     let count = pinMessages.length;
+
     return (
       <TouchableOpacity
         style={styles.pinItem}
@@ -316,6 +310,7 @@ const ChatRoom = (props) => {
         isShowModal={isShowReactModal}
         setIsShowModal={setIsShowReactModal}
         message={messSelected}
+        typeOfConversation={conver && conver.type == true ? "group" : "simple"}
       />
     </View>
   );

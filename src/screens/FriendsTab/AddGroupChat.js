@@ -137,13 +137,6 @@ const AddGroupChat = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Pressable style={styles.image} onPress={onPickImage}>
-          {image ? (
-            <Image source={{ uri: image.uri }} style={styles.image} />
-          ) : (
-            <Ionicons name="md-camera-sharp" size={24} color="black" />
-          )}
-        </Pressable>
         <TextInput
           value={nameInput}
           onChangeText={setnameInput}
