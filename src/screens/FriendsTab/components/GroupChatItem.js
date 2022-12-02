@@ -2,13 +2,11 @@ import React from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
 
 const GroupChatItem = (props) => {
-  const { _id, name, lassMessageId, index, type, avatar, senderId } = props;
-  console.log(senderId);
+  const { _id, name, lassMessageId, index, type, avatar } = props;
 
   return (
     <View style={[styles.item, index == 0 && { marginTop: 12 }]}>
       <View style={styles.avatarContainer}>
-        {}
         <Image
           source={require("../../../../assets/avatar.jpg")}
           style={styles.avatar}
@@ -16,8 +14,7 @@ const GroupChatItem = (props) => {
       </View>
       <View style={styles.itemMiddle}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-          {/* {type == false && senderId.name}
-          {type == true && name} */}
+          {name}
         </Text>
         <Text style={styles.lastMess} numberOfLines={1} ellipsizeMode="tail">
           {}

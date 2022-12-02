@@ -8,9 +8,19 @@ const GroupChatBody = ({ navigation }) => {
   const { convers } = useConversationContext();
 
   function renderItem({ item, index }) {
-    // if (item.type == true) {
-    return <GroupChatItem {...item} index={index} />;
-    // }
+    if (item.type == true) {
+      return <GroupChatItem {...item} index={index} />;
+    }
+  }
+
+  function count() {
+    let num = 0;
+    convers.forEach((element) => {
+      if (element.type == true) {
+        num++;
+      }
+    });
+    return num;
   }
 
   return (
@@ -28,9 +38,7 @@ const GroupChatBody = ({ navigation }) => {
       </View>
       <View style={styles.body}>
         <View style={styles.numOfGroupContainer}>
-          <Text style={styles.numOfGroup}>
-            Nhóm đang tham gia ({convers.length})
-          </Text>
+          <Text style={styles.numOfGroup}>Nhóm đang tham gia ({count()})</Text>
         </View>
         <View style={styles.list}>
           <FlatList

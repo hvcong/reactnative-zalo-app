@@ -56,7 +56,6 @@ const ConversationContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (convers && convers.length > 0) {
-      connectIo();
       console.log("load last view");
       loadAllLastViews();
       initTypingList();
