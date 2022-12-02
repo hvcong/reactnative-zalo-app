@@ -156,7 +156,7 @@ const ListMember = (props) => {
 
     let res = await findUserByPhoneNumber(phoneInput);
     setIsFinding(false);
-    if (res && res.isSuccess) {
+    if (res && res.isSuccess && res._id) {
       setuserFound(res);
     } else {
       console.log("not found");

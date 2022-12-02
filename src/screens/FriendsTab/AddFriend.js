@@ -27,7 +27,7 @@ const AddFriend = () => {
   async function onFindSubmit() {
     if (phoneInput.length != 10) return;
     let res = await findUserByPhoneNumber(phoneInput);
-    if (res && res.isSuccess) {
+    if (res && res.isSuccess && res._id) {
       setuserFound(res);
       setErrText("");
     } else {

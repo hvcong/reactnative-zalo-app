@@ -8,7 +8,9 @@ const GroupChatBody = ({ navigation }) => {
   const { convers } = useConversationContext();
 
   function renderItem({ item, index }) {
+    // if (item.type == true) {
     return <GroupChatItem {...item} index={index} />;
+    // }
   }
 
   return (

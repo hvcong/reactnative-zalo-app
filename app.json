@@ -4,7 +4,7 @@
     "slug": "zalo3",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -21,7 +21,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.cnm.gro-chat"
+      "package": "com.cnm.Gavroche"
     },
     "web": {
       "favicon": "./assets/favicon.png"

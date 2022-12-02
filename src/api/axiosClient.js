@@ -2,9 +2,9 @@ import axios from "axios";
 import store from "../store";
 // let baseURL = "http://192.168.1.87/";
 // let baseURL = "http://127.0.0.1:3000/";
-let baseURL = "https://zalo-chat.herokuapp.com/";
+// let baseURL = "https://zalo-chat.herokuapp.com/";
 // let baseURL = "http://localhost:3000/";
-// let baseURL = "http://3.1.213.26:3000/";
+let baseURL = "http://3.1.213.26:3000/";
 
 const axiosClient = axios.create({
   baseURL: baseURL,

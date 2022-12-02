@@ -47,6 +47,7 @@ const ConversationContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
+      console.log("load .....");
       connectIo();
       loadAllConversation();
     }
@@ -55,6 +56,7 @@ const ConversationContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (convers && convers.length > 0) {
+      connectIo();
       console.log("load last view");
       loadAllLastViews();
       initTypingList();
@@ -76,13 +78,13 @@ const ConversationContextProvider = ({ children }) => {
 
   // load and setting io
   async function connectIo() {
-    if (!socketRef.current || !socketRef.current.connected) {
-      console.log("io start");
-      socketRef.current = await startSocketIO();
-      socketRef.current.on("connect", () => {
-        console.log("socket: connect");
-      });
-    }
+    // if (!socketRef.current || !socketRef.current.connected) {
+    console.log("io start");
+    socketRef.current = await startSocketIO();
+    socketRef.current.on("connect", () => {
+      console.log("socket: connect");
+    });
+    // }
   }
 
   async function loadAllConversation() {

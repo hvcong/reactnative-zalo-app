@@ -99,7 +99,7 @@ const AddGroupChat = (props) => {
   async function findUser() {
     if (phoneInput.length != 10) return;
     let res = await findUserByPhoneNumber(phoneInput);
-    if (res && res.isSuccess) {
+    if (res && res.isSuccess && res._id) {
       setuserFound(res);
     } else {
       console.log("not found");

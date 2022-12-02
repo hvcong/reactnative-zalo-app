@@ -161,6 +161,15 @@ const ChatItem = ({ conver, navigation }) => {
             )}
           </View>
         );
+      } else {
+        return (
+          <View style={styles.imageContainer}>
+            <Image
+              source={require("../../assets/avatar.jpg")}
+              style={styles.avatar}
+            />
+          </View>
+        );
       }
     }
   }

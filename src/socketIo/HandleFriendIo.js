@@ -57,9 +57,11 @@ const HandleFriendIo = () => {
 
     socket.on("user-online", (userId) => {
       console.log("emit user-online ---", userId);
+      loadFriends();
     });
     socket.on("user-offline", (userId) => {
       console.log("emit user-offline ---", userId);
+      loadFriends();
     });
   }
 
