@@ -6,7 +6,7 @@ import { useFriendContext } from "../../store/contexts/FriendContext";
 import AddFriendItem from "./components/AddFriendItem";
 
 const AddFriend = () => {
-  const [phoneInput, setphoneInput] = useState("0988888881");
+  const [phoneInput, setphoneInput] = useState("0356267135");
   const [userFound, setuserFound] = useState(null);
   const [errText, setErrText] = useState("");
   const [isDisSubmit, setIsDisSubmit] = useState(false);

@@ -8,6 +8,7 @@ const ChatItem = ({ conver, navigation }) => {
   const { name, lastMessageId, _id, type, avatar, members } = conver;
   const { lastViews, getMember } = useConversationContext();
   const { user } = useGlobalContext();
+  const [lastView, setLastView] = useState();
 
   function onPressItem() {
     navigation.navigate("ChatRoom", {

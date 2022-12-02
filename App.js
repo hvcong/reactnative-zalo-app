@@ -11,6 +11,7 @@ import HandleFriendIo from "./src/socketIo/HandleFriendIo.js";
 import HandleConverIo from "./src/socketIo/HandleConverIo.js";
 export default function App() {
   LogBox.ignoreLogs(["EventEmitter.removeListener"]);
+  console.disableYellowBox = true;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

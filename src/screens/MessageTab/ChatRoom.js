@@ -48,6 +48,7 @@ const ChatRoom = (props) => {
   useEffect(() => {
     const blurSubc = navigation.addListener("blur", () => {
       if (socket) {
+        console.log("emit close-room");
         socket.emit("close-room", converId);
         updateLastViewOffline(converId);
       }

@@ -27,7 +27,7 @@ const ForgotPassword = ({ navigation, route }) => {
           const user = await userApi.findUserByPhoneNumber(
             route.params.phoneInput
           );
-          if (user.isSuccess) {
+          if (user.isSuccess && user._id) {
             const res = await userApi.updatePassword(user._id, pwdInput);
             if (res.isSuccess) {
               console.log("update pass ok");

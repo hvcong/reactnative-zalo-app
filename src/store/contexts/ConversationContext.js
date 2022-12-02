@@ -548,9 +548,9 @@ const ConversationContextProvider = ({ children }) => {
     for (let i = 0; i < _lasVs.length; i++) {
       if (_lasVs[i].conversationId == converId) {
         _lasVs[i].lastView = new Date();
-        return;
       }
     }
+    setLastViews(_lasVs);
   }
 
   // handle add typing

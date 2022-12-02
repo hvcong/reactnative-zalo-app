@@ -26,6 +26,7 @@ const FriendsItem = (props) => {
     length,
     isOnline,
   } = props;
+  console.log(isOnline);
   const { createSimpleConver } = useConversationContext();
 
   const { modalProfile, setModalProfile } = useGlobalContext();

@@ -19,7 +19,7 @@ const ForgotPasswordPhoneInput = ({ navigation, route }) => {
       let res = await userApi.findUserByPhoneNumber(phoneInput);
 
       setIsLoading(false);
-      if (res.isSuccess) {
+      if (res.isSuccess && res._id) {
         navigation.navigate("RegisterVerify", {
           phoneInput,
           nextScreen: "ForgotPassword",

@@ -6,7 +6,7 @@ import LoadingModal from "../../components/LoadingModal";
 import Submit from "../../components/Login/Submit";
 
 const RegisterPhoneInput = ({ navigation, route }) => {
-  const [phoneInput, setPhoneInput] = useState("0356267135");
+  const [phoneInput, setPhoneInput] = useState("0868283915");
   const [errText, setErrText] = useState("Nhập số điện thoại để đăng kí");
   const [isDisSubmit, setIsDisSubmit] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,7 @@ const RegisterPhoneInput = ({ navigation, route }) => {
       let res = await userApi.findUserByPhoneNumber(phoneInput);
 
       setIsLoading(false);
-      if (!res.isSuccess) {
+      if (!res._id) {
         navigation.navigate("RegisterVerify", {
           phoneInput,
           nextScreen: "RegisterInput",
